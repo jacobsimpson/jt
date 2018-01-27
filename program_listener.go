@@ -65,14 +65,14 @@ func NewPrintlnBlock() Block {
 	return &printlnBlock{}
 }
 
-type Expression struct {
+type Rule struct {
 	Selection Selection
 	Block     Block
 }
 
 type InterpreterListener struct {
-	Expressions       []*Expression
-	currentExpression *Expression
+	Rules       []*Rule
+	currentRule *Rule
 }
 
 func NewInterpreterListener() *InterpreterListener {
@@ -87,9 +87,8 @@ func (l *InterpreterListener) ExitEveryRule(ctx antlr.ParserRuleContext)  {}
 // EnterProgram is called when entering the program production.
 func (l *InterpreterListener) EnterProgram(c *parser.ProgramContext) {}
 
-// EnterExpression is called when entering the expression production.
-func (l *InterpreterListener) EnterExpression(c *parser.ExpressionContext) {
-	l.currentExpression = &Expression{
+func (l *InterpreterListener) EnterProcessingRule(c *parser.ProcessingRuleContext) {
+	l.currentRule = &Rule{
 		Block: NewPrintlnBlock(),
 	}
 }
@@ -100,7 +99,7 @@ func (l *InterpreterListener) EnterSelection(c *parser.SelectionContext) {
 		re = re[1 : len(re)-1]
 		// TODO: error handling. Can't return it here, have to capture somehow.
 		selection, _ := NewRegularExpressionMatcher(re)
-		l.currentExpression.Selection = selection
+		l.currentRule.Selection = selection
 	}
 }
 
@@ -111,7 +110,7 @@ func (l *InterpreterListener) EnterValue(c *parser.ValueContext) {
 		re = re[1 : len(re)-1]
 		// TODO: error handling. Can't return it here, have to capture somehow.
 		selection, _ := NewRegularExpressionMatcher(re)
-		l.currentExpression.Selection = selection
+		l.currentRule.Selection = selection
 	} else if c.STRING() != nil {
 	} else if c.DATE_TIME != nil {
 	} else if c.INTEGER != nil {
@@ -132,11 +131,10 @@ func (l *InterpreterListener) EnterParameter_list(c *parser.Parameter_listContex
 // ExitProgram is called when exiting the program production.
 func (l *InterpreterListener) ExitProgram(c *parser.ProgramContext) {}
 
-// ExitExpression is called when exiting the expression production.
-func (l *InterpreterListener) ExitExpression(c *parser.ExpressionContext) {
-	if l.currentExpression != nil {
-		l.Expressions = append(l.Expressions, l.currentExpression)
-		l.currentExpression = nil
+func (l *InterpreterListener) ExitProcessingRule(c *parser.ProcessingRuleContext) {
+	if l.currentRule != nil {
+		l.Rules = append(l.Rules, l.currentRule)
+		l.currentRule = nil
 	}
 }
 

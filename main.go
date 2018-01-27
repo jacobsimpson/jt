@@ -34,11 +34,11 @@ standard input is read.
 
 func main() {
 	var scriptFile string
-	var expressions string
+	var rules string
 	var inputFiles []string
 	var version bool
 
-	flag.StringVarP(&expressions, "expression", "e", expressions,
+	flag.StringVarP(&rules, "expression", "e", rules,
 		"add the script to the commands to be execute")
 	flag.StringVarP(&scriptFile, "file", "f", scriptFile,
 		"add the contents of script-file to the commands to be execute")
@@ -57,27 +57,27 @@ func main() {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s: couldn't open file %s: No such file or directory", execName(), scriptFile)
 		}
-		expressions = string(data)
+		rules = string(data)
 		inputFiles = args
-	} else if expressions != "" {
+	} else if rules != "" {
 		inputFiles = args
 	} else if len(args) > 0 {
-		expressions = args[0]
+		rules = args[0]
 		inputFiles = args[1:]
 	} else {
 		flag.Usage()
 		os.Exit(1)
 	}
 
-	if err := execute(expressions, inputFiles); err != nil {
+	if err := execute(rules, inputFiles); err != nil {
 		os.Exit(1)
 	}
 }
 
-func execute(expressions string, inputFiles []string) error {
+func execute(rules string, inputFiles []string) error {
 	var result error
 
-	input := antlr.NewInputStream(expressions)
+	input := antlr.NewInputStream(rules)
 	lexer := parser.NewProgramLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	parser := parser.NewProgramParser(stream)
@@ -107,7 +107,7 @@ func processFile(interpreter *InterpreterListener, fileName string) error {
 
 	lineNumber := 0
 	for scanner.Scan() {
-		if anyExpressionMatches(interpreter, scanner.Text(), lineNumber) {
+		if anyRuleMatches(interpreter, scanner.Text(), lineNumber) {
 			fmt.Println(scanner.Text())
 		}
 		lineNumber++
@@ -115,10 +115,10 @@ func processFile(interpreter *InterpreterListener, fileName string) error {
 	return nil
 }
 
-func anyExpressionMatches(interpreter *InterpreterListener, line string, lineNumber int) bool {
+func anyRuleMatches(interpreter *InterpreterListener, line string, lineNumber int) bool {
 
-	for _, expression := range interpreter.Expressions {
-		if expression.Selection.Evaluate(line, lineNumber) {
+	for _, rule := range interpreter.Rules {
+		if rule.Selection.Evaluate(line, lineNumber) {
 			return true
 		}
 	}

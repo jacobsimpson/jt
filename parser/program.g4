@@ -3,10 +3,12 @@
 grammar Program;
 
 program
-    : expression*
+    : processingRule*
     ;
 
-expression
+// Would like to name this just 'rule' but that keyword conflicts with
+// something in golang.
+processingRule
     : selection block
     | selection
     | block
