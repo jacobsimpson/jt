@@ -8,7 +8,21 @@ import (
 	"github.com/jacobsimpson/jt/parser"
 )
 
-type Matcher interface {
+type ValueType int
+
+const (
+	StringValue ValueType = iota
+	RegularExpressionValue
+	IntegerValue
+	DateTimeValue
+)
+
+type Value interface {
+	Type() ValueType
+	Raw() string
+}
+
+type Selection interface {
 	Match(line string, lineNumber int) bool
 	String() string
 }
@@ -18,7 +32,7 @@ type regularExpressionMatcher struct {
 	re          *regexp.Regexp
 }
 
-func NewRegularExpressionMatcher(regexString string) (Matcher, error) {
+func NewRegularExpressionMatcher(regexString string) (Selection, error) {
 	re, err := regexp.Compile(regexString)
 	if err != nil {
 		return nil, err
@@ -52,8 +66,8 @@ func NewPrintlnBlock() Block {
 }
 
 type Expression struct {
-	Matcher Matcher
-	Block   Block
+	Selection Selection
+	Block     Block
 }
 
 type InterpreterListener struct {
@@ -81,14 +95,28 @@ func (l *InterpreterListener) EnterExpression(c *parser.ExpressionContext) {
 }
 
 func (l *InterpreterListener) EnterSelection(c *parser.SelectionContext) {
-	if c.REGULAR_EXPRESSION() == nil {
-		fmt.Printf("EnterSelection\n")
-	} else {
+	if c.REGULAR_EXPRESSION() != nil {
 		re := c.REGULAR_EXPRESSION().GetSymbol().GetText()
 		re = re[1 : len(re)-1]
 		// TODO: error handling. Can't return it here, have to capture somehow.
-		matcher, _ := NewRegularExpressionMatcher(re)
-		l.currentExpression.Matcher = matcher
+		selection, _ := NewRegularExpressionMatcher(re)
+		l.currentExpression.Selection = selection
+	}
+}
+
+func (l *InterpreterListener) EnterValue(c *parser.ValueContext) {
+	if c.COLUMN() != nil {
+	} else if c.REGULAR_EXPRESSION() != nil {
+		re := c.REGULAR_EXPRESSION().GetSymbol().GetText()
+		re = re[1 : len(re)-1]
+		// TODO: error handling. Can't return it here, have to capture somehow.
+		selection, _ := NewRegularExpressionMatcher(re)
+		l.currentExpression.Selection = selection
+	} else if c.STRING() != nil {
+	} else if c.DATE_TIME != nil {
+	} else if c.INTEGER != nil {
+	} else if c.HEX_INTEGER != nil {
+	} else if c.BINARY_INTEGER != nil {
 	}
 }
 
@@ -106,11 +134,14 @@ func (l *InterpreterListener) ExitProgram(c *parser.ProgramContext) {}
 
 // ExitExpression is called when exiting the expression production.
 func (l *InterpreterListener) ExitExpression(c *parser.ExpressionContext) {
-	l.Expressions = append(l.Expressions, l.currentExpression)
-	l.currentExpression = nil
+	if l.currentExpression != nil {
+		l.Expressions = append(l.Expressions, l.currentExpression)
+		l.currentExpression = nil
+	}
 }
 
 func (s *InterpreterListener) ExitSelection(ctx *parser.SelectionContext) {}
+func (s *InterpreterListener) ExitValue(ctx *parser.ValueContext)         {}
 
 // ExitBlock is called when exiting the block production.
 func (l *InterpreterListener) ExitBlock(c *parser.BlockContext) {}

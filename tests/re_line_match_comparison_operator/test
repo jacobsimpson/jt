@@ -1,2 +1,2 @@
 # vi: ft=sh
-${JT} '%9 ~ /things/' ${INPUT} > ${STDOUT} 2> ${STDERR}
+${JT} '%4 ~ /things/' ${INPUT} > ${STDOUT} 2> ${STDERR}
