@@ -23,7 +23,7 @@ type Value interface {
 }
 
 type Selection interface {
-	Match(line string, lineNumber int) bool
+	Evaluate(line string, lineNumber int) bool
 	String() string
 }
 
@@ -43,7 +43,7 @@ func NewRegularExpressionMatcher(regexString string) (Selection, error) {
 	}, nil
 }
 
-func (m *regularExpressionMatcher) Match(line string, lineNumber int) bool {
+func (m *regularExpressionMatcher) Evaluate(line string, lineNumber int) bool {
 	return m.re.MatchString(line)
 }
 

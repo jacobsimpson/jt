@@ -118,7 +118,7 @@ func processFile(interpreter *InterpreterListener, fileName string) error {
 func anyExpressionMatches(interpreter *InterpreterListener, line string, lineNumber int) bool {
 
 	for _, expression := range interpreter.Expressions {
-		if expression.Selection.Match(line, lineNumber) {
+		if expression.Selection.Evaluate(line, lineNumber) {
 			return true
 		}
 	}
