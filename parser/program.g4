@@ -14,6 +14,11 @@ expression
 
 selection
     : REGULAR_EXPRESSION
+    | COLUMN '~' REGULAR_EXPRESSION
+    ;
+
+COLUMN
+    : '%' [0-9]+
     ;
 
 block

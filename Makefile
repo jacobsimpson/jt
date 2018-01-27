@@ -9,13 +9,17 @@ jt: parser/Program.g4 *.go
 	go test
 
 test: tests/re_line_match_implicit \
-	  tests/re_line_match_implicit_pipe_delimited
+	  tests/re_line_match_implicit_pipe_delimited \
+	  tests/re_line_match_comparison_operator
 
 tests/re_line_match_implicit::
 	tests/test tests/re_line_match_implicit
 
 tests/re_line_match_implicit_pipe_delimited::
 	tests/test tests/re_line_match_implicit_pipe_delimited
+
+tests/re_line_match_comparison_operator::
+	tests/test tests/re_line_match_comparison_operator
 
 clean::
 	rm -f \
