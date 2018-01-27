@@ -1,0 +1,2 @@
+# vi: ft=sh
+${JT} '/things/' ${INPUT} > ${STDOUT} 2> ${STDERR}

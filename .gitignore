@@ -12,3 +12,17 @@
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
+
+# Vim swap files.
+.sw?
+.*.sw?
+
+# The antlr program files.
+*.jar
+
+# The executable. Sometimes I'm in this directory when doing development.
+/jt
+
+# antlr generated files that shouldn't be checked in.
+parser/*.tokens
+parser/*.go

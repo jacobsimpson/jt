@@ -247,3 +247,28 @@ I alternate between methods and functions. Not sure what to do. Methods provide
 a nice opportunity for fluent programming (see the PATH split/join examples)
 and functions seem a little more intuitive. If I go with methods, I don't want
 null pointer crashes, so automatic elvis operator behavior.
+
+## Development
+
+### Preparation
+
+Install antlr4.
+    - https://github.com/antlr/antlr4/blob/master/doc/getting-started.md
+
+```sh
+curl -O http://www.antlr.org/download/antlr-4.7-complete.jar
+alias antlr4='java -Xmx500M -cp "antlr-4.7-complete.jar:$CLASSPATH" org.antlr.v4.Tool'
+alias grun='java -Xmx500M -cp "antlr-4.7-complete.jar:$CLASSPATH" org.antlr.v4.gui.TestRig'
+```
+
+```sh
+go get github.com/stretchr/testify
+go get github.com/ogier/pflag
+```
+
+### Development Cycle
+
+```sh
+make
+```
+

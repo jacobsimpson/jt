@@ -1,0 +1,70 @@
+#! /bin/bash
+
+printf "%-60s" $1
+
+
+JT=./jt
+TEST_DIR="$1"
+TMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir')"
+TEST="${TEST_DIR}/test"
+INPUT="${TEST_DIR}/input.txt"
+STDOUT="${TMP_DIR}/stdout.txt"
+STDERR="${TMP_DIR}/stderr.txt"
+EXPECTED_STDOUT="${TEST_DIR}/expected-stdout.txt"
+EXPECTED_STDERR="${TEST_DIR}/expected-stderr.txt"
+
+if [[ ! -e $TEST_DIR ]]; then
+    echo Fail
+    echo "        Error: the test directory '$TEST_DIR' does not exist."
+    exit 1
+fi
+if [[ ! -e $INPUT ]]; then
+    echo Fail
+    echo "        Error: the test input '$INPUT' does not exist."
+    exit 1
+fi
+if [[ ! -e $EXPECTED_STDOUT ]]; then
+    echo Fail
+    echo "        Error: the expected stdout '$EXPECTED_STDOUT' does not exist."
+    exit 1
+fi
+if [[ ! -e $EXPECTED_STDERR ]]; then
+    echo Fail
+    echo "        Error: the expected stderr '$EXPECTED_STDERR' does not exist."
+    exit 1
+fi
+
+[[ ! -e ${JT} ]] && exit 1
+
+source "$TEST"
+
+if [[ ! $? -eq 0 ]]; then
+    echo Fail
+    echo "        Status was non-zero"
+    echo "        ${STDOUT}"
+    echo "        ${STDERR}"
+    exit 1
+fi
+
+if ! diff $EXPECTED_STDOUT $STDOUT >& /dev/null ; then
+    echo Fail
+    echo "        stdout did not match expected"
+    echo
+    cat "$TEST" | grep -v "^#"
+    echo
+    echo "        diff $EXPECTED_STDOUT $STDOUT"
+    exit 1
+fi
+
+if ! diff $EXPECTED_STDERR $STDERR >& /dev/null ; then
+    echo Fail
+    echo "        stderr did not match expected"
+    echo
+    cat "$TEST" | grep -v "^#"
+    echo
+    echo "        diff $EXPECTED_STDERR $STDERR"
+    exit 1
+fi
+
+echo Success
+#rm -Rf ${TMP_DIR}
