@@ -9,6 +9,7 @@ import (
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/jacobsimpson/jt/debug"
+	jtflag "github.com/jacobsimpson/jt/flag"
 	"github.com/jacobsimpson/jt/listener"
 	"github.com/jacobsimpson/jt/parser"
 	flag "github.com/ogier/pflag"
@@ -39,7 +40,10 @@ func main() {
 	var rules string
 	var inputFiles []string
 	var version bool
+	var verbose int
 
+	jtflag.CountVarP(&verbose, "verbose", "v", verbose,
+		"increase output for debugging purposes")
 	flag.StringVarP(&rules, "expression", "e", rules,
 		"add the script to the commands to be execute")
 	flag.StringVarP(&scriptFile, "file", "f", scriptFile,
@@ -48,6 +52,7 @@ func main() {
 		"output version information and exit")
 	flag.Parse()
 
+	debug.SetLevel(verbose)
 	if version {
 		fmt.Printf("%s %s\n", execName(), VERSION)
 		os.Exit(0)
