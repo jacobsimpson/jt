@@ -45,7 +45,7 @@ value
     ;
 
 comparator
-    : GT | GE | LT | LE | EQ
+    : LT | LE | EQ | NE | GE | GT
     ;
 
 binary
@@ -66,6 +66,7 @@ GE         : '>=' ;
 LT         : '<' ;
 LE         : '<=' ;
 EQ         : '==' ;
+NE         : '!=' ;
 LPAREN     : '(' ;
 RPAREN     : ')' ;
 DECIMAL    : '-'? [0-9][0-9_]* ( '.' [0-9][0-9_]* )? ;
@@ -96,6 +97,7 @@ BINARY_INTEGER
 
 COLUMN
     : '%' [0-9]+
+    | '%#'
     ;
 
 block

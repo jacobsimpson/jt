@@ -126,6 +126,7 @@ func applyRules(interpreter *listener.InterpreterListener, line string, lineNumb
 	environment := make(map[string]string)
 
 	environment["%0"] = line
+	environment["%#"] = fmt.Sprintf("%d", lineNumber)
 	for i, c := range strings.Split(line, " ") {
 		environment[fmt.Sprintf("%%%d", i+1)] = c
 	}
@@ -134,9 +135,9 @@ func applyRules(interpreter *listener.InterpreterListener, line string, lineNumb
 	debug.Info("There are %d rules", len(interpreter.Rules))
 	for _, rule := range interpreter.Rules {
 		debug.Info("    Evaluating: %s\n", rule)
-		if rule.Evaluate(environment, line, lineNumber) {
+		if rule.Evaluate(environment) {
 			debug.Info("        Executing block\n")
-			rule.Execute(environment, line, lineNumber)
+			rule.Execute(environment)
 		}
 	}
 	return true

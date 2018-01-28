@@ -2,20 +2,19 @@ package listener
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/jacobsimpson/jt/parser"
 )
 
 type Block interface {
-	Execute(environment map[string]string, line string, lineNumber int)
+	Execute(environment map[string]string)
 }
 
 type printlnBlock struct{}
 
-func (b *printlnBlock) Execute(environment map[string]string, line string, lineNumber int) {
-	fmt.Println(line)
+func (b *printlnBlock) Execute(environment map[string]string) {
+	fmt.Println(environment["%0"])
 }
 
 func NewPrintlnBlock() Block {
@@ -37,85 +36,101 @@ func (l *InterpreterListener) VisitErrorNode(node antlr.ErrorNode)   {}
 func (l *InterpreterListener) EnterEveryRule(ctx antlr.ParserRuleContext) {}
 func (l *InterpreterListener) ExitEveryRule(ctx antlr.ParserRuleContext)  {}
 
-func (l *InterpreterListener) EnterProgram(c *parser.ProgramContext) {}
-func (l *InterpreterListener) ExitProgram(c *parser.ProgramContext)  {}
+func (l *InterpreterListener) EnterProgram(ctx *parser.ProgramContext) {}
+func (l *InterpreterListener) ExitProgram(ctx *parser.ProgramContext)  {}
 
-func (l *InterpreterListener) EnterProcessingRule(c *parser.ProcessingRuleContext) {
+func (l *InterpreterListener) EnterProcessingRule(ctx *parser.ProcessingRuleContext) {
 	l.currentRule = &rule{
 		block: NewPrintlnBlock(),
 	}
 }
-func (l *InterpreterListener) ExitProcessingRule(c *parser.ProcessingRuleContext) {
+func (l *InterpreterListener) ExitProcessingRule(ctx *parser.ProcessingRuleContext) {
 	if l.currentRule != nil {
 		l.Rules = append(l.Rules, l.currentRule)
 		l.currentRule = nil
 	}
 }
 
-func (l *InterpreterListener) EnterSelection(c *parser.SelectionContext) {
-	if c.REGULAR_EXPRESSION() != nil {
-		re := c.REGULAR_EXPRESSION().GetSymbol().GetText()
-		re = re[1 : len(re)-1]
-		// TODO: error handling. Can't return it here, have to capture somehow.
-		selection, _ := NewRegexpMatcher(re)
-		l.currentRule.selection = selection
-	}
-}
-func (s *InterpreterListener) ExitSelection(ctx *parser.SelectionContext) {}
-
-func (l *InterpreterListener) EnterComparison(c *parser.ComparisonContext) {
-	l.currentRule.selection = &comparison{
-		left:     &varValue{name: "%0"},
-		operator: EQ_Operator,
-		right:    &regexpValue{},
-	}
-}
-func (l *InterpreterListener) ExitComparison(c *parser.ComparisonContext) {}
-
-func (l *InterpreterListener) EnterValue(c *parser.ValueContext) {
-	cmp := l.currentRule.selection.(*comparison)
-	if c.COLUMN() != nil {
-		cmp.left = &varValue{
-			name: c.COLUMN().GetSymbol().GetText(),
-		}
-	} else if c.REGULAR_EXPRESSION() != nil {
-		regexpString := c.REGULAR_EXPRESSION().GetSymbol().GetText()
+func (l *InterpreterListener) EnterSelection(ctx *parser.SelectionContext) {
+	if ctx.REGULAR_EXPRESSION() != nil {
+		regexpString := ctx.REGULAR_EXPRESSION().GetSymbol().GetText()
 		regexpString = regexpString[1 : len(regexpString)-1]
 		// TODO: error handling. Can't return it here, have to capture somehow.
-		re, err := regexp.Compile(regexpString)
-		if err != nil {
-			return
+		value, _ := NewRegexpValue(regexpString)
+		l.currentRule.selection = &comparison{
+			left:     &varValue{name: "%0"},
+			operator: EQ_Operator,
+			right:    value,
 		}
-		cmp.right = &regexpValue{
-			raw: regexpString,
-			re:  re,
-		}
-	} else if c.STRING() != nil {
-	} else if c.DATE_TIME != nil {
-	} else if c.INTEGER != nil {
-	} else if c.HEX_INTEGER != nil {
-	} else if c.BINARY_INTEGER != nil {
 	}
 }
-func (s *InterpreterListener) ExitValue(ctx *parser.ValueContext) {}
+func (l *InterpreterListener) ExitSelection(ctx *parser.SelectionContext) {}
 
-func (l *InterpreterListener) EnterBlock(c *parser.BlockContext) {}
-func (l *InterpreterListener) ExitBlock(c *parser.BlockContext)  {}
+func (l *InterpreterListener) EnterComparison(ctx *parser.ComparisonContext) {
+	l.currentRule.selection = &comparison{}
+}
+func (l *InterpreterListener) ExitComparison(ctx *parser.ComparisonContext) {}
 
-func (l *InterpreterListener) EnterCommand(c *parser.CommandContext) {}
-func (l *InterpreterListener) ExitCommand(c *parser.CommandContext)  {}
+func (l *InterpreterListener) EnterComparator(ctx *parser.ComparatorContext) {
+	cmp := l.currentRule.selection.(*comparison)
+	if ctx.LT() != nil {
+		cmp.operator = LT_Operator
+	} else if ctx.LE() != nil {
+		cmp.operator = LE_Operator
+	} else if ctx.EQ() != nil {
+		cmp.operator = EQ_Operator
+	} else if ctx.NE() != nil {
+		cmp.operator = NE_Operator
+	} else if ctx.GE() != nil {
+		cmp.operator = LE_Operator
+	} else if ctx.GT() != nil {
+		cmp.operator = GT_Operator
+	}
+}
+func (l *InterpreterListener) ExitComparator(ctx *parser.ComparatorContext) {}
 
-func (l *InterpreterListener) EnterBinary(c *parser.BinaryContext)  {}
-func (s *InterpreterListener) ExitBinary(ctx *parser.BinaryContext) {}
+func (l *InterpreterListener) EnterValue(ctx *parser.ValueContext) {
+	var value Value
+	if ctx.COLUMN() != nil {
+		value = &varValue{
+			name: ctx.COLUMN().GetSymbol().GetText(),
+		}
+	} else if ctx.REGULAR_EXPRESSION() != nil {
+		regexpString := ctx.REGULAR_EXPRESSION().GetSymbol().GetText()
+		regexpString = regexpString[1 : len(regexpString)-1]
+		// TODO: error handling. Can't return it here, have to capture somehow.
+		value, _ = NewRegexpValue(regexpString)
+	} else if ctx.STRING() != nil {
+		value = NewStringValue(ctx.STRING().GetSymbol().GetText())
+	} else if ctx.INTEGER != nil {
+	} else if ctx.HEX_INTEGER != nil {
+	} else if ctx.BINARY_INTEGER != nil {
+	} else if ctx.DATE_TIME != nil {
+	}
 
-func (l *InterpreterListener) EnterBoolean(c *parser.BooleanContext)  {}
-func (s *InterpreterListener) ExitBoolean(ctx *parser.BooleanContext) {}
+	cmp := l.currentRule.selection.(*comparison)
+	if cmp.left == nil {
+		cmp.left = value
+	} else {
+		cmp.right = value
+	}
+}
+func (l *InterpreterListener) ExitValue(ctx *parser.ValueContext) {}
 
-func (l *InterpreterListener) EnterComparator(c *parser.ComparatorContext)  {}
-func (s *InterpreterListener) ExitComparator(ctx *parser.ComparatorContext) {}
+func (l *InterpreterListener) EnterBlock(ctx *parser.BlockContext) {}
+func (l *InterpreterListener) ExitBlock(ctx *parser.BlockContext)  {}
 
-func (l *InterpreterListener) EnterExpression(c *parser.ExpressionContext)  {}
-func (s *InterpreterListener) ExitExpression(ctx *parser.ExpressionContext) {}
+func (l *InterpreterListener) EnterCommand(ctx *parser.CommandContext) {}
+func (l *InterpreterListener) ExitCommand(ctx *parser.CommandContext)  {}
 
-func (l *InterpreterListener) EnterParameterList(c *parser.ParameterListContext) {}
-func (l *InterpreterListener) ExitParameterList(c *parser.ParameterListContext)  {}
+func (l *InterpreterListener) EnterBinary(ctx *parser.BinaryContext) {}
+func (l *InterpreterListener) ExitBinary(ctx *parser.BinaryContext)  {}
+
+func (l *InterpreterListener) EnterBoolean(ctx *parser.BooleanContext) {}
+func (l *InterpreterListener) ExitBoolean(ctx *parser.BooleanContext)  {}
+
+func (l *InterpreterListener) EnterExpression(ctx *parser.ExpressionContext) {}
+func (l *InterpreterListener) ExitExpression(ctx *parser.ExpressionContext)  {}
+
+func (l *InterpreterListener) EnterParameterList(ctx *parser.ParameterListContext) {}
+func (l *InterpreterListener) ExitParameterList(ctx *parser.ParameterListContext)  {}

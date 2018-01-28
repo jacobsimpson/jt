@@ -5,8 +5,8 @@ import (
 )
 
 type Rule interface {
-	Evaluate(environment map[string]string, line string, lineNumber int) bool
-	Execute(environment map[string]string, line string, lineNumber int)
+	Evaluate(environment map[string]string) bool
+	Execute(environment map[string]string)
 	String() string
 }
 
@@ -16,13 +16,13 @@ type rule struct {
 }
 
 // TODO: Add errors to return status.
-func (r *rule) Evaluate(environment map[string]string, line string, lineNumber int) bool {
-	return r.selection.Evaluate(environment, line, lineNumber)
+func (r *rule) Evaluate(environment map[string]string) bool {
+	return r.selection.Evaluate(environment)
 }
 
 // TODO: Add errors to return status.
-func (r *rule) Execute(environment map[string]string, line string, lineNumber int) {
-	r.block.Execute(environment, line, lineNumber)
+func (r *rule) Execute(environment map[string]string) {
+	r.block.Execute(environment)
 }
 
 func (r *rule) String() string {
