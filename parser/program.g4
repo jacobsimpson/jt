@@ -16,7 +16,19 @@ processingRule
 
 selection
     : REGULAR_EXPRESSION
-    | value '~' value
+    | expression
+    ;
+
+expression
+    : LPAREN expression RPAREN
+    | NOT expression
+    | left=expression op=binary right=expression
+    | comparison
+    | boolean
+    ;
+
+comparison
+    : left=value op=comparator right=value #comparatorExpression
     ;
 
 value
@@ -28,8 +40,36 @@ value
         | INTEGER
         | HEX_INTEGER
         | BINARY_INTEGER
+        | DECIMAL
     )
     ;
+
+comparator
+    : GT | GE | LT | LE | EQ
+    ;
+
+binary
+    : AND | OR
+    ;
+
+boolean
+    : TRUE | FALSE
+    ;
+
+AND        : 'and' ;
+OR         : 'or' ;
+NOT        : 'not';
+TRUE       : 'true' ;
+FALSE      : 'false' ;
+GT         : '>' ;
+GE         : '>=' ;
+LT         : '<' ;
+LE         : '<=' ;
+EQ         : '==' ;
+LPAREN     : '(' ;
+RPAREN     : ')' ;
+DECIMAL    : '-'? [0-9][0-9_]* ( '.' [0-9][0-9_]* )? ;
+IDENTIFIER : [a-zA-Z_] [a-zA-Z_0-9]* ;
 
 STRING
     : '"' ~('"')* '"'
@@ -63,10 +103,10 @@ block
     ;
 
 command
-    : FUNCTION parameter_list?
+    : FUNCTION parameterList?
     ;
 
-parameter_list
+parameterList
     : '(' ')'
     ;
 

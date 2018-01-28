@@ -79,17 +79,24 @@ func NewInterpreterListener() *InterpreterListener {
 	return &InterpreterListener{}
 }
 
-func (l *InterpreterListener) VisitTerminal(node antlr.TerminalNode)      {}
-func (l *InterpreterListener) VisitErrorNode(node antlr.ErrorNode)        {}
+func (l *InterpreterListener) VisitTerminal(node antlr.TerminalNode) {}
+func (l *InterpreterListener) VisitErrorNode(node antlr.ErrorNode)   {}
+
 func (l *InterpreterListener) EnterEveryRule(ctx antlr.ParserRuleContext) {}
 func (l *InterpreterListener) ExitEveryRule(ctx antlr.ParserRuleContext)  {}
 
-// EnterProgram is called when entering the program production.
 func (l *InterpreterListener) EnterProgram(c *parser.ProgramContext) {}
+func (l *InterpreterListener) ExitProgram(c *parser.ProgramContext)  {}
 
 func (l *InterpreterListener) EnterProcessingRule(c *parser.ProcessingRuleContext) {
 	l.currentRule = &Rule{
 		Block: NewPrintlnBlock(),
+	}
+}
+func (l *InterpreterListener) ExitProcessingRule(c *parser.ProcessingRuleContext) {
+	if l.currentRule != nil {
+		l.Rules = append(l.Rules, l.currentRule)
+		l.currentRule = nil
 	}
 }
 
@@ -102,6 +109,7 @@ func (l *InterpreterListener) EnterSelection(c *parser.SelectionContext) {
 		l.currentRule.Selection = selection
 	}
 }
+func (s *InterpreterListener) ExitSelection(ctx *parser.SelectionContext) {}
 
 func (l *InterpreterListener) EnterValue(c *parser.ValueContext) {
 	if c.COLUMN() != nil {
@@ -118,34 +126,28 @@ func (l *InterpreterListener) EnterValue(c *parser.ValueContext) {
 	} else if c.BINARY_INTEGER != nil {
 	}
 }
+func (s *InterpreterListener) ExitValue(ctx *parser.ValueContext) {}
 
-// EnterBlock is called when entering the block production.
 func (l *InterpreterListener) EnterBlock(c *parser.BlockContext) {}
+func (l *InterpreterListener) ExitBlock(c *parser.BlockContext)  {}
 
-// EnterCommand is called when entering the command production.
 func (l *InterpreterListener) EnterCommand(c *parser.CommandContext) {}
+func (l *InterpreterListener) ExitCommand(c *parser.CommandContext)  {}
 
-// EnterParameter_list is called when entering the parameter_list production.
-func (l *InterpreterListener) EnterParameter_list(c *parser.Parameter_listContext) {}
+func (l *InterpreterListener) EnterBinary(c *parser.BinaryContext)  {}
+func (s *InterpreterListener) ExitBinary(ctx *parser.BinaryContext) {}
 
-// ExitProgram is called when exiting the program production.
-func (l *InterpreterListener) ExitProgram(c *parser.ProgramContext) {}
+func (l *InterpreterListener) EnterBoolean(c *parser.BooleanContext)  {}
+func (s *InterpreterListener) ExitBoolean(ctx *parser.BooleanContext) {}
 
-func (l *InterpreterListener) ExitProcessingRule(c *parser.ProcessingRuleContext) {
-	if l.currentRule != nil {
-		l.Rules = append(l.Rules, l.currentRule)
-		l.currentRule = nil
-	}
-}
+func (l *InterpreterListener) EnterComparator(c *parser.ComparatorContext)  {}
+func (s *InterpreterListener) ExitComparator(ctx *parser.ComparatorContext) {}
 
-func (s *InterpreterListener) ExitSelection(ctx *parser.SelectionContext) {}
-func (s *InterpreterListener) ExitValue(ctx *parser.ValueContext)         {}
+func (l *InterpreterListener) EnterExpression(c *parser.ExpressionContext)  {}
+func (s *InterpreterListener) ExitExpression(ctx *parser.ExpressionContext) {}
 
-// ExitBlock is called when exiting the block production.
-func (l *InterpreterListener) ExitBlock(c *parser.BlockContext) {}
+func (l *InterpreterListener) EnterComparatorExpression(c *parser.ComparatorExpressionContext)  {}
+func (s *InterpreterListener) ExitComparatorExpression(ctx *parser.ComparatorExpressionContext) {}
 
-// ExitCommand is called when exiting the command production.
-func (l *InterpreterListener) ExitCommand(c *parser.CommandContext) {}
-
-// ExitParameter_list is called when exiting the parameter_list production.
-func (l *InterpreterListener) ExitParameter_list(c *parser.Parameter_listContext) {}
+func (l *InterpreterListener) EnterParameterList(c *parser.ParameterListContext) {}
+func (l *InterpreterListener) ExitParameterList(c *parser.ParameterListContext)  {}
