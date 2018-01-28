@@ -12,7 +12,8 @@ parser/program_listener.go: parser/program.g4
 
 test: tests/re_line_match_implicit \
 	  tests/re_line_match_implicit_pipe_delimited \
-	  tests/re_line_match_comparison_operator
+	  tests/re_line_match_comparison_operator \
+      tests/re_column_match_comparison_operator
 
 tests/re_line_match_implicit::
 	tests/test tests/re_line_match_implicit
@@ -22,6 +23,9 @@ tests/re_line_match_implicit_pipe_delimited::
 
 tests/re_line_match_comparison_operator::
 	tests/test tests/re_line_match_comparison_operator
+
+tests/re_column_match_comparison_operator::
+	tests/test tests/re_column_match_comparison_operator
 
 clean::
 	rm -f \

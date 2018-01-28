@@ -2,6 +2,7 @@ package listener
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/jacobsimpson/jt/parser"
@@ -62,14 +63,33 @@ func (l *InterpreterListener) EnterSelection(c *parser.SelectionContext) {
 }
 func (s *InterpreterListener) ExitSelection(ctx *parser.SelectionContext) {}
 
+func (l *InterpreterListener) EnterComparison(c *parser.ComparisonContext) {
+	l.currentRule.selection = &comparison{
+		left:     &varValue{name: "%0"},
+		operator: EQ_Operator,
+		right:    &regexpValue{},
+	}
+}
+func (l *InterpreterListener) ExitComparison(c *parser.ComparisonContext) {}
+
 func (l *InterpreterListener) EnterValue(c *parser.ValueContext) {
+	cmp := l.currentRule.selection.(*comparison)
 	if c.COLUMN() != nil {
+		cmp.left = &varValue{
+			name: c.COLUMN().GetSymbol().GetText(),
+		}
 	} else if c.REGULAR_EXPRESSION() != nil {
-		re := c.REGULAR_EXPRESSION().GetSymbol().GetText()
-		re = re[1 : len(re)-1]
+		regexpString := c.REGULAR_EXPRESSION().GetSymbol().GetText()
+		regexpString = regexpString[1 : len(regexpString)-1]
 		// TODO: error handling. Can't return it here, have to capture somehow.
-		selection, _ := NewRegexpMatcher(re)
-		l.currentRule.selection = selection
+		re, err := regexp.Compile(regexpString)
+		if err != nil {
+			return
+		}
+		cmp.right = &regexpValue{
+			raw: regexpString,
+			re:  re,
+		}
 	} else if c.STRING() != nil {
 	} else if c.DATE_TIME != nil {
 	} else if c.INTEGER != nil {
@@ -99,6 +119,3 @@ func (s *InterpreterListener) ExitExpression(ctx *parser.ExpressionContext) {}
 
 func (l *InterpreterListener) EnterParameterList(c *parser.ParameterListContext) {}
 func (l *InterpreterListener) ExitParameterList(c *parser.ParameterListContext)  {}
-
-func (l *InterpreterListener) EnterComparison(c *parser.ComparisonContext) {}
-func (l *InterpreterListener) ExitComparison(c *parser.ComparisonContext)  {}

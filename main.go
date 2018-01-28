@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/jacobsimpson/jt/debug"
@@ -125,6 +126,10 @@ func applyRules(interpreter *listener.InterpreterListener, line string, lineNumb
 	environment := make(map[string]string)
 
 	environment["%0"] = line
+	for i, c := range strings.Split(line, " ") {
+		environment[fmt.Sprintf("%%%d", i+1)] = c
+	}
+	debug.Debug("Line %d splits as %s", lineNumber, environment)
 
 	debug.Info("There are %d rules", len(interpreter.Rules))
 	for _, rule := range interpreter.Rules {
