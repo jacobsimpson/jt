@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/jacobsimpson/jt/debug"
+	"github.com/jacobsimpson/jt/listener"
 	"github.com/jacobsimpson/jt/parser"
 	flag "github.com/ogier/pflag"
 )
@@ -83,7 +85,7 @@ func execute(rules string, inputFiles []string) error {
 	parser := parser.NewProgramParser(stream)
 	parser.BuildParseTrees = true
 	tree := parser.Program()
-	interpreter := NewInterpreterListener()
+	interpreter := listener.NewInterpreterListener()
 	antlr.ParseTreeWalkerDefault.Walk(interpreter, tree)
 
 	for _, f := range inputFiles {
@@ -95,7 +97,7 @@ func execute(rules string, inputFiles []string) error {
 	return result
 }
 
-func processFile(interpreter *InterpreterListener, fileName string) error {
+func processFile(interpreter *listener.InterpreterListener, fileName string) error {
 	f, err := os.Open(fileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s: can't read %s: No such file or directory", execName(), fileName)
@@ -107,20 +109,25 @@ func processFile(interpreter *InterpreterListener, fileName string) error {
 
 	lineNumber := 0
 	for scanner.Scan() {
-		if anyRuleMatches(interpreter, scanner.Text(), lineNumber) {
-			fmt.Println(scanner.Text())
+		if applyRules(interpreter, scanner.Text(), lineNumber) {
 		}
 		lineNumber++
 	}
 	return nil
 }
 
-func anyRuleMatches(interpreter *InterpreterListener, line string, lineNumber int) bool {
+func applyRules(interpreter *listener.InterpreterListener, line string, lineNumber int) bool {
+	environment := make(map[string]string)
 
+	environment["%0"] = line
+
+	debug.Info("There are %d rules", len(interpreter.Rules))
 	for _, rule := range interpreter.Rules {
-		if rule.Selection.Evaluate(line, lineNumber) {
-			return true
+		debug.Info("    Evaluating: %s\n", rule)
+		if rule.Evaluate(environment, line, lineNumber) {
+			debug.Info("        Executing block\n")
+			rule.Execute(environment, line, lineNumber)
 		}
 	}
-	return false
+	return true
 }

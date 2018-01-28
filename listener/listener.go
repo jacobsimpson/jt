@@ -1,63 +1,19 @@
-package main
+package listener
 
 import (
 	"fmt"
-	"regexp"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/jacobsimpson/jt/parser"
 )
 
-type ValueType int
-
-const (
-	StringValue ValueType = iota
-	RegularExpressionValue
-	IntegerValue
-	DateTimeValue
-)
-
-type Value interface {
-	Type() ValueType
-	Raw() string
-}
-
-type Selection interface {
-	Evaluate(line string, lineNumber int) bool
-	String() string
-}
-
-type regularExpressionMatcher struct {
-	regexString string
-	re          *regexp.Regexp
-}
-
-func NewRegularExpressionMatcher(regexString string) (Selection, error) {
-	re, err := regexp.Compile(regexString)
-	if err != nil {
-		return nil, err
-	}
-	return &regularExpressionMatcher{
-		regexString: regexString,
-		re:          re,
-	}, nil
-}
-
-func (m *regularExpressionMatcher) Evaluate(line string, lineNumber int) bool {
-	return m.re.MatchString(line)
-}
-
-func (m *regularExpressionMatcher) String() string {
-	return m.regexString
-}
-
 type Block interface {
-	Execute(line string, lineNumber int)
+	Execute(environment map[string]string, line string, lineNumber int)
 }
 
 type printlnBlock struct{}
 
-func (b *printlnBlock) Execute(line string, lineNumber int) {
+func (b *printlnBlock) Execute(environment map[string]string, line string, lineNumber int) {
 	fmt.Println(line)
 }
 
@@ -65,14 +21,9 @@ func NewPrintlnBlock() Block {
 	return &printlnBlock{}
 }
 
-type Rule struct {
-	Selection Selection
-	Block     Block
-}
-
 type InterpreterListener struct {
-	Rules       []*Rule
-	currentRule *Rule
+	Rules       []*rule
+	currentRule *rule
 }
 
 func NewInterpreterListener() *InterpreterListener {
@@ -89,8 +40,8 @@ func (l *InterpreterListener) EnterProgram(c *parser.ProgramContext) {}
 func (l *InterpreterListener) ExitProgram(c *parser.ProgramContext)  {}
 
 func (l *InterpreterListener) EnterProcessingRule(c *parser.ProcessingRuleContext) {
-	l.currentRule = &Rule{
-		Block: NewPrintlnBlock(),
+	l.currentRule = &rule{
+		block: NewPrintlnBlock(),
 	}
 }
 func (l *InterpreterListener) ExitProcessingRule(c *parser.ProcessingRuleContext) {
@@ -105,8 +56,8 @@ func (l *InterpreterListener) EnterSelection(c *parser.SelectionContext) {
 		re := c.REGULAR_EXPRESSION().GetSymbol().GetText()
 		re = re[1 : len(re)-1]
 		// TODO: error handling. Can't return it here, have to capture somehow.
-		selection, _ := NewRegularExpressionMatcher(re)
-		l.currentRule.Selection = selection
+		selection, _ := NewRegexpMatcher(re)
+		l.currentRule.selection = selection
 	}
 }
 func (s *InterpreterListener) ExitSelection(ctx *parser.SelectionContext) {}
@@ -117,8 +68,8 @@ func (l *InterpreterListener) EnterValue(c *parser.ValueContext) {
 		re := c.REGULAR_EXPRESSION().GetSymbol().GetText()
 		re = re[1 : len(re)-1]
 		// TODO: error handling. Can't return it here, have to capture somehow.
-		selection, _ := NewRegularExpressionMatcher(re)
-		l.currentRule.Selection = selection
+		selection, _ := NewRegexpMatcher(re)
+		l.currentRule.selection = selection
 	} else if c.STRING() != nil {
 	} else if c.DATE_TIME != nil {
 	} else if c.INTEGER != nil {
@@ -146,8 +97,8 @@ func (s *InterpreterListener) ExitComparator(ctx *parser.ComparatorContext) {}
 func (l *InterpreterListener) EnterExpression(c *parser.ExpressionContext)  {}
 func (s *InterpreterListener) ExitExpression(ctx *parser.ExpressionContext) {}
 
-func (l *InterpreterListener) EnterComparatorExpression(c *parser.ComparatorExpressionContext)  {}
-func (s *InterpreterListener) ExitComparatorExpression(ctx *parser.ComparatorExpressionContext) {}
-
 func (l *InterpreterListener) EnterParameterList(c *parser.ParameterListContext) {}
 func (l *InterpreterListener) ExitParameterList(c *parser.ParameterListContext)  {}
+
+func (l *InterpreterListener) EnterComparison(c *parser.ComparisonContext) {}
+func (l *InterpreterListener) ExitComparison(c *parser.ComparisonContext)  {}

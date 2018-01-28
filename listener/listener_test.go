@@ -1,10 +1,10 @@
-package main
+package listener
 
 import (
 	"github.com/jacobsimpson/jt/parser"
 	"testing"
 )
 
-func TestProgramListenerInterface(*testing.T) {
+func TestListenerInterface(*testing.T) {
 	var _ parser.ProgramListener = &InterpreterListener{}
 }

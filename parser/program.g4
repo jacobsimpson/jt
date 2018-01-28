@@ -28,7 +28,7 @@ expression
     ;
 
 comparison
-    : left=value op=comparator right=value #comparatorExpression
+    : left=value op=comparator right=value
     ;
 
 value
