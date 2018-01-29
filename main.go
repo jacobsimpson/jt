@@ -87,10 +87,23 @@ func execute(rules string, inputFiles []string) error {
 
 	input := antlr.NewInputStream(rules)
 	lexer := parser.NewProgramLexer(input)
+	lexer.RemoveErrorListeners()
+	errorReporter := NewErrorReporter()
+	lexer.AddErrorListener(errorReporter)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	parser := parser.NewProgramParser(stream)
+	parser.RemoveErrorListeners()
+	parser.AddErrorListener(errorReporter)
 	parser.BuildParseTrees = true
 	tree := parser.Program()
+
+	if errorReporter.FoundErrors() {
+		fmt.Printf("####################### Found some errors.\n")
+		for _, e := range errorReporter.Errors {
+			fmt.Printf("%s\n", e)
+		}
+		os.Exit(1)
+	}
 	interpreter := listener.NewInterpreterListener()
 	antlr.ParseTreeWalkerDefault.Walk(interpreter, tree)
 
