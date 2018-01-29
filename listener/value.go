@@ -1,9 +1,10 @@
 package listener
 
 import (
-	"fmt"
 	"regexp"
 	"time"
+
+	"github.com/jacobsimpson/jt/datetime"
 )
 
 type ValueType int
@@ -117,11 +118,11 @@ func (v *stringValue) String() string {
 //
 type datetimeValue struct {
 	raw   string
-	value time.Time
+	value *time.Time
 }
 
 func NewDateTimeValue(s string) (Value, error) {
-	date, err := parseDateLiteral(s)
+	date, err := datetime.ParseDateTime(datetime.LiteralFormats, s)
 	if err != nil {
 		return nil, err
 	}
@@ -145,27 +146,4 @@ func (v *datetimeValue) Value() interface{} {
 
 func (v *datetimeValue) String() string {
 	return v.value.String()
-}
-
-var dateLiteralFormats = []string{
-	"2006-01-02T15:04:05.000Z",
-	"2006-01-02T15:04:05",
-	"2006-01-02T15:04",
-	"2006-01-02T15",
-	"2006-01-02T",
-	"20060102T15:04:05.000Z",
-	"20060102T15:04:05",
-	"20060102T15:04",
-	"20060102T15",
-	"20060102T",
-}
-
-func parseDateLiteral(str string) (time.Time, error) {
-	for _, layout := range dateLiteralFormats {
-		if t, err := time.Parse(layout, str); err == nil {
-			return t, nil
-		} else {
-		}
-	}
-	return time.Time{}, fmt.Errorf("Unable to convert %q to a date", str)
 }

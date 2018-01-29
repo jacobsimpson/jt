@@ -14,7 +14,9 @@ test: tests/re_line_match_implicit \
 	  tests/re_line_match_implicit_pipe_delimited \
 	  tests/re_line_match_comparison_operator \
       tests/re_column_match_comparison_operator \
-      tests/datetime_eq_operator
+      tests/datetime_eq_operator \
+      tests/datetime_lt_operator \
+      tests/datetime_gt_operator
 
 tests/re_line_match_implicit::
 	tests/test tests/re_line_match_implicit
@@ -30,6 +32,12 @@ tests/re_column_match_comparison_operator::
 
 tests/datetime_eq_operator::
 	tests/test tests/datetime_eq_operator
+
+tests/datetime_lt_operator::
+	tests/test tests/datetime_lt_operator
+
+tests/datetime_gt_operator::
+	tests/test tests/datetime_gt_operator
 
 clean::
 	rm -f \

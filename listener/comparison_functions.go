@@ -1,14 +1,32 @@
 package listener
 
 import (
-	"fmt"
 	"regexp"
 	"time"
 
+	"github.com/jacobsimpson/jt/datetime"
 	"github.com/jacobsimpson/jt/debug"
 )
 
 func lt(environment map[string]string, left, right Value) bool {
+	switch left.Type() {
+	case UnknownValue:
+		switch right.Type() {
+		case DateTimeValue:
+			return dateTimeGTUnknown(environment, right.Value(), left.Value())
+		default:
+			return false
+		}
+	case DateTimeValue:
+		switch right.Type() {
+		case UnknownValue:
+			return dateTimeLTUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	default:
+		return false
+	}
 	return false
 }
 
@@ -69,6 +87,24 @@ func ge(environment map[string]string, left, right Value) bool {
 }
 
 func gt(environment map[string]string, left, right Value) bool {
+	switch left.Type() {
+	case UnknownValue:
+		switch right.Type() {
+		case DateTimeValue:
+			return dateTimeLTUnknown(environment, right.Value(), left.Value())
+		default:
+			return false
+		}
+	case DateTimeValue:
+		switch right.Type() {
+		case UnknownValue:
+			return dateTimeGTUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	default:
+		return false
+	}
 	return false
 }
 
@@ -93,37 +129,41 @@ func regexpEQUnknown(environment map[string]string, re interface{}, s interface{
 	return rev.MatchString(sv)
 }
 
-var dateCoercionFormats = []string{
-	"2006-01-02T15:04:05.000Z",
-	"2006-01-02T15:04:05",
-	"2006-01-02T15:04",
-	"2006-01-02T15",
-	"2006-01-02T",
-	"20060102T15:04:05.000Z",
-	"20060102T15:04:05",
-	"20060102T15:04",
-	"20060102T15",
-	"20060102T",
-}
-
-func dateTimeEQUnknown(environment map[string]string, dt interface{}, v interface{}) bool {
+func dateTimeEQUnknown(environment map[string]string, dtValue interface{}, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	datetime := dt.(time.Time)
-	debug.Info("comparing %s (%s) to %s", varName, val, datetime)
-	coerced, err := coerceDateTime(val)
+	dt := dtValue.(*time.Time)
+	debug.Info("comparing %s (%s) to %s", varName, val, dt)
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
 	if err != nil {
 		return false
 	}
-	return datetime.Equal(*coerced)
+	return dt.Equal(*coerced)
 }
 
-func coerceDateTime(str string) (*time.Time, error) {
-	for _, layout := range dateLiteralFormats {
-		if t, err := time.Parse(layout, str); err == nil {
-			return &t, nil
-		}
+func dateTimeLTUnknown(environment map[string]string, dtValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	dt := dtValue.(*time.Time)
+	debug.Info("comparing %s (%s) to %s", varName, val, dt)
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
+	if err != nil {
+		return false
 	}
-	return nil, fmt.Errorf("Unable to convert %q to a date", str)
+	return dt.Before(*coerced)
+}
+
+func dateTimeGTUnknown(environment map[string]string, dtValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	dt := dtValue.(*time.Time)
+	debug.Info("comparing %s (%s) to %s", varName, val, dt)
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
+	if err != nil {
+		return false
+	}
+	return dt.After(*coerced)
 }
