@@ -1,0 +1,2 @@
+2014-09-12T human readable just date no time
+20140912T compact just date no time

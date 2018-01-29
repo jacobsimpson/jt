@@ -1,0 +1,15 @@
+and where is this going to
+2014-09-12T11:45:26.371Z human readable full date time
+2014-09-12T11:45:26 human readable include seconds
+2014-09-12T11:45 human readable include minutes
+2014-09-12T11 human readable include hours
+2014-09-12T human readable just date no time
+20140912T11:45:26.371Z compact full date time
+20140912T11:45:26 compact include seconds
+20140912T11:45 compact include minutes
+20140912T11 compact include hours
+20140912T compact just date no time
+this issue should be addressed soon
+that is not the thing to talk about
+where are the things
+is there much more to say
