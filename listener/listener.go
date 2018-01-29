@@ -24,10 +24,15 @@ func NewPrintlnBlock() Block {
 type InterpreterListener struct {
 	Rules       []*rule
 	currentRule *rule
+	Errors      []*ParsingError
 }
 
 func NewInterpreterListener() *InterpreterListener {
 	return &InterpreterListener{}
+}
+
+func (l *InterpreterListener) FoundErrors() bool {
+	return len(l.Errors) > 0
 }
 
 func (l *InterpreterListener) VisitTerminal(node antlr.TerminalNode) {}
@@ -55,8 +60,15 @@ func (l *InterpreterListener) EnterSelection(ctx *parser.SelectionContext) {
 	if ctx.REGULAR_EXPRESSION() != nil {
 		regexpString := ctx.REGULAR_EXPRESSION().GetSymbol().GetText()
 		regexpString = regexpString[1 : len(regexpString)-1]
-		// TODO: error handling. Can't return it here, have to capture somehow.
-		value, _ := NewRegexpValue(regexpString)
+		value, err := NewRegexpValue(regexpString)
+		if err != nil {
+			l.Errors = append(l.Errors, &ParsingError{
+				msg:    fmt.Sprintf("could not parse regular expression %q: %v", regexpString, err),
+				line:   ctx.REGULAR_EXPRESSION().GetSymbol().GetLine(),
+				column: ctx.REGULAR_EXPRESSION().GetSymbol().GetColumn(),
+			})
+			return
+		}
 		l.currentRule.selection = &comparison{
 			left:     &varValue{name: "%0"},
 			operator: EQ_Operator,
@@ -98,8 +110,16 @@ func (l *InterpreterListener) EnterValue(ctx *parser.ValueContext) {
 	} else if ctx.REGULAR_EXPRESSION() != nil {
 		regexpString := ctx.REGULAR_EXPRESSION().GetSymbol().GetText()
 		regexpString = regexpString[1 : len(regexpString)-1]
-		// TODO: error handling. Can't return it here, have to capture somehow.
-		value, _ = NewRegexpValue(regexpString)
+		var err error
+		value, err = NewRegexpValue(regexpString)
+		if err != nil {
+			l.Errors = append(l.Errors, &ParsingError{
+				msg:    fmt.Sprintf("could not parse regular expression %q: %v", regexpString, err),
+				line:   ctx.REGULAR_EXPRESSION().GetSymbol().GetLine(),
+				column: ctx.REGULAR_EXPRESSION().GetSymbol().GetColumn(),
+			})
+			return
+		}
 	} else if ctx.STRING() != nil {
 		value = NewStringValue(ctx.STRING().GetSymbol().GetText())
 	} else if ctx.INTEGER != nil {
