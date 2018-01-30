@@ -83,6 +83,26 @@ func ne(environment map[string]string, left, right Value) bool {
 }
 
 func ge(environment map[string]string, left, right Value) bool {
+	switch left.Type() {
+	case UnknownValue:
+		switch right.Type() {
+		case DateTimeValue:
+			return dateTimeLTUnknown(environment, right.Value(), left.Value()) ||
+				dateTimeEQUnknown(environment, right.Value(), left.Value())
+		default:
+			return false
+		}
+	case DateTimeValue:
+		switch right.Type() {
+		case UnknownValue:
+			return dateTimeGTUnknown(environment, left.Value(), right.Value()) ||
+				dateTimeEQUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	default:
+		return false
+	}
 	return false
 }
 

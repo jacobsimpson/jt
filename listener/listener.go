@@ -94,7 +94,7 @@ func (l *InterpreterListener) EnterComparator(ctx *parser.ComparatorContext) {
 	} else if ctx.NE() != nil {
 		cmp.operator = NE_Operator
 	} else if ctx.GE() != nil {
-		cmp.operator = LE_Operator
+		cmp.operator = GE_Operator
 	} else if ctx.GT() != nil {
 		cmp.operator = GT_Operator
 	}
