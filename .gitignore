@@ -26,3 +26,6 @@
 # antlr generated files that shouldn't be checked in.
 parser/*.tokens
 parser/*.go
+
+# Keep downloaded dependencies from getting checked in.
+/vendor/

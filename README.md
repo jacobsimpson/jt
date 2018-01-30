@@ -261,9 +261,10 @@ alias antlr4='java -Xmx500M -cp "antlr-4.7-complete.jar:$CLASSPATH" org.antlr.v4
 alias grun='java -Xmx500M -cp "antlr-4.7-complete.jar:$CLASSPATH" org.antlr.v4.gui.TestRig'
 ```
 
+Download all the necessary golang dependencies.
+
 ```sh
-go get github.com/stretchr/testify
-go get github.com/ogier/pflag
+dep ensure
 ```
 
 ### Development Cycle
