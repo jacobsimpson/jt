@@ -252,24 +252,19 @@ null pointer crashes, so automatic elvis operator behavior.
 
 ### Preparation
 
-Install antlr4.
-    - https://github.com/antlr/antlr4/blob/master/doc/getting-started.md
-
-```sh
-curl -O http://www.antlr.org/download/antlr-4.7-complete.jar
-alias antlr4='java -Xmx500M -cp "antlr-4.7-complete.jar:$CLASSPATH" org.antlr.v4.Tool'
-alias grun='java -Xmx500M -cp "antlr-4.7-complete.jar:$CLASSPATH" org.antlr.v4.gui.TestRig'
-```
-
-Download all the necessary golang dependencies.
+- Java needs to be installed to run the antlr parser generator.
+- golang dep needs to be installed to download the necessary golang libraries.
+- golang [mage](https://magefile.org/) build tool
 
 ```sh
 dep ensure
+mage test
 ```
 
 ### Development Cycle
 
 ```sh
-make
+mage
+mage test
 ```
 
