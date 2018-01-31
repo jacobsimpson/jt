@@ -1,7 +1,10 @@
 package listener
 
 import (
+	"fmt"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jacobsimpson/jt/datetime"
@@ -146,4 +149,48 @@ func (v *datetimeValue) Value() interface{} {
 
 func (v *datetimeValue) String() string {
 	return v.value.String()
+}
+
+//
+// A Value implementation to hold a integer.
+//
+type integerValue struct {
+	raw   string
+	value int64
+}
+
+func NewIntegerValue(s string) (Value, error) {
+	// '_' characters are allowed in integer representations to improve
+	// readability, but they have no other purpose and are stripped here to
+	// allow parsing.
+	s = strings.Map(func(r rune) rune {
+		if r == '_' {
+			return -1
+		}
+		return r
+	}, s)
+	i, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &integerValue{
+		raw:   s,
+		value: i,
+	}, nil
+}
+
+func (v *integerValue) Type() ValueType {
+	return IntegerValue
+}
+
+func (v *integerValue) Raw() string {
+	return v.raw
+}
+
+func (v *integerValue) Value() interface{} {
+	return v.value
+}
+
+func (v *integerValue) String() string {
+	return fmt.Sprintf("%d", v.value)
 }

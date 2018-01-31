@@ -56,25 +56,25 @@ boolean
     : TRUE | FALSE
     ;
 
-AND        : 'and' ;
-OR         : 'or' ;
-NOT        : 'not';
-TRUE       : 'true' ;
-FALSE      : 'false' ;
-GT         : '>' ;
-GE         : '>=' ;
-LT         : '<' ;
-LE         : '<=' ;
-EQ         : '==' ;
-NE         : '!=' ;
-LPAREN     : '(' ;
-RPAREN     : ')' ;
-DECIMAL    : '-'? [0-9][0-9_]* ( '.' [0-9][0-9_]* )? ;
-IDENTIFIER : [a-zA-Z_] [a-zA-Z_0-9]* ;
-
-STRING
-    : '"' ~('"')* '"'
-    ;
+AND              : 'and' ;
+OR               : 'or' ;
+NOT              : 'not';
+TRUE             : 'true' ;
+FALSE            : 'false' ;
+GT               : '>' ;
+GE               : '>=' ;
+LT               : '<' ;
+LE               : '<=' ;
+EQ               : '==' ;
+NE               : '!=' ;
+LPAREN           : '(' ;
+RPAREN           : ')' ;
+IDENTIFIER       : [a-zA-Z_] [a-zA-Z_0-9]* ;
+STRING           : '"' ~('"')* '"' ;
+INTEGER          : '-'? [0-9][0-9_]* ;
+HEX_INTEGER      : '-'? '0x' [0-9][0-9_]* ;
+BINARY_INTEGER   : '-'? '0b' [01][01_]* ;
+DECIMAL          : '-'? [0-9][0-9_]* '.' ( [0-9][0-9_]* )? ;
 
 DATE_TIME
     : [-+]? [0-9][0-9][0-9][0-9] '-' [0-9][0-9] '-' [0-9][0-9] 'T'
@@ -91,18 +91,6 @@ DATE_TIME
                 [0-9][0-9] ':' [0-9][0-9]
     | [-+]? [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] 'T'
                 [0-9][0-9] ':' [0-9][0-9] ':' [0-9][0-9]
-    ;
-
-INTEGER
-    : [0-9][0-9_]+
-    ;
-
-HEX_INTEGER
-    : '0x' [0-9][0-9_]+
-    ;
-
-BINARY_INTEGER
-    : '0b' [01][01_]+
     ;
 
 COLUMN

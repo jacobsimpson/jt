@@ -123,8 +123,19 @@ func (l *InterpreterListener) EnterValue(ctx *parser.ValueContext) {
 	} else if ctx.STRING() != nil {
 		value = NewStringValue(ctx.STRING().GetSymbol().GetText())
 	} else if ctx.INTEGER() != nil {
+		var err error
+		value, err = NewIntegerValue(ctx.INTEGER().GetSymbol().GetText())
+		if err != nil {
+			l.Errors = append(l.Errors, &ParsingError{
+				msg:    err.Error(),
+				line:   ctx.DATE_TIME().GetSymbol().GetLine(),
+				column: ctx.DATE_TIME().GetSymbol().GetColumn(),
+			})
+			return
+		}
 	} else if ctx.HEX_INTEGER() != nil {
 	} else if ctx.BINARY_INTEGER() != nil {
+	} else if ctx.DECIMAL() != nil {
 	} else if ctx.DATE_TIME() != nil {
 		var err error
 		value, err = NewDateTimeValue(ctx.DATE_TIME().GetSymbol().GetText())

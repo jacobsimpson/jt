@@ -2,6 +2,8 @@ package listener
 
 import (
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jacobsimpson/jt/datetime"
@@ -14,6 +16,8 @@ func lt(environment map[string]string, left, right Value) bool {
 		switch right.Type() {
 		case DateTimeValue:
 			return dateTimeGTUnknown(environment, right.Value(), left.Value())
+		case IntegerValue:
+			return integerGTUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -21,6 +25,13 @@ func lt(environment map[string]string, left, right Value) bool {
 		switch right.Type() {
 		case UnknownValue:
 			return dateTimeLTUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	case IntegerValue:
+		switch right.Type() {
+		case UnknownValue:
+			return integerLTUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
 		}
@@ -37,6 +48,9 @@ func le(environment map[string]string, left, right Value) bool {
 		case DateTimeValue:
 			return dateTimeGTUnknown(environment, right.Value(), left.Value()) ||
 				dateTimeEQUnknown(environment, right.Value(), left.Value())
+		case IntegerValue:
+			return integerGTUnknown(environment, right.Value(), left.Value()) ||
+				integerEQUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -45,6 +59,14 @@ func le(environment map[string]string, left, right Value) bool {
 		case UnknownValue:
 			return dateTimeLTUnknown(environment, left.Value(), right.Value()) ||
 				dateTimeEQUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	case IntegerValue:
+		switch right.Type() {
+		case UnknownValue:
+			return integerLTUnknown(environment, left.Value(), right.Value()) ||
+				integerEQUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
 		}
@@ -82,6 +104,8 @@ func eq(environment map[string]string, left, right Value) bool {
 			return regexpEQUnknown(environment, right.Value(), left.Value())
 		case DateTimeValue:
 			return dateTimeEQUnknown(environment, right.Value(), left.Value())
+		case IntegerValue:
+			return integerEQUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -89,6 +113,13 @@ func eq(environment map[string]string, left, right Value) bool {
 		switch right.Type() {
 		case UnknownValue:
 			return dateTimeEQUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	case IntegerValue:
+		switch right.Type() {
+		case IntegerValue:
+			return integerEQUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
 		}
@@ -109,6 +140,9 @@ func ge(environment map[string]string, left, right Value) bool {
 		case DateTimeValue:
 			return dateTimeLTUnknown(environment, right.Value(), left.Value()) ||
 				dateTimeEQUnknown(environment, right.Value(), left.Value())
+		case IntegerValue:
+			return integerLTUnknown(environment, right.Value(), left.Value()) ||
+				integerEQUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -117,6 +151,14 @@ func ge(environment map[string]string, left, right Value) bool {
 		case UnknownValue:
 			return dateTimeGTUnknown(environment, left.Value(), right.Value()) ||
 				dateTimeEQUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	case IntegerValue:
+		switch right.Type() {
+		case UnknownValue:
+			return integerGTUnknown(environment, left.Value(), right.Value()) ||
+				integerEQUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
 		}
@@ -132,6 +174,8 @@ func gt(environment map[string]string, left, right Value) bool {
 		switch right.Type() {
 		case DateTimeValue:
 			return dateTimeLTUnknown(environment, right.Value(), left.Value())
+		case IntegerValue:
+			return integerLTUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -139,6 +183,13 @@ func gt(environment map[string]string, left, right Value) bool {
 		switch right.Type() {
 		case UnknownValue:
 			return dateTimeGTUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	case IntegerValue:
+		switch right.Type() {
+		case UnknownValue:
+			return integerGTUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
 		}
@@ -206,4 +257,58 @@ func dateTimeGTUnknown(environment map[string]string, dtValue interface{}, v int
 		return false
 	}
 	return dt.After(*coerced)
+}
+
+func integerEQUnknown(environment map[string]string, iValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	i := iValue.(int64)
+	parsed, err := parseInt(val)
+	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, i)
+	if err != nil {
+		return false
+	}
+	return i == parsed
+}
+
+func integerLTUnknown(environment map[string]string, iValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	i := iValue.(int64)
+	parsed, err := parseInt(val)
+	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, i)
+	if err != nil {
+		return false
+	}
+	return i < parsed
+}
+
+func integerGTUnknown(environment map[string]string, iValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	i := iValue.(int64)
+	parsed, err := parseInt(val)
+	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, i)
+	if err != nil {
+		return false
+	}
+	return i > parsed
+}
+
+func parseInt(s string) (int64, error) {
+	s = strings.Map(func(r rune) rune {
+		if r == '_' {
+			return -1
+		}
+		return r
+	}, s)
+	if len(s) > 2 {
+		if strings.HasPrefix(s, "0x") {
+			return strconv.ParseInt(s, 0, 64)
+		}
+	}
+	return strconv.ParseInt(s, 10, 64)
 }
