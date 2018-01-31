@@ -31,6 +31,26 @@ func lt(environment map[string]string, left, right Value) bool {
 }
 
 func le(environment map[string]string, left, right Value) bool {
+	switch left.Type() {
+	case UnknownValue:
+		switch right.Type() {
+		case DateTimeValue:
+			return dateTimeGTUnknown(environment, right.Value(), left.Value()) ||
+				dateTimeEQUnknown(environment, right.Value(), left.Value())
+		default:
+			return false
+		}
+	case DateTimeValue:
+		switch right.Type() {
+		case UnknownValue:
+			return dateTimeLTUnknown(environment, left.Value(), right.Value()) ||
+				dateTimeEQUnknown(environment, left.Value(), right.Value())
+		default:
+			return false
+		}
+	default:
+		return false
+	}
 	return false
 }
 
