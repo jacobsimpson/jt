@@ -19,6 +19,13 @@ I wish dates and times were a first class type
 ps -ef | jt '%5 < 2018-01-18T06:00'
 ```
 
+Speaking of dates, haven't you always wanted to be able to use `date` not just
+for producing, but also for reformatting?
+
+```sh
+ps -ef | jt 'format(%5, "%Y-%M-%DT")'
+```
+
 This is an experiment to see what that could look like. It is very nacent, and
 most of the examples that follow will not actual work yet, they represent how I
 would like it to work.
@@ -201,6 +208,10 @@ would like it to work.
     ```sh
     jt '2018-12-11T06:00 < %3 < 2018-12-11T06:43'
     ```
+- easily format dates
+    ```sh
+    ps -ef | jt 'format(%5, "%Y-%M-%DT")'
+    ```
 
 - allow integer representations in different bases.
 - allow integer representations with _ separators
@@ -223,10 +234,11 @@ would like it to work.
         values = {'a', 'b'} # This is a set, because it uses {} and doesn't have :
     }
     %1 in values
-    '```
+    '
+    ```
 
 - support maps, lists and sets natively.
-    - make sure that the syntax for these maps onto the syntax for other,
+    - make sure that the syntax for these is analogous to the syntax for other,
       similar built in constructs
     - `{:}` empty map
     ```sh
@@ -253,6 +265,8 @@ null pointer crashes, so automatic elvis operator behavior.
 ### Preparation
 
 - Java needs to be installed to run the antlr parser generator.
+    - antlr parser generator jar is checked into the repo, so you don't need to
+      download that.
 - golang dep needs to be installed to download the necessary golang libraries.
 - golang [mage](https://magefile.org/) build tool
 
