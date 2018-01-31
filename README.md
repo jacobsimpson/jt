@@ -260,6 +260,10 @@ a nice opportunity for fluent programming (see the PATH split/join examples)
 and functions seem a little more intuitive. If I go with methods, I don't want
 null pointer crashes, so automatic elvis operator behavior.
 
+- Should process stdin when piped to, but recursive search when no files
+  specified? (like ag does), instead of just freezing like grep does when it
+  doesn't have any piped input or files specified?
+
 ## Development
 
 ### Preparation
