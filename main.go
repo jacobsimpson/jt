@@ -10,10 +10,9 @@ import (
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/jacobsimpson/jt/debug"
-	jtflag "github.com/jacobsimpson/jt/flag"
 	"github.com/jacobsimpson/jt/listener"
 	"github.com/jacobsimpson/jt/parser"
-	flag "github.com/ogier/pflag"
+	flag "github.com/spf13/pflag"
 )
 
 const VERSION = "0.0.1"
@@ -43,7 +42,7 @@ func main() {
 	var version bool
 	var verbose int
 
-	jtflag.CountVarP(&verbose, "verbose", "v", verbose,
+	flag.CountVarP(&verbose, "verbose", "v",
 		"increase output for debugging purposes")
 	flag.StringVarP(&rules, "expression", "e", rules,
 		"add the script to the commands to be execute")

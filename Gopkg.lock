@@ -36,10 +36,10 @@
   version = "v0.0.3"
 
 [[projects]]
-  name = "github.com/ogier/pflag"
+  name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "32a05c62658bd1d7c7e75cbc8195de5d585fde0f"
-  version = "v0.0.1"
+  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -50,6 +50,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a6fa58b78d3ddf937b6747c8a29d11e4b4cedceac3039c5adec07d2b627a98a0"
+  inputs-digest = "83e32241e191e82401691aa99785b7a8aac246f03806e596d18eaa309e9c4f15"
   solver-name = "gps-cdcl"
   solver-version = 1
