@@ -12,7 +12,7 @@ type Rule interface {
 
 type rule struct {
 	selection Expression
-	block     Block
+	block     *block
 }
 
 // TODO: Add errors to return status.

@@ -11,7 +11,6 @@ program
 processingRule
     : selection block
     | selection
-    | block
     ;
 
 selection
@@ -56,6 +55,18 @@ boolean
     : TRUE | FALSE
     ;
 
+block
+    : LBRACE command RBRACE
+    ;
+
+command
+    : IDENTIFIER parameterList?
+    ;
+
+parameterList
+    : '(' (COLUMN | IDENTIFIER)* ')'
+    ;
+
 AND              : 'and' ;
 OR               : 'or' ;
 NOT              : 'not';
@@ -69,6 +80,8 @@ EQ               : '==' ;
 NE               : '!=' ;
 LPAREN           : '(' ;
 RPAREN           : ')' ;
+LBRACE           : '{' ;
+RBRACE           : '}' ;
 IDENTIFIER       : [a-zA-Z_] [a-zA-Z_0-9]* ;
 STRING           : '"' ~('"')* '"' ;
 INTEGER          : '-'? [0-9][0-9_]* ;
@@ -98,25 +111,13 @@ COLUMN
     | '%#'
     ;
 
-block
-    : '{' command* '}'
-    ;
-
-command
-    : FUNCTION parameterList?
-    ;
-
-parameterList
-    : '(' ')'
-    ;
-
 REGULAR_EXPRESSION
     : '/' ~('/')* '/'
     | '|' ~('|')* '|'
     ;
 
 FUNCTION
-    : 'print'
+    : [a-zA-Z_][a-zA-Z_0-9]*
     ;
 
 WS

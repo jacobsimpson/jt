@@ -2,6 +2,7 @@ package listener
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/jacobsimpson/jt/parser"
@@ -11,14 +12,66 @@ type Block interface {
 	Execute(environment map[string]string)
 }
 
-type printlnBlock struct{}
-
-func (b *printlnBlock) Execute(environment map[string]string) {
-	fmt.Println(environment["%0"])
+func NewPrintlnBlock() *block {
+	return &block{
+		commands: []Command{
+			&printCommand{
+				parameters: []string{"%0"},
+				newline:    true,
+			},
+		},
+	}
 }
 
-func NewPrintlnBlock() Block {
-	return &printlnBlock{}
+type block struct {
+	commands []Command
+}
+
+func (b *block) Execute(environment map[string]string) {
+	for _, command := range b.commands {
+		command.Execute(environment)
+	}
+}
+
+type Command interface {
+	Execute(environment map[string]string)
+	AddParameter(parameter string)
+}
+
+type command struct {
+	name       string
+	parameters []string
+}
+
+func (c *command) Execute(environment map[string]string) {
+	fmt.Printf("there should be some generic function handler here ...\n")
+}
+
+func (c *command) AddParameter(parameter string) {
+	c.parameters = append(c.parameters, parameter)
+}
+
+type printCommand struct {
+	parameters []string
+	newline    bool
+}
+
+func (c *printCommand) Execute(environment map[string]string) {
+	formats := []string{}
+	values := []interface{}{}
+	for _, p := range c.parameters {
+		formats = append(formats, "%s")
+		values = append(values, environment[p])
+	}
+	format := strings.Join(formats, " ")
+	if c.newline {
+		format = format + "\n"
+	}
+	fmt.Printf(format, values...)
+}
+
+func (c *printCommand) AddParameter(parameter string) {
+	c.parameters = append(c.parameters, parameter)
 }
 
 type InterpreterListener struct {
@@ -157,11 +210,27 @@ func (l *InterpreterListener) EnterValue(ctx *parser.ValueContext) {
 }
 func (l *InterpreterListener) ExitValue(ctx *parser.ValueContext) {}
 
-func (l *InterpreterListener) EnterBlock(ctx *parser.BlockContext) {}
-func (l *InterpreterListener) ExitBlock(ctx *parser.BlockContext)  {}
+func (l *InterpreterListener) EnterBlock(ctx *parser.BlockContext) {
+	l.currentRule.block = &block{}
+}
+func (l *InterpreterListener) ExitBlock(ctx *parser.BlockContext) {}
 
-func (l *InterpreterListener) EnterCommand(ctx *parser.CommandContext) {}
-func (l *InterpreterListener) ExitCommand(ctx *parser.CommandContext)  {}
+func (l *InterpreterListener) EnterCommand(ctx *parser.CommandContext) {
+	l.currentRule.block.commands = append(l.currentRule.block.commands,
+		&printCommand{
+			parameters: []string{},
+			newline:    true,
+		})
+}
+func (l *InterpreterListener) ExitCommand(ctx *parser.CommandContext) {}
+
+func (l *InterpreterListener) EnterParameterList(ctx *parser.ParameterListContext) {
+	currentCommand := l.currentRule.block.commands[len(l.currentRule.block.commands)-1]
+	for _, c := range ctx.AllCOLUMN() {
+		currentCommand.AddParameter(c.GetSymbol().GetText())
+	}
+}
+func (l *InterpreterListener) ExitParameterList(ctx *parser.ParameterListContext) {}
 
 func (l *InterpreterListener) EnterBinary(ctx *parser.BinaryContext) {}
 func (l *InterpreterListener) ExitBinary(ctx *parser.BinaryContext)  {}
@@ -171,6 +240,3 @@ func (l *InterpreterListener) ExitBoolean(ctx *parser.BooleanContext)  {}
 
 func (l *InterpreterListener) EnterExpression(ctx *parser.ExpressionContext) {}
 func (l *InterpreterListener) ExitExpression(ctx *parser.ExpressionContext)  {}
-
-func (l *InterpreterListener) EnterParameterList(ctx *parser.ParameterListContext) {}
-func (l *InterpreterListener) ExitParameterList(ctx *parser.ParameterListContext)  {}
