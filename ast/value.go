@@ -1,4 +1,4 @@
-package listener
+package ast
 
 import (
 	"fmt"
@@ -30,6 +30,12 @@ type Value interface {
 //
 // A Value implementation to hold a variable.
 //
+func NewVarValue(name string) Value {
+	return &varValue{
+		name: name,
+	}
+}
+
 type varValue struct {
 	name string
 }

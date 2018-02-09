@@ -1,9 +1,9 @@
-package listener
+package ast
 
 import (
 	"testing"
 )
 
 func TestExpressionInterface(*testing.T) {
-	var _ Expression = &comparison{}
+	var _ Expression = &Comparison{}
 }
