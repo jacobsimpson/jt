@@ -146,7 +146,14 @@ func (l *InterpreterListener) EnterBlock(ctx *parser.BlockContext) {
 func (l *InterpreterListener) ExitBlock(ctx *parser.BlockContext) {}
 
 func (l *InterpreterListener) EnterCommand(ctx *parser.CommandContext) {
-	l.currentRule.Block().AddCommand(ast.NewPrintlnCommand())
+	switch ctx.IDENTIFIER().GetSymbol().GetText() {
+	case "print":
+		l.currentRule.Block().AddCommand(ast.NewPrintCommand())
+	case "println":
+		l.currentRule.Block().AddCommand(ast.NewPrintlnCommand())
+	default:
+		l.currentRule.Block().AddCommand(ast.NewPrintlnCommand())
+	}
 }
 func (l *InterpreterListener) ExitCommand(ctx *parser.CommandContext) {}
 
