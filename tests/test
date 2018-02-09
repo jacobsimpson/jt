@@ -12,6 +12,7 @@ STDOUT="${TMP_DIR}/stdout.txt"
 STDERR="${TMP_DIR}/stderr.txt"
 EXPECTED_STDOUT="${TEST_DIR}/expected-stdout.txt"
 EXPECTED_STDERR="${TEST_DIR}/expected-stderr.txt"
+EXPECTED_STATUS_FILE="${TEST_DIR}/expected-status.txt"
 
 if [[ ! -e $TEST_DIR ]]; then
     echo Fail
@@ -33,14 +34,19 @@ if [[ ! -e $EXPECTED_STDERR ]]; then
     echo "        Error: the expected stderr '$EXPECTED_STDERR' does not exist."
     exit 1
 fi
+expectedStatus=0
+if [[ -e $EXPECTED_STATUS_FILE ]]; then
+    expectedStatus=$(cat "$EXPECTED_STATUS_FILE")
+fi
 
 [[ ! -e ${JT} ]] && exit 1
 
 source "$TEST"
 
-if [[ ! $? -eq 0 ]]; then
+status=$?
+if [[ ! $status -eq $expectedStatus ]]; then
     echo Fail
-    echo "        Status was non-zero"
+    echo "        Status was $status but expected $expectedStatus"
     echo "        ${STDOUT}"
     echo "        ${STDERR}"
     exit 1

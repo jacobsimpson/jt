@@ -1,0 +1,2 @@
+## Found some errors.
+unknown function "nofunc": 1:11

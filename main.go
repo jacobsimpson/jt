@@ -97,9 +97,9 @@ func execute(rules string, inputFiles []string) error {
 	tree := parser.Program()
 
 	if errorReporter.FoundErrors() {
-		fmt.Printf("## Found some errors.\n")
+		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
 		for _, e := range errorReporter.Errors {
-			fmt.Printf("%s\n", e)
+			fmt.Fprintf(os.Stderr, "%s\n", e)
 		}
 		os.Exit(1)
 	}
@@ -107,9 +107,9 @@ func execute(rules string, inputFiles []string) error {
 	antlr.ParseTreeWalkerDefault.Walk(interpreter, tree)
 
 	if interpreter.FoundErrors() {
-		fmt.Printf("## Found some errors.\n")
+		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
 		for _, e := range interpreter.Errors {
-			fmt.Printf("%s\n", e)
+			fmt.Fprintf(os.Stderr, "%s\n", e)
 		}
 		os.Exit(1)
 	}

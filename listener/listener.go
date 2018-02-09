@@ -146,18 +146,26 @@ func (l *InterpreterListener) EnterBlock(ctx *parser.BlockContext) {
 func (l *InterpreterListener) ExitBlock(ctx *parser.BlockContext) {}
 
 func (l *InterpreterListener) EnterCommand(ctx *parser.CommandContext) {
-	switch ctx.IDENTIFIER().GetSymbol().GetText() {
+	symbol := ctx.IDENTIFIER().GetSymbol()
+	switch symbol.GetText() {
 	case "print":
 		l.currentRule.Block().AddCommand(ast.NewPrintCommand())
 	case "println":
 		l.currentRule.Block().AddCommand(ast.NewPrintlnCommand())
 	default:
-		l.currentRule.Block().AddCommand(ast.NewPrintlnCommand())
+		l.Errors = append(l.Errors, &ParsingError{
+			msg:    fmt.Sprintf("unknown function %q", symbol.GetText()),
+			line:   symbol.GetLine(),
+			column: symbol.GetColumn(),
+		})
 	}
 }
 func (l *InterpreterListener) ExitCommand(ctx *parser.CommandContext) {}
 
 func (l *InterpreterListener) EnterParameterList(ctx *parser.ParameterListContext) {
+	if len(l.Errors) > 0 {
+		return
+	}
 	currentCommand := l.currentRule.Block().LastCommand()
 	for _, c := range ctx.AllCOLUMN() {
 		currentCommand.AddParameter(c.GetSymbol().GetText())
