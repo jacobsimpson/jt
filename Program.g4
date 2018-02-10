@@ -64,7 +64,12 @@ command
     ;
 
 parameterList
-    : '(' (COLUMN | IDENTIFIER)* ')'
+    : '(' variable* ')'
+    ;
+
+variable
+    : COLUMN
+    | IDENTIFIER
     ;
 
 AND              : 'and' ;

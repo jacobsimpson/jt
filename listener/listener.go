@@ -162,16 +162,21 @@ func (l *InterpreterListener) EnterCommand(ctx *parser.CommandContext) {
 }
 func (l *InterpreterListener) ExitCommand(ctx *parser.CommandContext) {}
 
-func (l *InterpreterListener) EnterParameterList(ctx *parser.ParameterListContext) {
+func (l *InterpreterListener) EnterParameterList(ctx *parser.ParameterListContext) {}
+func (l *InterpreterListener) ExitParameterList(ctx *parser.ParameterListContext)  {}
+
+func (l *InterpreterListener) EnterVariable(ctx *parser.VariableContext) {
 	if len(l.Errors) > 0 {
 		return
 	}
 	currentCommand := l.currentRule.Block().LastCommand()
-	for _, c := range ctx.AllCOLUMN() {
-		currentCommand.AddParameter(c.GetSymbol().GetText())
+	if ctx.COLUMN() != nil {
+		currentCommand.AddParameter(ctx.COLUMN().GetSymbol().GetText())
+	} else if ctx.IDENTIFIER() != nil {
+		currentCommand.AddParameter(ctx.IDENTIFIER().GetSymbol().GetText())
 	}
 }
-func (l *InterpreterListener) ExitParameterList(ctx *parser.ParameterListContext) {}
+func (l *InterpreterListener) ExitVariable(ctx *parser.VariableContext) {}
 
 func (l *InterpreterListener) EnterBinary(ctx *parser.BinaryContext) {}
 func (l *InterpreterListener) ExitBinary(ctx *parser.BinaryContext)  {}
