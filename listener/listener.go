@@ -171,12 +171,24 @@ func (l *InterpreterListener) EnterVariable(ctx *parser.VariableContext) {
 	}
 	currentCommand := l.currentRule.Block().LastCommand()
 	if ctx.COLUMN() != nil {
-		currentCommand.AddParameter(ctx.COLUMN().GetSymbol().GetText())
+		e := ast.NewVariableExpression(ctx.COLUMN().GetSymbol().GetText())
+		//if ctx.RANGE() != nil {
+		//	fmt.Printf("range = %q\n", ctx.RANGE().GetSymbol().GetText())
+		//	e = ast.NewRangeExpression(e, 0, 1)
+		//}
+		currentCommand.AddParameter(e)
 	} else if ctx.IDENTIFIER() != nil {
-		currentCommand.AddParameter(ctx.IDENTIFIER().GetSymbol().GetText())
+		e := ast.NewVariableExpression(ctx.IDENTIFIER().GetSymbol().GetText())
+		//if ctx.RANGE() != nil {
+		//	e = ast.NewRangeExpression(e, 0, 1)
+		//}
+		currentCommand.AddParameter(e)
 	}
 }
 func (l *InterpreterListener) ExitVariable(ctx *parser.VariableContext) {}
+
+//func (l *InterpreterListener) EnterRange(ctx *parser.RangeContext) {}
+//func (l *InterpreterListener) ExitRange(ctx *parser.RangeContext)  {}
 
 func (l *InterpreterListener) EnterBinary(ctx *parser.BinaryContext) {}
 func (l *InterpreterListener) ExitBinary(ctx *parser.BinaryContext)  {}

@@ -2,43 +2,44 @@ package ast
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
 type Command interface {
 	Execute(environment map[string]string)
-	AddParameter(parameter string)
+	AddParameter(parameter Expression)
 }
 
 type command struct {
 	name       string
-	parameters []string
+	parameters []Expression
 }
 
 func (c *command) Execute(environment map[string]string) {
 	fmt.Printf("there should be some generic function handler here ...\n")
 }
 
-func (c *command) AddParameter(parameter string) {
+func (c *command) AddParameter(parameter Expression) {
 	c.parameters = append(c.parameters, parameter)
 }
 
 func NewPrintCommand() Command {
 	return &printCommand{
-		parameters: []string{},
+		parameters: []Expression{},
 		newline:    false,
 	}
 }
 
 func NewPrintlnCommand() Command {
 	return &printCommand{
-		parameters: []string{},
+		parameters: []Expression{},
 		newline:    true,
 	}
 }
 
 type printCommand struct {
-	parameters []string
+	parameters []Expression
 	newline    bool
 }
 
@@ -47,7 +48,14 @@ func (c *printCommand) Execute(environment map[string]string) {
 	values := []interface{}{}
 	for _, p := range c.parameters {
 		formats = append(formats, "%s")
-		values = append(values, environment[p])
+		v, err := p.Evaluate(environment)
+		if err != nil {
+			// TODO This is not real error handling. This should propagate up
+			// the stack.
+			fmt.Fprintf(os.Stderr, "could not evaluate parameter %s: %v", p, err)
+			return
+		}
+		values = append(values, v)
 	}
 	format := strings.Join(formats, " ")
 	if c.newline {
@@ -56,6 +64,6 @@ func (c *printCommand) Execute(environment map[string]string) {
 	fmt.Printf(format, values...)
 }
 
-func (c *printCommand) AddParameter(parameter string) {
+func (c *printCommand) AddParameter(parameter Expression) {
 	c.parameters = append(c.parameters, parameter)
 }

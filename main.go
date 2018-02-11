@@ -155,7 +155,10 @@ func applyRules(interpreter *listener.InterpreterListener, line string, lineNumb
 	debug.Info("There are %d rules", len(interpreter.Rules))
 	for _, rule := range interpreter.Rules {
 		debug.Info("    Evaluating: %s\n", rule)
-		if rule.Evaluate(environment) {
+		result, err := rule.Evaluate(environment)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not evaluate %q: %v", rule, err)
+		} else if b, ok := result.(bool); ok && b {
 			debug.Info("        Executing block\n")
 			rule.Execute(environment)
 		}

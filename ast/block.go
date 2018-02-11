@@ -16,7 +16,7 @@ func NewPrintlnBlock() Block {
 	return &block{
 		commands: []Command{
 			&printCommand{
-				parameters: []string{"%0"},
+				parameters: []Expression{NewVariableExpression("%0")},
 				newline:    true,
 			},
 		},

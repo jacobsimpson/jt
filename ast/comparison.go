@@ -19,8 +19,8 @@ var Comparisons = map[Operator]func(map[string]string, Value, Value) bool{
 	GT_Operator: gt,
 }
 
-func (c *Comparison) Evaluate(environment map[string]string) bool {
-	return Comparisons[c.Operator](environment, c.Left, c.Right)
+func (c *Comparison) Evaluate(environment map[string]string) (interface{}, error) {
+	return Comparisons[c.Operator](environment, c.Left, c.Right), nil
 }
 
 func (c *Comparison) String() string {

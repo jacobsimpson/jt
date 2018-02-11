@@ -68,26 +68,46 @@ parameterList
     ;
 
 variable
-    : COLUMN
-    | IDENTIFIER
+    : COLUMN RANGE?
+    | IDENTIFIER RANGE?
     ;
 
+RANGE            : '[' INTEGER? ':' INTEGER? ']' ;
+
+IDENTIFIER       : [a-zA-Z_] [a-zA-Z_0-9]* ;
+COLUMN           : '%' [0-9]+ | '%#' ;
+
+REGULAR_EXPRESSION
+    : '/' ~('/')* '/'
+    | '|' ~('|')* '|'
+    ;
+
+//
+// Boolean operators.
+//
 AND              : 'and' ;
 OR               : 'or' ;
 NOT              : 'not';
 TRUE             : 'true' ;
 FALSE            : 'false' ;
-GT               : '>' ;
-GE               : '>=' ;
 LT               : '<' ;
 LE               : '<=' ;
 EQ               : '==' ;
 NE               : '!=' ;
+GE               : '>=' ;
+GT               : '>' ;
+
+//
+// Syntax tokens
+//
 LPAREN           : '(' ;
 RPAREN           : ')' ;
 LBRACE           : '{' ;
 RBRACE           : '}' ;
-IDENTIFIER       : [a-zA-Z_] [a-zA-Z_0-9]* ;
+
+//
+// Literals
+//
 STRING           : '"' ~('"')* '"' ;
 INTEGER          : '-'? [0-9][0-9_]* ;
 HEX_INTEGER      : '-'? '0x' [0-9][0-9_]* ;
@@ -109,20 +129,6 @@ DATE_TIME
                 [0-9][0-9] ':' [0-9][0-9]
     | [-+]? [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] 'T'
                 [0-9][0-9] ':' [0-9][0-9] ':' [0-9][0-9]
-    ;
-
-COLUMN
-    : '%' [0-9]+
-    | '%#'
-    ;
-
-REGULAR_EXPRESSION
-    : '/' ~('/')* '/'
-    | '|' ~('|')* '|'
-    ;
-
-FUNCTION
-    : [a-zA-Z_][a-zA-Z_0-9]*
     ;
 
 WS

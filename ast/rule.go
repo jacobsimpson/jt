@@ -5,7 +5,7 @@ import (
 )
 
 type Rule interface {
-	Evaluate(environment map[string]string) bool
+	Evaluate(environment map[string]string) (interface{}, error)
 	Execute(environment map[string]string)
 	SetBlock(block Block)
 	Block() Block
@@ -26,7 +26,7 @@ type rule struct {
 }
 
 // TODO: Add errors to return status.
-func (r *rule) Evaluate(environment map[string]string) bool {
+func (r *rule) Evaluate(environment map[string]string) (interface{}, error) {
 	return r.selection.Evaluate(environment)
 }
 
