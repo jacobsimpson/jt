@@ -25,3 +25,6 @@
 
 # Keep downloaded dependencies from getting checked in.
 /vendor/
+
+/gobfile
+/gobfile.go

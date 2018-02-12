@@ -6,4 +6,7 @@ import (
 
 func TestExpressionInterface(*testing.T) {
 	var _ Expression = &Comparison{}
+	var _ Expression = &variableExpression{}
+	var _ Expression = &RangeExpression{}
+	var _ Expression = &negativeExpression{}
 }

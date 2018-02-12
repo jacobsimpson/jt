@@ -14,9 +14,10 @@ type Rule interface {
 	String() string
 }
 
-func NewRule(block Block) Rule {
+func NewRule(selection Expression, block Block) Rule {
 	return &rule{
-		block: block,
+		selection: selection,
+		block:     block,
 	}
 }
 

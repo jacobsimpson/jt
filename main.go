@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/jacobsimpson/jt/ast"
 	"github.com/jacobsimpson/jt/debug"
 	"github.com/jacobsimpson/jt/listener"
 	"github.com/jacobsimpson/jt/parser"
@@ -103,19 +104,25 @@ func execute(rules string, inputFiles []string) error {
 		}
 		os.Exit(1)
 	}
-	interpreter := listener.NewInterpreterListener()
-	antlr.ParseTreeWalkerDefault.Walk(interpreter, tree)
-
-	if interpreter.FoundErrors() {
+	visitor := listener.NewASTVisitor()
+	r := visitor.Visit(tree)
+	if err, ok := r.(error); ok && err != nil {
 		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
-		for _, e := range interpreter.Errors {
-			fmt.Fprintf(os.Stderr, "%s\n", e)
-		}
+		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
 
+	if err, ok := r.(error); ok {
+		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+
+	ast := r.(ast.Program)
+	debug.Debug("ast = %s\n", ast)
+
 	for _, f := range inputFiles {
-		if err := processFile(interpreter, f); err != nil {
+		if err := processFile(ast, f); err != nil {
 			result = err
 		}
 	}
@@ -123,7 +130,7 @@ func execute(rules string, inputFiles []string) error {
 	return result
 }
 
-func processFile(interpreter *listener.InterpreterListener, fileName string) error {
+func processFile(interpreter ast.Program, fileName string) error {
 	f, err := os.Open(fileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s: can't read %s: No such file or directory", execName(), fileName)
@@ -142,7 +149,7 @@ func processFile(interpreter *listener.InterpreterListener, fileName string) err
 	return nil
 }
 
-func applyRules(interpreter *listener.InterpreterListener, line string, lineNumber int) bool {
+func applyRules(interpreter ast.Program, line string, lineNumber int) bool {
 	environment := make(map[string]string)
 
 	environment["%0"] = line
@@ -152,8 +159,8 @@ func applyRules(interpreter *listener.InterpreterListener, line string, lineNumb
 	}
 	debug.Debug("Line %d splits as %s", lineNumber, environment)
 
-	debug.Info("There are %d rules", len(interpreter.Rules))
-	for _, rule := range interpreter.Rules {
+	debug.Info("There are %d rules", len(interpreter.Rules()))
+	for _, rule := range interpreter.Rules() {
 		debug.Info("    Evaluating: %s\n", rule)
 		result, err := rule.Evaluate(environment)
 		if err != nil {

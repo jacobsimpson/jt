@@ -19,8 +19,8 @@ selection
     ;
 
 expression
-    : LPAREN expression RPAREN
-    | NOT expression
+    : LPAREN paren=expression RPAREN
+    | NOT negative=expression
     | left=expression op=binary right=expression
     | comparison
     | boolean
@@ -68,11 +68,11 @@ parameterList
     ;
 
 variable
-    : COLUMN RANGE?
-    | IDENTIFIER RANGE?
+    : COLUMN slice?
+    | IDENTIFIER slice?
     ;
 
-RANGE            : '[' INTEGER? ':' INTEGER? ']' ;
+slice            : '[' left=INTEGER? ':' right=INTEGER? ']' ;
 
 IDENTIFIER       : [a-zA-Z_] [a-zA-Z_0-9]* ;
 COLUMN           : '%' [0-9]+ | '%#' ;

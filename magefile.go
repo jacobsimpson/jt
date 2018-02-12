@@ -35,6 +35,8 @@ func BuildGrammar() error {
 		"org.antlr.v4.Tool",
 		"-Dlanguage=Go",
 		"-o", "parser",
+		"-no-listener",
+		"-visitor",
 		"Program.g4").Run()
 }
 

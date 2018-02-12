@@ -11,7 +11,7 @@ type ParsingError struct {
 	line, column int
 }
 
-func (e *ParsingError) String() string {
+func (e *ParsingError) Error() string {
 	return fmt.Sprintf("%s: %d:%d", e.msg, e.line, e.column)
 }
 

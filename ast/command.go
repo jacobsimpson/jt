@@ -24,16 +24,16 @@ func (c *command) AddParameter(parameter Expression) {
 	c.parameters = append(c.parameters, parameter)
 }
 
-func NewPrintCommand() Command {
+func NewPrintCommand(parameters []Expression) Command {
 	return &printCommand{
-		parameters: []Expression{},
+		parameters: parameters,
 		newline:    false,
 	}
 }
 
-func NewPrintlnCommand() Command {
+func NewPrintlnCommand(parameters []Expression) Command {
 	return &printCommand{
-		parameters: []Expression{},
+		parameters: parameters,
 		newline:    true,
 	}
 }

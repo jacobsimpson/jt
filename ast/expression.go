@@ -33,21 +33,21 @@ func (e *variableExpression) String() string {
 //
 // Range Expression
 //
-type rangeExpression struct {
+type RangeExpression struct {
 	expression Expression
 	start      int
 	end        int
 }
 
 func NewRangeExpression(expression Expression, start, end int) Expression {
-	return &rangeExpression{
+	return &RangeExpression{
 		expression: expression,
 		start:      start,
 		end:        end,
 	}
 }
 
-func (e *rangeExpression) Evaluate(environment map[string]string) (interface{}, error) {
+func (e *RangeExpression) Evaluate(environment map[string]string) (interface{}, error) {
 	v, err := e.expression.Evaluate(environment)
 	if err != nil {
 		return nil, err
@@ -58,6 +58,38 @@ func (e *rangeExpression) Evaluate(environment map[string]string) (interface{}, 
 	return nil, fmt.Errorf("range can not be applied to %q", e.expression)
 }
 
-func (e *rangeExpression) String() string {
-	return fmt.Sprintf("%s[%d:%d]", e.expression.String(), e.start, e.end)
+func (e *RangeExpression) SetExpression(expression Expression) {
+	e.expression = expression
+}
+
+func (e *RangeExpression) String() string {
+	return fmt.Sprintf("%v[%d:%d]", e.expression, e.start, e.end)
+}
+
+//
+// Negative Expression
+//
+type negativeExpression struct {
+	expression Expression
+}
+
+func NewNegativeExpression(expression Expression) Expression {
+	return &negativeExpression{
+		expression: expression,
+	}
+}
+
+func (e *negativeExpression) Evaluate(environment map[string]string) (interface{}, error) {
+	o, err := e.expression.Evaluate(environment)
+	if err != nil {
+		return nil, err
+	}
+	if v, ok := o.(bool); ok {
+		return !v, nil
+	}
+	return nil, fmt.Errorf("attempted to negate a non-boolean value")
+}
+
+func (e *negativeExpression) String() string {
+	return fmt.Sprintf("NOT %s", e.expression)
 }
