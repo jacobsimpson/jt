@@ -176,7 +176,8 @@ func NewIntegerValueFromBinaryString(s string) (Value, error) {
 		}
 		return r
 	}, s)
-	return parseIntFromString(s, 2)
+	v, err := parseIntFromString(s, 2)
+	return v, err
 }
 
 func NewIntegerValueFromHexString(s string) (Value, error) {
@@ -207,7 +208,7 @@ func NewIntegerValue(s string) (Value, error) {
 }
 
 func parseIntFromString(s string, base int) (Value, error) {
-	i, err := strconv.ParseInt(s, 10, 64)
+	i, err := strconv.ParseInt(s, base, 64)
 	if err != nil {
 		return nil, err
 	}
