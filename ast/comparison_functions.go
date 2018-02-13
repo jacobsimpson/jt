@@ -310,5 +310,10 @@ func parseInt(s string) (int64, error) {
 			return strconv.ParseInt(s, 0, 64)
 		}
 	}
+	if len(s) > 2 {
+		if strings.HasPrefix(s, "0b") {
+			return strconv.ParseInt(s[2:], 2, 64)
+		}
+	}
 	return strconv.ParseInt(s, 10, 64)
 }

@@ -196,25 +196,47 @@ func (v *astVisitor) VisitValue(ctx *parser.ValueContext) interface{} {
 	} else if ctx.STRING() != nil {
 		return ast.NewStringValue(ctx.STRING().GetSymbol().GetText())
 	} else if ctx.INTEGER() != nil {
-		value, err := ast.NewIntegerValue(ctx.INTEGER().GetSymbol().GetText())
+		symbol := ctx.INTEGER().GetSymbol()
+		value, err := ast.NewIntegerValue(symbol.GetText())
 		if err != nil {
 			return &ParsingError{
 				msg:    err.Error(),
-				line:   ctx.DATE_TIME().GetSymbol().GetLine(),
-				column: ctx.DATE_TIME().GetSymbol().GetColumn(),
+				line:   symbol.GetLine(),
+				column: symbol.GetColumn(),
 			}
 		}
 		return value
 	} else if ctx.HEX_INTEGER() != nil {
-	} else if ctx.BINARY_INTEGER() != nil {
-	} else if ctx.DECIMAL() != nil {
-	} else if ctx.DATE_TIME() != nil {
-		value, err := ast.NewDateTimeValue(ctx.DATE_TIME().GetSymbol().GetText())
+		symbol := ctx.HEX_INTEGER().GetSymbol()
+		value, err := ast.NewIntegerValueFromHexString(symbol.GetText())
 		if err != nil {
 			return &ParsingError{
 				msg:    err.Error(),
-				line:   ctx.DATE_TIME().GetSymbol().GetLine(),
-				column: ctx.DATE_TIME().GetSymbol().GetColumn(),
+				line:   symbol.GetLine(),
+				column: symbol.GetColumn(),
+			}
+		}
+		return value
+	} else if ctx.BINARY_INTEGER() != nil {
+		symbol := ctx.BINARY_INTEGER().GetSymbol()
+		value, err := ast.NewIntegerValueFromBinaryString(symbol.GetText())
+		if err != nil {
+			return &ParsingError{
+				msg:    err.Error(),
+				line:   symbol.GetLine(),
+				column: symbol.GetColumn(),
+			}
+		}
+		return value
+	} else if ctx.DECIMAL() != nil {
+	} else if ctx.DATE_TIME() != nil {
+		symbol := ctx.DATE_TIME().GetSymbol()
+		value, err := ast.NewDateTimeValue(symbol.GetText())
+		if err != nil {
+			return &ParsingError{
+				msg:    err.Error(),
+				line:   symbol.GetLine(),
+				column: symbol.GetColumn(),
 			}
 		}
 		return value

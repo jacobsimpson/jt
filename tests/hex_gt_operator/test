@@ -1,0 +1,2 @@
+# vi: ft=sh
+${JT} '%2 > 0x00_08' ${INPUT} > ${STDOUT} 2> ${STDERR}

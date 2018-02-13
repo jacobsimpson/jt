@@ -165,6 +165,34 @@ type integerValue struct {
 	value int64
 }
 
+func NewIntegerValueFromBinaryString(s string) (Value, error) {
+	s = s[2:]
+	// '_' characters are allowed in integer representations to improve
+	// readability, but they have no other purpose and are stripped here to
+	// allow parsing.
+	s = strings.Map(func(r rune) rune {
+		if r == '_' {
+			return -1
+		}
+		return r
+	}, s)
+	return parseIntFromString(s, 2)
+}
+
+func NewIntegerValueFromHexString(s string) (Value, error) {
+	s = s[2:]
+	// '_' characters are allowed in integer representations to improve
+	// readability, but they have no other purpose and are stripped here to
+	// allow parsing.
+	s = strings.Map(func(r rune) rune {
+		if r == '_' {
+			return -1
+		}
+		return r
+	}, s)
+	return parseIntFromString(s, 16)
+}
+
 func NewIntegerValue(s string) (Value, error) {
 	// '_' characters are allowed in integer representations to improve
 	// readability, but they have no other purpose and are stripped here to
@@ -175,6 +203,10 @@ func NewIntegerValue(s string) (Value, error) {
 		}
 		return r
 	}, s)
+	return parseIntFromString(s, 10)
+}
+
+func parseIntFromString(s string, base int) (Value, error) {
 	i, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return nil, err
