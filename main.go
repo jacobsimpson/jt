@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -121,9 +122,13 @@ func execute(rules string, inputFiles []string) error {
 	ast := r.(ast.Program)
 	debug.Debug("ast = %s\n", ast)
 
-	for _, f := range inputFiles {
-		if err := processFile(ast, f); err != nil {
-			result = err
+	if len(inputFiles) == 0 {
+		return processReader(ast, os.Stdin)
+	} else {
+		for _, f := range inputFiles {
+			if err := processFile(ast, f); err != nil {
+				result = err
+			}
 		}
 	}
 
@@ -138,7 +143,11 @@ func processFile(interpreter ast.Program, fileName string) error {
 	}
 	defer f.Close()
 
-	scanner := bufio.NewScanner(f)
+	return processReader(interpreter, f)
+}
+
+func processReader(interpreter ast.Program, reader io.Reader) error {
+	scanner := bufio.NewScanner(reader)
 
 	lineNumber := 0
 	for scanner.Scan() {
