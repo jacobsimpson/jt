@@ -53,7 +53,15 @@ func (e *RangeExpression) Evaluate(environment map[string]string) (interface{}, 
 		return nil, err
 	}
 	if s, ok := v.(string); ok {
-		return s[e.start:e.end], nil
+		start := e.start
+		if start < 0 {
+			start = len(s) + start
+		}
+		end := e.end
+		if end < 0 {
+			end = len(s) + end
+		}
+		return s[start:end], nil
 	}
 	return nil, fmt.Errorf("range can not be applied to %q", e.expression)
 }
