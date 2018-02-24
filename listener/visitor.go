@@ -348,21 +348,21 @@ func (v *astVisitor) VisitVariable(ctx *parser.VariableContext) interface{} {
 
 func (v *astVisitor) VisitSlice(ctx *parser.SliceContext) interface{} {
 	debug.Debug("astVisitor.VisitSlice")
-	start, end := 0, 0
+	var start, end *int
 	if ctx.GetLeft() != nil {
-		var err error
 		t := ctx.GetLeft().GetText()
-		start, err = strconv.Atoi(t)
-		if err != nil {
+		if n, err := strconv.Atoi(t); err != nil {
 			return fmt.Errorf("unable to convert %q to integer", t)
+		} else {
+			start = &n
 		}
 	}
 	if ctx.GetRight() != nil {
-		var err error
 		t := ctx.GetRight().GetText()
-		end, err = strconv.Atoi(t)
-		if err != nil {
+		if n, err := strconv.Atoi(t); err != nil {
 			return fmt.Errorf("unable to convert %q to integer", t)
+		} else {
+			end = &n
 		}
 	}
 	e := ast.NewRangeExpression(nil, start, end)

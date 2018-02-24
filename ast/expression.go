@@ -35,11 +35,11 @@ func (e *variableExpression) String() string {
 //
 type RangeExpression struct {
 	expression Expression
-	start      int
-	end        int
+	start      *int
+	end        *int
 }
 
-func NewRangeExpression(expression Expression, start, end int) Expression {
+func NewRangeExpression(expression Expression, start, end *int) Expression {
 	return &RangeExpression{
 		expression: expression,
 		start:      start,
@@ -53,11 +53,17 @@ func (e *RangeExpression) Evaluate(environment map[string]string) (interface{}, 
 		return nil, err
 	}
 	if s, ok := v.(string); ok {
-		start := e.start
+		start := 0
+		if e.start != nil {
+			start = *e.start
+		}
 		if start < 0 {
 			start = len(s) + start
 		}
-		end := e.end
+		end := len(s)
+		if e.end != nil {
+			end = *e.end
+		}
 		if end < 0 {
 			end = len(s) + end
 		}
