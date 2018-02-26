@@ -1,7 +1,5 @@
 # Roadmap
 
-- move all the antlr generated code to something like `antlrgen`, and move the
-  `listener` to `parser`.
 - implement duration literals
     - using strict ISO-8601 duration literals (e.g. P1Y3M ...) will mean that
       during parsing, duration literals could potentially be valid identifiers

@@ -25,7 +25,7 @@ func Build() error {
 }
 
 func BuildGrammar() error {
-	newer, err := target.Path("parser/program_lexer.go", "Program.g4")
+	newer, err := target.Path("antlrgen/program_lexer.go", "Program.g4")
 	if !newer && err == nil {
 		return nil
 	}
@@ -34,7 +34,8 @@ func BuildGrammar() error {
 		"-cp", "tools/antlr-4.7.1-complete.jar",
 		"org.antlr.v4.Tool",
 		"-Dlanguage=Go",
-		"-o", "parser",
+		"-o", "antlrgen",
+		"-package", "antlrgen",
 		"-no-listener",
 		"-visitor",
 		"Program.g4").Run()
@@ -84,5 +85,5 @@ func Install() error {
 func Clean() {
 	fmt.Println("Cleaning...")
 	os.RemoveAll("jt")
-	os.RemoveAll("parser")
+	os.RemoveAll("antlrgen")
 }

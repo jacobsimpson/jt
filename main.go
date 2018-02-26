@@ -10,10 +10,12 @@ import (
 	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/jacobsimpson/jt/antlrgen"
 	"github.com/jacobsimpson/jt/ast"
 	"github.com/jacobsimpson/jt/debug"
-	"github.com/jacobsimpson/jt/listener"
-	"github.com/jacobsimpson/jt/parser"
+	// For some reason if this import is done without the alias, golang assumes
+	// this is imported as `listener`. No idea why.
+	parser "github.com/jacobsimpson/jt/parser"
 	flag "github.com/spf13/pflag"
 )
 
@@ -87,16 +89,16 @@ func execute(rules string, inputFiles []string) error {
 	var result error
 
 	input := antlr.NewInputStream(rules)
-	lexer := parser.NewProgramLexer(input)
+	lexer := antlrgen.NewProgramLexer(input)
 	lexer.RemoveErrorListeners()
-	errorReporter := listener.NewErrorReporter()
+	errorReporter := parser.NewErrorReporter()
 	lexer.AddErrorListener(errorReporter)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
-	parser := parser.NewProgramParser(stream)
-	parser.RemoveErrorListeners()
-	parser.AddErrorListener(errorReporter)
-	parser.BuildParseTrees = true
-	tree := parser.Program()
+	p := antlrgen.NewProgramParser(stream)
+	p.RemoveErrorListeners()
+	p.AddErrorListener(errorReporter)
+	p.BuildParseTrees = true
+	tree := p.Program()
 
 	if errorReporter.FoundErrors() {
 		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
@@ -105,7 +107,7 @@ func execute(rules string, inputFiles []string) error {
 		}
 		os.Exit(1)
 	}
-	visitor := listener.NewASTVisitor()
+	visitor := parser.NewASTVisitor()
 	r := visitor.Visit(tree)
 	if err, ok := r.(error); ok && err != nil {
 		fmt.Fprintf(os.Stderr, "## Found some errors.\n")

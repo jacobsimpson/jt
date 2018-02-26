@@ -21,7 +21,7 @@
 /jt
 
 # antlr generated files that shouldn't be checked in.
-/parser/
+/antlrgen/
 
 # Keep downloaded dependencies from getting checked in.
 /vendor/

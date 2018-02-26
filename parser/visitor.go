@@ -5,12 +5,12 @@ import (
 	"strconv"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/jacobsimpson/jt/antlrgen"
 	"github.com/jacobsimpson/jt/ast"
 	"github.com/jacobsimpson/jt/debug"
-	"github.com/jacobsimpson/jt/parser"
 )
 
-func NewASTVisitor() parser.ProgramVisitor {
+func NewASTVisitor() antlrgen.ProgramVisitor {
 	return &astVisitor{}
 }
 
@@ -49,7 +49,7 @@ func (v *astVisitor) VisitErrorNode(node antlr.ErrorNode) interface{} {
 	return nil
 }
 
-func (v *astVisitor) VisitProgram(ctx *parser.ProgramContext) interface{} {
+func (v *astVisitor) VisitProgram(ctx *antlrgen.ProgramContext) interface{} {
 	debug.Debug("astVisitor.VisitProgram")
 	result := v.VisitChildren(ctx)
 	if err := getError(result); err != nil {
@@ -66,7 +66,7 @@ func (v *astVisitor) VisitProgram(ctx *parser.ProgramContext) interface{} {
 	return ast.NewProgram(rules)
 }
 
-func (v *astVisitor) VisitProcessingRule(ctx *parser.ProcessingRuleContext) interface{} {
+func (v *astVisitor) VisitProcessingRule(ctx *antlrgen.ProcessingRuleContext) interface{} {
 	debug.Debug("astVisitor.VisitProcessingRule")
 
 	var selection ast.Expression
@@ -92,7 +92,7 @@ func (v *astVisitor) VisitProcessingRule(ctx *parser.ProcessingRuleContext) inte
 	return ast.NewRule(selection, block)
 }
 
-func (v *astVisitor) VisitSelection(ctx *parser.SelectionContext) interface{} {
+func (v *astVisitor) VisitSelection(ctx *antlrgen.SelectionContext) interface{} {
 	debug.Debug("astVisitor.VisitSelection")
 	if ctx.REGULAR_EXPRESSION() != nil {
 		regexpString := ctx.REGULAR_EXPRESSION().GetSymbol().GetText()
@@ -118,7 +118,7 @@ func (v *astVisitor) VisitSelection(ctx *parser.SelectionContext) interface{} {
 	return r.(ast.Expression)
 }
 
-func (v *astVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{} {
+func (v *astVisitor) VisitExpression(ctx *antlrgen.ExpressionContext) interface{} {
 	debug.Debug("astVisitor.VisitExpression")
 	if ctx.GetParen() != nil {
 		r := ctx.GetParen().Accept(v)
@@ -156,7 +156,7 @@ func (v *astVisitor) VisitExpression(ctx *parser.ExpressionContext) interface{} 
 	return v.VisitChildren(ctx)
 }
 
-func (v *astVisitor) VisitComparison(ctx *parser.ComparisonContext) interface{} {
+func (v *astVisitor) VisitComparison(ctx *antlrgen.ComparisonContext) interface{} {
 	debug.Debug("astVisitor.VisitComparison")
 	l := ctx.GetLeft().Accept(v)
 	if err := getError(l); err != nil {
@@ -177,7 +177,7 @@ func (v *astVisitor) VisitComparison(ctx *parser.ComparisonContext) interface{} 
 	}
 }
 
-func (v *astVisitor) VisitValue(ctx *parser.ValueContext) interface{} {
+func (v *astVisitor) VisitValue(ctx *antlrgen.ValueContext) interface{} {
 	debug.Debug("astVisitor.VisitValue")
 	if ctx.COLUMN() != nil {
 		return ast.NewVarValue(ctx.COLUMN().GetSymbol().GetText())
@@ -244,7 +244,7 @@ func (v *astVisitor) VisitValue(ctx *parser.ValueContext) interface{} {
 	return nil
 }
 
-func (v *astVisitor) VisitComparator(ctx *parser.ComparatorContext) interface{} {
+func (v *astVisitor) VisitComparator(ctx *antlrgen.ComparatorContext) interface{} {
 	debug.Debug("astVisitor.VisitComparator")
 	if ctx.LT() != nil {
 		return ast.LT_Operator
@@ -262,17 +262,17 @@ func (v *astVisitor) VisitComparator(ctx *parser.ComparatorContext) interface{} 
 	return fmt.Errorf("unknown operator")
 }
 
-func (v *astVisitor) VisitBinary(ctx *parser.BinaryContext) interface{} {
+func (v *astVisitor) VisitBinary(ctx *antlrgen.BinaryContext) interface{} {
 	debug.Debug("astVisitor.VisitBinary")
 	return v.VisitChildren(ctx)
 }
 
-func (v *astVisitor) VisitBoolean(ctx *parser.BooleanContext) interface{} {
+func (v *astVisitor) VisitBoolean(ctx *antlrgen.BooleanContext) interface{} {
 	debug.Debug("astVisitor.VisitBoolean")
 	return v.VisitChildren(ctx)
 }
 
-func (v *astVisitor) VisitBlock(ctx *parser.BlockContext) interface{} {
+func (v *astVisitor) VisitBlock(ctx *antlrgen.BlockContext) interface{} {
 	debug.Debug("astVisitor.VisitBlock")
 	children := v.VisitChildren(ctx)
 	if err := getError(children); err != nil {
@@ -285,7 +285,7 @@ func (v *astVisitor) VisitBlock(ctx *parser.BlockContext) interface{} {
 	return block
 }
 
-func (v *astVisitor) VisitCommand(ctx *parser.CommandContext) interface{} {
+func (v *astVisitor) VisitCommand(ctx *antlrgen.CommandContext) interface{} {
 	debug.Debug("astVisitor.VisitCommand")
 	parameters := []ast.Expression{}
 	if ctx.ParameterList() != nil {
@@ -317,7 +317,7 @@ func (v *astVisitor) VisitCommand(ctx *parser.CommandContext) interface{} {
 	}
 }
 
-func (v *astVisitor) VisitParameterList(ctx *parser.ParameterListContext) interface{} {
+func (v *astVisitor) VisitParameterList(ctx *antlrgen.ParameterListContext) interface{} {
 	debug.Debug("astVisitor.VisitParameterList")
 	children := v.VisitChildren(ctx)
 	for _, c := range children.([]interface{}) {
@@ -328,7 +328,7 @@ func (v *astVisitor) VisitParameterList(ctx *parser.ParameterListContext) interf
 	return children
 }
 
-func (v *astVisitor) VisitVariable(ctx *parser.VariableContext) interface{} {
+func (v *astVisitor) VisitVariable(ctx *antlrgen.VariableContext) interface{} {
 	debug.Debug("astVisitor.VisitVariable")
 	var expression ast.Expression
 	if ctx.COLUMN() != nil {
@@ -346,7 +346,7 @@ func (v *astVisitor) VisitVariable(ctx *parser.VariableContext) interface{} {
 	return expression
 }
 
-func (v *astVisitor) VisitSlice(ctx *parser.SliceContext) interface{} {
+func (v *astVisitor) VisitSlice(ctx *antlrgen.SliceContext) interface{} {
 	debug.Debug("astVisitor.VisitSlice")
 	var start, end *int
 	if ctx.GetLeft() != nil {
