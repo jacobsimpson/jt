@@ -5,6 +5,7 @@
       during parsing, duration literals could potentially be valid identifiers
       too. Requiring the P at the end instead of the beginning would give
       behavior more like the date/time literal.
+- implement a `now()` function.
 - implement time literals
     - right now I think time literals only work if there is a preceeding date.
 - convert everything to be an expression
@@ -15,6 +16,8 @@
       needing an explicit `print` statement.
 - implement the string functions
 - enable chaining of string functions
+- `|>` operator - take the output of the preceeding function and make it the
+  first parameter of the following function.
 - enable mathematical operations
 - come up with type promotion rules
     - not sure what language I saw it in (maybe Scala) but one of them
@@ -293,12 +296,57 @@
 - great file based checking and manipulation?
    - %1.exists().isdirectory().iswritable().isreadable().isperm(0x660)
 
-I alternate between methods and functions. Not sure what to do. Methods provide
-a nice opportunity for fluent programming (see the PATH split/join examples)
-and functions seem a little more intuitive. If I go with methods, I don't want
-null pointer crashes, so automatic elvis operator behavior.
+- I alternate between methods and functions. Not sure what to do. Methods
+  provide a nice opportunity for fluent programming (see the PATH split/join
+  examples) and functions seem a little more intuitive.
+    - if method type functions were actually defined as regular functions that
+      take the object as the first parameter, then the `.` operator becomes
+      syntactic sugar and the user can choose either syntax as appropriate. And
+      the `|>` operator makes functions even nicer.
+
+        ```
+        jt '
+            function trimPeriod(s string) {...}
+
+            /nothing/ { %1.trim().trimPeriod() }
+            /things/ { %1.trim() |> trimPeriod() }
+        ' input.txt
+
+        ```
+
+- No null pointer crashes, so what about automatic elvis operator behavior. I
+  think Objective C (and probably Swift) have similar behaviors. And, if a
+  block returns null, it's as if the selector didn't match the line. So the
+  following program would match each line with `things` in it, invoke `nullify`
+  on `%1`, return `null`, attempt to invoke `trim` on `null`, which will not
+  actually make the call to `trim` because the object is `null`, instead it
+  will skip invoking `trim` and carry the `null` result forward, making `null`
+  the final result of the block, therefore the value of the block. The value of
+  the block is implicitly printed, unless it is `null`, which it is in this
+  case, so nothing will be printed for any lines matching the selection.
+
+    ```
+    jt '
+        function nullify(s string) { null }
+        /things/ { %1.nullify().trim() }
+    ' input.txt
+    ```
 
 - Should process stdin when piped to, but recursive search when no files
   specified? (like ag does), instead of just freezing like grep does when it
   doesn't have any piped input or files specified?
 
+- It would be nice if there was start and end specifiers, so that you would
+  turn on certain selections when start was matched, and turn off certain
+  selections when end was matched. Say there was some report type text file,
+  with some header information, and a table of dates and other columns
+  following the line with 'Results' going all the way to the blank line. This
+  would adjust the value of the date column one day backward.
+
+    ```
+    jt '
+        /Results/ start
+            {%1.asDate() - 1D}
+        /^$/ end
+    ' input.txt
+    ```
