@@ -15,9 +15,7 @@ Simple recipes for working with text.
 statement, applies the statement to each line of incoming text and executes the
 associated program block if the boolean evaluates to true.
 
-    ```sh
     jt '%0 == /things/ { print(%0) }'
-    ```
 
 - `%0` represents the whole line
 - strings delimited by `/` or `|` represent regular expressions
