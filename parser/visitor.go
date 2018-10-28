@@ -228,7 +228,17 @@ func (v *astVisitor) VisitValue(ctx *antlrgen.ValueContext) interface{} {
 			}
 		}
 		return value
-	} else if ctx.DECIMAL() != nil {
+	} else if ctx.DOUBLE() != nil {
+		symbol := ctx.DOUBLE().GetSymbol()
+		value, err := ast.NewDoubleFromString(symbol.GetText())
+		if err != nil {
+			return &ParsingError{
+				msg:    err.Error(),
+				line:   symbol.GetLine(),
+				column: symbol.GetColumn(),
+			}
+		}
+		return value
 	} else if ctx.DATE_TIME() != nil {
 		symbol := ctx.DATE_TIME().GetSymbol()
 		value, err := ast.NewDateTimeValue(symbol.GetText())

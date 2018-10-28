@@ -17,6 +17,7 @@ const (
 	RegexpValue
 	IntegerValue
 	DateTimeValue
+	DoubleValue
 	UnknownValue
 )
 
@@ -232,4 +233,54 @@ func (v *integerValue) Value() interface{} {
 
 func (v *integerValue) String() string {
 	return fmt.Sprintf("%d", v.value)
+}
+
+//
+// A Value implementation to hold a double.
+//
+type doubleValue struct {
+	raw   string
+	value float64
+}
+
+func NewDoubleFromString(s string) (Value, error) {
+	s = s[2:]
+	// '_' characters are allowed in decimal representations to improve
+	// readability, but they have no other purpose and are stripped here to
+	// allow parsing.
+	s = strings.Map(func(r rune) rune {
+		if r == '_' {
+			return -1
+		}
+		return r
+	}, s)
+	v, err := parseDecimalFromString(s)
+	return v, err
+}
+
+func parseDecimalFromString(s string) (Value, error) {
+	d, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &doubleValue{
+		raw:   s,
+		value: d,
+	}, nil
+}
+
+func (v *doubleValue) Type() ValueType {
+	return DoubleValue
+}
+
+func (v *doubleValue) Raw() string {
+	return v.raw
+}
+
+func (v *doubleValue) Value() interface{} {
+	return v.value
+}
+
+func (v *doubleValue) String() string {
+	return fmt.Sprintf("%f", v.value)
 }

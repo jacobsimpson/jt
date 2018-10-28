@@ -39,7 +39,7 @@ value
         | INTEGER
         | HEX_INTEGER
         | BINARY_INTEGER
-        | DECIMAL
+        | DOUBLE
     )
     ;
 
@@ -112,7 +112,7 @@ STRING           : '"' ~('"')* '"' ;
 INTEGER          : '-'? [0-9][0-9_]* ;
 HEX_INTEGER      : '-'? '0x' [0-9][0-9_]* ;
 BINARY_INTEGER   : '-'? '0b' [01][01_]* ;
-DECIMAL          : '-'? [0-9][0-9_]* '.' ( [0-9][0-9_]* )? ;
+DOUBLE           : '-'? [0-9][0-9_]* '.' ( [0-9][0-9_]* )? ;
 
 DATE_TIME
     : [-+]? [0-9][0-9][0-9][0-9] '-' [0-9][0-9] '-' [0-9][0-9] 'T'
