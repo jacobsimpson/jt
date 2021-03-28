@@ -1,0 +1,6 @@
+github.com/antlr/antlr4 v0.0.0-20171209200417-bdc05c87be2a h1:Oa6yfumd0D/3ANoYOHQCEd6lOyAgd5bldxayrpN/cDM=
+github.com/antlr/antlr4 v0.0.0-20171209200417-bdc05c87be2a/go.mod h1:T7PbCXFs94rrTttyxjbyT5+/1V8T2TYDejxUfHJjw1Y=
+github.com/shopspring/decimal v1.1.0 h1:Jh2P6mQOEIEa/8YqU5ITvmWCGGrIloCHvYl+FfQqdd4=
+github.com/shopspring/decimal v1.1.0/go.mod h1:M+9NzErvs504Cn4c5DxATwIqPbtswREoFCre64PpcG4=
+github.com/spf13/pflag v1.0.0 h1:oaPbdDe/x0UncahuwiPxW1GYJyilRAdsPnq3e1yaPcI=
+github.com/spf13/pflag v1.0.0/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
