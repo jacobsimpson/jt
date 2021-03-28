@@ -1,6 +1,6 @@
 
 jt: *.go datetime/*.go parser/*.go ast/*.go antlrgen/*.go
-	go build -o jt .
+	go build .
 
 antlrgen/*.go: Program.g4
 	java \
@@ -18,6 +18,7 @@ test: jt
 	go test ./...
 
 tests: jt
+	go test ./...
 	tests/test tests/binary_eq_operator
 	tests/test tests/binary_ge_operator
 	tests/test tests/binary_gt_operator
@@ -58,7 +59,7 @@ tests: jt
 	tests/test tests/substring_column_overlapping_range
 
 install: jt
-	./jt /usr/bin/jt
+	cp ./jt /usr/bin/jt
 
 clean::
 	rm -Rf jt antlrgen
