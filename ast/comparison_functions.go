@@ -323,14 +323,14 @@ func doubleLTUnknown(environment map[string]string, dValue interface{}, v interf
 	val := environment[varName]
 	d := dValue.(*decimal.Decimal)
 	parsed, err := decimal.NewFromString(val)
-	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, d)
 	if err != nil {
 		parsedInt, err := parseInt(val)
 		if err != nil {
 			return false
 		}
-		parsed = decimal.New(parsedInt, 1)
+		parsed = decimal.New(parsedInt, 0)
 	}
+	debug.Info("comparing %s (%s = %v) to %v", varName, val, parsed, d)
 	return d.LessThan(parsed)
 }
 
