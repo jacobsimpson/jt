@@ -89,7 +89,7 @@ func (v *astVisitor) VisitProcessingRule(ctx *antlrgen.ProcessingRuleContext) in
 		block = ast.NewPrintlnBlock()
 	}
 	debug.Debug("selection = %v, block = %v", selection, block)
-	return ast.NewRule(selection, block)
+	return &ast.Rule{selection, block}
 }
 
 func (v *astVisitor) VisitSelection(ctx *antlrgen.SelectionContext) interface{} {
