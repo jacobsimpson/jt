@@ -107,7 +107,7 @@ func execute(rules string, inputFiles []string) error {
 	return result
 }
 
-func processFile(interpreter ast.Program, fileName string) error {
+func processFile(interpreter *ast.Program, fileName string) error {
 	f, err := os.Open(fileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s: can't read %s: No such file or directory", execName(), fileName)
@@ -118,7 +118,7 @@ func processFile(interpreter ast.Program, fileName string) error {
 	return processReader(interpreter, f)
 }
 
-func processReader(interpreter ast.Program, reader io.Reader) error {
+func processReader(interpreter *ast.Program, reader io.Reader) error {
 	scanner := bufio.NewScanner(reader)
 
 	lineNumber := 0
@@ -130,7 +130,7 @@ func processReader(interpreter ast.Program, reader io.Reader) error {
 	return nil
 }
 
-func applyRules(interpreter ast.Program, line string, lineNumber int) bool {
+func applyRules(interpreter *ast.Program, line string, lineNumber int) bool {
 	environment := make(map[string]string)
 
 	environment["%0"] = line
@@ -140,8 +140,8 @@ func applyRules(interpreter ast.Program, line string, lineNumber int) bool {
 	}
 	debug.Debug("Line %d splits as %s", lineNumber, environment)
 
-	debug.Info("There are %d rules", len(interpreter.Rules()))
-	for _, rule := range interpreter.Rules() {
+	debug.Info("There are %d rules", len(interpreter.Rules))
+	for _, rule := range interpreter.Rules {
 		debug.Info("    Evaluating: %s\n", rule)
 		result, err := rule.Evaluate(environment)
 		if err != nil {

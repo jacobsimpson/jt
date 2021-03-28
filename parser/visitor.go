@@ -63,7 +63,7 @@ func (v *astVisitor) VisitProgram(ctx *antlrgen.ProgramContext) interface{} {
 			return fmt.Errorf("expecting rule, found %v", r)
 		}
 	}
-	return ast.NewProgram(rules)
+	return &ast.Program{rules}
 }
 
 func (v *astVisitor) VisitProcessingRule(ctx *antlrgen.ProcessingRuleContext) interface{} {

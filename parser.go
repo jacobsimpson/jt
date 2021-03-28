@@ -14,7 +14,7 @@ import (
 	parser "github.com/jacobsimpson/jt/parser"
 )
 
-func parse(rules string) (ast.Program, error) {
+func parse(rules string) (*ast.Program, error) {
 	input := antlr.NewInputStream(rules)
 	lexer := antlrgen.NewProgramLexer(input)
 	lexer.RemoveErrorListeners()
@@ -48,5 +48,5 @@ func parse(rules string) (ast.Program, error) {
 		os.Exit(1)
 	}
 
-	return r.(ast.Program), nil
+	return r.(*ast.Program), nil
 }

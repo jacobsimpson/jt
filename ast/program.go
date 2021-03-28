@@ -4,28 +4,13 @@ import (
 	"fmt"
 )
 
-type Program interface {
-	Rules() []*Rule
-	String() string
+type Program struct {
+	Rules []*Rule
 }
 
-type program struct {
-	rules []*Rule
-}
-
-func NewProgram(rules []*Rule) Program {
-	return &program{
-		rules: rules,
-	}
-}
-
-func (p *program) Rules() []*Rule {
-	return p.rules
-}
-
-func (p *program) String() string {
+func (p *Program) String() string {
 	result := "Program [\n"
-	for _, r := range p.rules {
+	for _, r := range p.Rules {
 		result += fmt.Sprintf("    %s\n", r.String())
 	}
 	result += "]"
