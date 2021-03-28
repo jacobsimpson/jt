@@ -1,20 +1,15 @@
 package ast
 
-type Block interface {
-	Execute(environment map[string]string)
-	AddCommand(command Command)
-	LastCommand() Command
+// Block represents a block of commands in a program.
+type Block struct {
+	Commands []Command
 }
 
-func NewBlock() Block {
-	return &block{
-		commands: []Command{},
-	}
-}
-
-func NewPrintlnBlock() Block {
-	return &block{
-		commands: []Command{
+// NewPrintlnBlock is a convenience method for a block with a single println
+// statement that prints the complete line.
+func NewPrintlnBlock() *Block {
+	return &Block{
+		Commands: []Command{
 			&printCommand{
 				parameters: []Expression{NewVariableExpression("%0")},
 				newline:    true,
@@ -23,20 +18,12 @@ func NewPrintlnBlock() Block {
 	}
 }
 
-type block struct {
-	commands []Command
-}
-
-func (b *block) Execute(environment map[string]string) {
-	for _, command := range b.commands {
+func (b *Block) Execute(environment map[string]string) {
+	for _, command := range b.Commands {
 		command.Execute(environment)
 	}
 }
 
-func (b *block) AddCommand(command Command) {
-	b.commands = append(b.commands, command)
-}
-
-func (b *block) LastCommand() Command {
-	return b.commands[len(b.commands)-1]
+func (b *Block) LastCommand() Command {
+	return b.Commands[len(b.Commands)-1]
 }

@@ -7,14 +7,14 @@ import (
 type Rule interface {
 	Evaluate(environment map[string]string) (interface{}, error)
 	Execute(environment map[string]string)
-	SetBlock(block Block)
-	Block() Block
+	SetBlock(block *Block)
+	Block() *Block
 	SetSelection(selection Expression)
 	Selection() Expression
 	String() string
 }
 
-func NewRule(selection Expression, block Block) Rule {
+func NewRule(selection Expression, block *Block) Rule {
 	return &rule{
 		selection: selection,
 		block:     block,
@@ -23,7 +23,7 @@ func NewRule(selection Expression, block Block) Rule {
 
 type rule struct {
 	selection Expression
-	block     Block
+	block     *Block
 }
 
 // TODO: Add errors to return status.
@@ -36,11 +36,11 @@ func (r *rule) Execute(environment map[string]string) {
 	r.block.Execute(environment)
 }
 
-func (r *rule) SetBlock(block Block) {
+func (r *rule) SetBlock(block *Block) {
 	r.block = block
 }
 
-func (r *rule) Block() Block {
+func (r *rule) Block() *Block {
 	return r.block
 }
 

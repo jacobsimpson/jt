@@ -78,8 +78,8 @@ func mustNewRegexpValue(t *testing.T, value string) ast.Value {
 	return v
 }
 
-func newPrintBlock() ast.Block {
-	b := ast.NewBlock()
-	b.AddCommand(ast.NewPrintCommand([]ast.Expression{ast.NewVariableExpression("%0")}))
-	return b
+func newPrintBlock() *ast.Block {
+	return &ast.Block{
+		[]ast.Command{ast.NewPrintCommand([]ast.Expression{ast.NewVariableExpression("%0")})},
+	}
 }

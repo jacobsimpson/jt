@@ -78,13 +78,13 @@ func (v *astVisitor) VisitProcessingRule(ctx *antlrgen.ProcessingRuleContext) in
 		selection = r.(ast.Expression)
 	}
 
-	var block ast.Block
+	var block *ast.Block
 	if ctx.Block() != nil {
 		r := ctx.Block().Accept(v)
 		if err := getError(r); err != nil {
 			return err
 		}
-		block = r.(ast.Block)
+		block = r.(*ast.Block)
 	} else {
 		block = ast.NewPrintlnBlock()
 	}
@@ -288,10 +288,11 @@ func (v *astVisitor) VisitBlock(ctx *antlrgen.BlockContext) interface{} {
 	if err := getError(children); err != nil {
 		return err
 	}
-	block := ast.NewBlock()
+	commands := []ast.Command{}
 	for _, c := range children.([]interface{}) {
-		block.AddCommand(c.(ast.Command))
+		commands = append(commands, c.(ast.Command))
 	}
+	block := &ast.Block{Commands: commands}
 	return block
 }
 
