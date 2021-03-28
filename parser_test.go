@@ -30,6 +30,16 @@ func TestParser(t *testing.T) {
 				}, ast.NewPrintlnBlock()),
 			}),
 		},
+		{
+			"%0 == /things/ { print(%0) }",
+			ast.NewProgram([]ast.Rule{
+				ast.NewRule(&ast.Comparison{
+					Left:     ast.NewVarValue("%0"),
+					Operator: ast.EQ_Operator,
+					Right:    mustNewRegexpValue(t, "things"),
+				}, newPrintBlock()),
+			}),
+		},
 	}
 
 	for _, test := range tests {
@@ -58,4 +68,18 @@ func mustNewHexIntegerValue(t *testing.T, value string) ast.Value {
 		t.Fatalf("Unable to convert %q to a value", value)
 	}
 	return v
+}
+
+func mustNewRegexpValue(t *testing.T, value string) ast.Value {
+	v, err := ast.NewRegexpValue(value)
+	if err != nil {
+		t.Fatalf("Unable to convert %q to a value", value)
+	}
+	return v
+}
+
+func newPrintBlock() ast.Block {
+	b := ast.NewBlock()
+	b.AddCommand(ast.NewPrintCommand([]ast.Expression{ast.NewVariableExpression("%0")}))
+	return b
 }
