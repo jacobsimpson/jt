@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jacobsimpson/jt/datetime"
+	"github.com/shopspring/decimal"
 )
 
 type ValueType int
@@ -240,11 +241,10 @@ func (v *integerValue) String() string {
 //
 type doubleValue struct {
 	raw   string
-	value float64
+	value *decimal.Decimal
 }
 
 func NewDoubleFromString(s string) (Value, error) {
-	s = s[2:]
 	// '_' characters are allowed in decimal representations to improve
 	// readability, but they have no other purpose and are stripped here to
 	// allow parsing.
@@ -254,18 +254,13 @@ func NewDoubleFromString(s string) (Value, error) {
 		}
 		return r
 	}, s)
-	v, err := parseDecimalFromString(s)
-	return v, err
-}
-
-func parseDecimalFromString(s string) (Value, error) {
-	d, err := strconv.ParseFloat(s, 64)
+	d, err := decimal.NewFromString(s)
 	if err != nil {
 		return nil, err
 	}
 	return &doubleValue{
 		raw:   s,
-		value: d,
+		value: &d,
 	}, nil
 }
 
@@ -282,5 +277,5 @@ func (v *doubleValue) Value() interface{} {
 }
 
 func (v *doubleValue) String() string {
-	return fmt.Sprintf("%f", v.value)
+	return v.value.String()
 }

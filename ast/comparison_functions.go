@@ -8,6 +8,7 @@ import (
 
 	"github.com/jacobsimpson/jt/datetime"
 	"github.com/jacobsimpson/jt/debug"
+	"github.com/shopspring/decimal"
 )
 
 func lt(environment map[string]string, left, right Value) bool {
@@ -106,6 +107,8 @@ func eq(environment map[string]string, left, right Value) bool {
 			return dateTimeEQUnknown(environment, right.Value(), left.Value())
 		case IntegerValue:
 			return integerEQUnknown(environment, right.Value(), left.Value())
+		case DoubleValue:
+			return doubleEQUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -143,6 +146,9 @@ func ge(environment map[string]string, left, right Value) bool {
 		case IntegerValue:
 			return integerLTUnknown(environment, right.Value(), left.Value()) ||
 				integerEQUnknown(environment, right.Value(), left.Value())
+		case DoubleValue:
+			return doubleLTUnknown(environment, right.Value(), left.Value()) ||
+				doubleEQUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -296,6 +302,36 @@ func integerGTUnknown(environment map[string]string, iValue interface{}, v inter
 		return false
 	}
 	return i > parsed
+}
+
+func doubleEQUnknown(environment map[string]string, dValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	d := dValue.(*decimal.Decimal)
+	parsed, err := decimal.NewFromString(val)
+	debug.Info("comparing %s (%s = %s) to %s", varName, val, parsed, d)
+	if err != nil {
+		return false
+	}
+	return d.Equal(parsed)
+}
+
+func doubleLTUnknown(environment map[string]string, dValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	d := dValue.(*decimal.Decimal)
+	parsed, err := decimal.NewFromString(val)
+	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, d)
+	if err != nil {
+		parsedInt, err := parseInt(val)
+		if err != nil {
+			return false
+		}
+		parsed = decimal.New(parsedInt, 1)
+	}
+	return d.LessThan(parsed)
 }
 
 func parseInt(s string) (int64, error) {
