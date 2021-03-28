@@ -1,0 +1,9 @@
+what 1
+bore 7.9
+beer 8
+butt 8.1
+best 8.11
+when 1_503
+where 0x00_0A
+why 0x03
+how 0x0F
