@@ -55,9 +55,9 @@ func (v *astVisitor) VisitProgram(ctx *antlrgen.ProgramContext) interface{} {
 	if err := getError(result); err != nil {
 		return err
 	}
-	rules := []ast.Rule{}
+	rules := []*ast.Rule{}
 	for _, r := range result.([]interface{}) {
-		if rule, ok := r.(ast.Rule); ok {
+		if rule, ok := r.(*ast.Rule); ok {
 			rules = append(rules, rule)
 		} else {
 			return fmt.Errorf("expecting rule, found %v", r)

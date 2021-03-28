@@ -14,7 +14,7 @@ func TestParser(t *testing.T) {
 	}{
 		{
 			"%1<9",
-			ast.NewProgram([]ast.Rule{
+			ast.NewProgram([]*ast.Rule{
 				ast.NewRule(&ast.Comparison{
 					Left:  ast.NewVarValue("%1"),
 					Right: mustNewIntegerValue(t, "9"),
@@ -23,7 +23,7 @@ func TestParser(t *testing.T) {
 		},
 		{
 			"%1<0x03",
-			ast.NewProgram([]ast.Rule{
+			ast.NewProgram([]*ast.Rule{
 				ast.NewRule(&ast.Comparison{
 					Left:  ast.NewVarValue("%1"),
 					Right: mustNewIntegerValue(t, "03"),
@@ -32,7 +32,7 @@ func TestParser(t *testing.T) {
 		},
 		{
 			"%0 == /things/ { print(%0) }",
-			ast.NewProgram([]ast.Rule{
+			ast.NewProgram([]*ast.Rule{
 				ast.NewRule(&ast.Comparison{
 					Left:     ast.NewVarValue("%0"),
 					Operator: ast.EQ_Operator,

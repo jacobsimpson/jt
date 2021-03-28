@@ -5,21 +5,21 @@ import (
 )
 
 type Program interface {
-	Rules() []Rule
+	Rules() []*Rule
 	String() string
 }
 
 type program struct {
-	rules []Rule
+	rules []*Rule
 }
 
-func NewProgram(rules []Rule) Program {
+func NewProgram(rules []*Rule) Program {
 	return &program{
 		rules: rules,
 	}
 }
 
-func (p *program) Rules() []Rule {
+func (p *program) Rules() []*Rule {
 	return p.rules
 }
 

@@ -5,5 +5,4 @@ import (
 )
 
 func TestRuleInterface(*testing.T) {
-	var _ Rule = &rule{}
 }
