@@ -52,6 +52,9 @@ func le(environment map[string]string, left, right Value) bool {
 		case IntegerValue:
 			return integerGTUnknown(environment, right.Value(), left.Value()) ||
 				integerEQUnknown(environment, right.Value(), left.Value())
+		case DoubleValue:
+			return doubleGTUnknown(environment, right.Value(), left.Value()) ||
+				doubleEQUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
@@ -334,6 +337,23 @@ func doubleLTUnknown(environment map[string]string, dValue interface{}, v interf
 	}
 	debug.Info("comparing %s (%s = %v) to %v", varName, val, parsed, d)
 	return d.LessThan(parsed)
+}
+
+func doubleGTUnknown(environment map[string]string, dValue interface{}, v interface{}) bool {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	d := dValue.(*decimal.Decimal)
+	parsed, err := decimal.NewFromString(val)
+	if err != nil {
+		parsedInt, err := parseInt(val)
+		if err != nil {
+			return false
+		}
+		parsed = decimal.New(parsedInt, 0)
+	}
+	debug.Info("comparing %s (%s = %v) to %v", varName, val, parsed, d)
+	return d.GreaterThan(parsed)
 }
 
 func parseInt(s string) (int64, error) {
