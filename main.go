@@ -13,6 +13,7 @@ import (
 	"github.com/jacobsimpson/jt/antlrgen"
 	"github.com/jacobsimpson/jt/ast"
 	"github.com/jacobsimpson/jt/debug"
+
 	// For some reason if this import is done without the alias, golang assumes
 	// this is imported as `listener`. No idea why.
 	parser "github.com/jacobsimpson/jt/parser"
@@ -88,6 +89,27 @@ func main() {
 func execute(rules string, inputFiles []string) error {
 	var result error
 
+	ast, err := parse(rules)
+	if err != nil {
+		return err
+	}
+
+	debug.Debug("ast = %s\n", ast)
+
+	if len(inputFiles) == 0 {
+		return processReader(ast, os.Stdin)
+	} else {
+		for _, f := range inputFiles {
+			if err := processFile(ast, f); err != nil {
+				result = err
+			}
+		}
+	}
+
+	return result
+}
+
+func parse(rules string) (ast.Program, error) {
 	input := antlr.NewInputStream(rules)
 	lexer := antlrgen.NewProgramLexer(input)
 	lexer.RemoveErrorListeners()
@@ -121,20 +143,7 @@ func execute(rules string, inputFiles []string) error {
 		os.Exit(1)
 	}
 
-	ast := r.(ast.Program)
-	debug.Debug("ast = %s\n", ast)
-
-	if len(inputFiles) == 0 {
-		return processReader(ast, os.Stdin)
-	} else {
-		for _, f := range inputFiles {
-			if err := processFile(ast, f); err != nil {
-				result = err
-			}
-		}
-	}
-
-	return result
+	return r.(ast.Program), nil
 }
 
 func processFile(interpreter ast.Program, fileName string) error {
