@@ -53,17 +53,15 @@ what I'd like to work in the [Roadmap](roadmap.md).
 - Java needs to be installed to run the antlr parser generator.
     - antlr parser generator jar is checked into the repo, so you don't need to
       download that.
-- golang dep needs to be installed to download the necessary golang libraries.
 - make build tool
 
 ```sh
-dep ensure
-make test
+make tests
 ```
 
 ### Development Cycle
 
 ```sh
 make
-make test
+make tests
 ```
