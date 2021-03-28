@@ -69,6 +69,10 @@ important part of what it does.
 
 `%[0-9]+` is used to address a particular column of input data.
 
+`%-[0-9]+` is used to address a particular column of input data, starting from
+the end of the column list and moving backwards. `%-1` is the last column of
+data.
+
 `%0` gets access to the whole line of input.
 
 The `%` character is used to access column data to avoid conflicting with the
@@ -126,6 +130,7 @@ row not printing.)
 - set - {1, 2, 3}
 - list - [1, 2, 3], ["January", "February"]
 - table - {"one": 1, "two": 2}
+- tuples - <"abc", 1>
 
 ### Strings
 
@@ -135,7 +140,8 @@ row not printing.)
     - s[0:-1] == "ab.cd.tx"
     - s[:"."] == "ab"
     - s[:-"."] == "ab.cd"
-    - s[".":"."] == "cd"
+    - s[".":"."] == ".cd"
+    - s["."+:"."] == "cd"
     - s[:/txt/] == "ab.cd."
 - s.len()
 - s.format("ab${c}d", {c: "3"})
@@ -227,7 +233,7 @@ Expressions can be executed for each matching line by enclosing them in braces:
 
     jt '/abc/{%3 = %3 + 10; print(%0)}'
 
-- matches each line that has 'abc' somewhere in it. 
+- matches each line that has 'abc' somewhere in it.
 
 ### Formatting
 
@@ -253,4 +259,4 @@ By default, the final expression evaluated in a block will be printed.
 
 Can be represented more succinctly as:
 
-    jt '{%0
+    jt '{%0}'

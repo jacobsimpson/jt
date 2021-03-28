@@ -46,7 +46,7 @@
 - implement native sets
 - implement user defined functions
 - implement multiple processing rules in 1 script.
-- jt 'x/kadk/ {print(%0)}' <input>
+- `jt 'x/kadk/ {print(%0)}' <input>`
     - appears to succeed, gives no error message. I don't think it should do
       that.
 - implement negative column addressing. %-1 will address the last column, %-2
@@ -88,15 +88,13 @@
   expression and the appropriate comparison run. If the column value can not be
   coerced, it fails the comparison, no matter what the comparison is.
     - the reasoning is, the programmer supplied type information (the literal
-      in the jt script). If the incoming text doesn't match the type
+      in the `jt` script). If the incoming text doesn't match the type
       expectation, it isn't meeting the programmer's selection criteria.
     ```sh
     jt '%3 < "that"'
     jt '%3 < 14'
-    jt '%3 < dt("12/11/2017 6:43am")'
     jt '%3 < 2017-12-11T06:43'
-    jt 'dt("12/11/2017 6:00am ") < %3 < dt("12/11/2017 6:43am")'
-    jt 'dt(12/11/2017 6:00am) < %3 < dt(12/11/2017 6:43am)'
+    jt '2017-12-11T06:00 < %3 < 2017-12-11T06:43'
     jt '%3 < 12 and %4 == "joe"'
     jt '%3 < 12 or %4 == "joe"'
     ```
@@ -145,15 +143,43 @@
     jt -i 's|this|that|' filename.txt
     ```
 
-- Instead of using '$' to indicate a variable, use some other construct so that
-  it's possible to cooperate easily with bash. Maybe, \1 instead of $1.
-  Actually, I don't think that \1 is a good idea. \ is a bash escape character,
-  so it has special significance when embedded in a string.
-- Attempt to choose special characters to not conflict with bash so it's easy
-  to use double quoted (") strings on the command line. That way, embedding env
-  vars is easy. Hmm, maybe even make it easy to reference env vars?
+- Avoid using '$' to indicate a variable as '$' is used by most shells. When
+  the shell interacts the program passed to `jt`, things get complicated. If '$1'
+  was valid in `jt` as a reference to the first column (as it is in `awk`),
+  then certain programs are forced to escape shell expansion, somehow. For
+  example, this `awk` program uses single quotes to address a column, which
+  makes it difficult if you actually want to get the first argument to the
+  shell running `awk`:
 
-- reads the text processing program from prog-file.jt
+     ```
+     awk '{print $1;}'
+     ```
+
+    - `\1` - possible, it's how `sed` works for back references, but it's also
+      the `bash` escape character, so when used in a double quoted string, bash
+      would interact with it.
+    - `%1` - should be fine.
+    - `_1` - would also work.
+
+    ```
+    jt "%1 == '501'"
+    jt "_1 == '501'"
+    ```
+
+    And, checking to see if a column matches a shell argument would be:
+
+    ```
+    jt "%1 == $1"
+    ```
+
+    This would be interesting in the simple cases, but in the more complicated cases it wouldn't work very well:
+
+    ```
+    a="1 2 3"
+    jt "%1 == $1"
+    ```
+
+- reads the text processing program from prog-file.
     ```sh
     jt -f prog-file.jt
     ```
@@ -177,6 +203,16 @@
     jt 'print env["PATH"].split(":")'
     ```
 
+    -   What if `$abc` always meant an environment variable? Then, if the
+        string is double quoted, the shell itself would expand the variable. If
+        the string is single quoted, or otherwise escaped, the `jt` interpreter
+        would map the `$abc` to an environment variable.
+
+- and a better way of accessing environment variables would be good too. Maybe
+  even just making them directly available, like `%PATH`, and `%GOPATH`.
+    ```sh
+    jt 'env["GOPATH"].split(":")[0]'
+    ```
 - simple, robust string indexing
 - this will return a string that is the last 3 characters of %2, if there are 3
   characters. If there are less than 3 characters, it will return whatever it
@@ -185,9 +221,9 @@
     jt 'print %2[-3:]'
     ```
 
-- string multiplications. "."*5 == "....."
-- .lower(), .upper(), .title(), .capitalize(), .swapcase(), .reverse(),
-  .join(), ltrim(), rtrim(), .trim(), .endswith(), .startswith()
+- string multiplications. `"."*5 == "....."`
+- `.lower()`, `.upper()`, `.title()`, `.capitalize()`, `.swapcase()`, `.reverse()`,
+  `.join()`, `ltrim()`, `rtrim()`, `.trim()`, `.endswith()`, `.startswith()`
 
 - it would be nice if there was a simpler way to do this. It's such a common
   type operation for shell code to manipulate paths.
@@ -196,20 +232,17 @@
       treat an env var as an array, and when to index a char in a string, and
       what character to use for separating the elements of the path.
     - `zsh` has a way of manipulating paths.
-- and a better way of accessing environment variables would be good too. Maybe
-  even just making them directly available, like `%PATH`, and `%GOPATH`.
-    ```sh
-    jt 'env["GOPATH"].split(":")[0]'
-    ```
 
 - remove unwanted path entries
     ```sh
     jt 'env["GOPATH"].split(":").filter("some-unwanted-path").join(":")'
     ```
 
-- remove duplicates. Notice it won't change order.
+- remove duplicates. Notice it doesn't require sorting in order to work, so it
+  won't change order.
     ```sh
     jt 'env["GOPATH"].split(":").dedup().join(":")'
+    jt 'env["GOPATH"].split(":").unique().join(":")'
     ```
 
 - newline replacements.
@@ -236,7 +269,8 @@
   date that is simple and fluent would be great. ISO8601 would probably be
   good, but some additional flexibility.
     ```sh
-	2012-06                  # could be an arithmetic expression
+    2012-06                  # could be an arithmetic expression. Instead, use
+                             # 2012-06T.
 	2012-06-03               # could be an arithmetic expression, but less likely
     2012-06-03T              # I think if all the way up to the T was required
                              # for specifying a date/time literal (leaving the
@@ -315,7 +349,7 @@
             function trimPeriod(s string) {...}
 
             /nothing/ { %1.trim().trimPeriod() }
-            /things/ { %1.trim() |> trimPeriod() }
+            /things/ { %1 |> trim() |> trimPeriod() }
         ' input.txt
 
         ```
@@ -364,3 +398,32 @@
         }
     ' input.txt
     ```
+
+- It would be nice if the super common case of printing a modified line as a
+  result of a match was a little more straightforward. What if the last
+  statement of a block evaluates to the value of the block, and the value of
+  the block gets printed? That would make these pairs of statements equivalent
+  to each other.
+
+  ```
+  jt '{print(%0)}'
+  jt '{%0}'
+  ```
+
+  ```
+  jt '{print(%1)}'
+  jt '{%1}'
+  ```
+
+  This particular `awk` program has been quite common (in my experience):
+
+
+  ```
+  awk '{print $1;}'
+  ```
+
+  It would be nice if it could be:
+
+  ```
+  jt '%1'
+  ```
