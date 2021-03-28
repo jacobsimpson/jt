@@ -4,7 +4,8 @@
     - using strict ISO-8601 duration literals (e.g. P1Y3M ...) will mean that
       during parsing, duration literals could potentially be valid identifiers
       too. Requiring the P at the end instead of the beginning would give
-      behavior more like the date/time literal.
+      behavior more like the date/time literal. It would also make parsing a
+      little more consistent.
 - implement a `now()` function.
 - implement time literals
     - right now I think time literals only work if there is a preceeding date.
@@ -48,6 +49,11 @@
 - jt 'x/kadk/ {print(%0)}' <input>
     - appears to succeed, gives no error message. I don't think it should do
       that.
+- implement negative column addressing. %-1 will address the last column, %-2
+  will address the second to last column.
+- TypeScript has a cute little thing which returns an alternate value if the
+  initial variable is falsy.
+- elvis operator for safe chaining.
 
 ## Aspirational Examples
 
@@ -236,11 +242,11 @@
                              # for specifying a date/time literal (leaving the
                              # time parts optional), that should be sufficiently
                              # unambiguous.
+    2012T                    # Unambiguously a date literal, just the year
+                             # granularity.
+    2012-06T                 # Unambiguously a date literal, just the month
+                             # granularity.
 	2012-06-03T23            # Unambiguously a date literal.
-	d(12/11/2017 6:00am)     # Some extra work parsing this, treat d as a special
-	                         # function, with special parsing rules?
-	d("12/11/2017 6:00am ")  # Most regular, no special parser required, but
-	                         # least usable.
 	```
 - add, subtract and compare dates and times. Durations should be a first class
   type too. Do best guessing to auto parse the dates and durations as part of
@@ -348,5 +354,13 @@
         /Results/ start
             {%1.asDate() - 1D}
         /^$/ end
+    ' input.txt
+    ```
+
+    ```
+    jt '
+        /Results/ -> /^$/ {
+            {%1.asDate() - 1D}
+        }
     ' input.txt
     ```
