@@ -33,28 +33,28 @@ type Value interface {
 // A Value implementation to hold a variable.
 //
 func NewVarValue(name string) Value {
-	return &varValue{
+	return &VarValue{
 		name: name,
 	}
 }
 
-type varValue struct {
+type VarValue struct {
 	name string
 }
 
-func (v *varValue) Type() ValueType {
+func (v *VarValue) Type() ValueType {
 	return UnknownValue
 }
 
-func (v *varValue) Raw() string {
+func (v *VarValue) Raw() string {
 	return v.name
 }
 
-func (v *varValue) Value() interface{} {
+func (v *VarValue) Value() interface{} {
 	return v.name
 }
 
-func (v *varValue) String() string {
+func (v *VarValue) String() string {
 	return v.name
 }
 
