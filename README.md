@@ -54,17 +54,16 @@ what I'd like to work in the [Roadmap](roadmap.md).
     - antlr parser generator jar is checked into the repo, so you don't need to
       download that.
 - golang dep needs to be installed to download the necessary golang libraries.
-- golang [mage](https://magefile.org/) build tool
+- make build tool
 
 ```sh
 dep ensure
-mage test
+make test
 ```
 
 ### Development Cycle
 
 ```sh
-mage
-mage test
+make
+make test
 ```
-
