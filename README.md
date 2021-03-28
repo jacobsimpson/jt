@@ -17,7 +17,7 @@ $2[0:-4]
 or maybe even easier:
 
 ```sh
-%2[0:"."]
+%2[0:-"."]
 ```
 
 I wish dates and times were a first class type
