@@ -9,14 +9,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/jacobsimpson/jt/antlrgen"
 	"github.com/jacobsimpson/jt/ast"
 	"github.com/jacobsimpson/jt/debug"
 
 	// For some reason if this import is done without the alias, golang assumes
 	// this is imported as `listener`. No idea why.
-	parser "github.com/jacobsimpson/jt/parser"
+
 	flag "github.com/spf13/pflag"
 )
 
@@ -107,43 +105,6 @@ func execute(rules string, inputFiles []string) error {
 	}
 
 	return result
-}
-
-func parse(rules string) (ast.Program, error) {
-	input := antlr.NewInputStream(rules)
-	lexer := antlrgen.NewProgramLexer(input)
-	lexer.RemoveErrorListeners()
-	errorReporter := parser.NewErrorReporter()
-	lexer.AddErrorListener(errorReporter)
-	stream := antlr.NewCommonTokenStream(lexer, 0)
-	p := antlrgen.NewProgramParser(stream)
-	p.RemoveErrorListeners()
-	p.AddErrorListener(errorReporter)
-	p.BuildParseTrees = true
-	tree := p.Program()
-
-	if errorReporter.FoundErrors() {
-		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
-		for _, e := range errorReporter.Errors {
-			fmt.Fprintf(os.Stderr, "%s\n", e)
-		}
-		os.Exit(1)
-	}
-	visitor := parser.NewASTVisitor()
-	r := visitor.Visit(tree)
-	if err, ok := r.(error); ok && err != nil {
-		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
-	}
-
-	if err, ok := r.(error); ok {
-		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
-	}
-
-	return r.(ast.Program), nil
 }
 
 func processFile(interpreter ast.Program, fileName string) error {
