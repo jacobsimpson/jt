@@ -182,6 +182,8 @@ func gt(environment map[string]string, left, right Value) bool {
 			return dateTimeLTUnknown(environment, right.Value(), left.Value())
 		case IntegerValue:
 			return integerLTUnknown(environment, right.Value(), left.Value())
+		case DoubleValue:
+			return doubleLTUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
 		}
