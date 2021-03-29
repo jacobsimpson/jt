@@ -96,7 +96,7 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *RegexpValue:
 			return compareStringEQRegexp(l, r)
 		case *StringValue:
-			return compareStringEQString(left.Value(), right.Value())
+			return compareStringEQString(l, r)
 		default:
 			// Error: "Can not compare %s to %s using %s",
 			//     left.Type(), right.Type(), operator
@@ -216,10 +216,8 @@ func compareStringEQRegexp(s *StringValue, re *RegexpValue) bool {
 	return rev.MatchString(sv)
 }
 
-func compareStringEQString(leftInterface interface{}, rightInterface interface{}) bool {
-	left := leftInterface.(string)
-	right := rightInterface.(string)
-	return left == right
+func compareStringEQString(left *StringValue, right *StringValue) bool {
+	return left.value == right.value
 }
 
 func regexpEQUnknown(environment map[string]string, re *RegexpValue, s interface{}) bool {

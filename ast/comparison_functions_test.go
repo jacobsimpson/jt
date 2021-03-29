@@ -96,6 +96,18 @@ func Test_eq(t *testing.T) {
 			&IntegerValue{raw: "1000", value: 8},
 			false,
 		},
+		{
+			map[string]string{},
+			&StringValue{raw: "abcd", value: "abcd"},
+			&StringValue{raw: "abcd", value: "abcd"},
+			true,
+		},
+		{
+			map[string]string{},
+			&StringValue{raw: "abcde", value: "abcde"},
+			&StringValue{raw: "abcd", value: "abcd"},
+			false,
+		},
 	}
 
 	for _, test := range tests {
