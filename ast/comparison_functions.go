@@ -32,7 +32,7 @@ func lt(environment map[string]string, left, right Value) bool {
 	case *IntegerValue:
 		switch right.(type) {
 		case *AnyValue:
-			return integerLTUnknown(environment, l, right.Value())
+			return integerLTAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -69,7 +69,7 @@ func le(environment map[string]string, left, right Value) bool {
 	case *IntegerValue:
 		switch right.(type) {
 		case *VarValue:
-			return integerLTUnknown(environment, l, right.Value()) ||
+			return integerLTAny(l, resolveVar(environment, right.Value())) ||
 				integerEQUnknown(environment, l, right.Value())
 		default:
 			return false
@@ -147,7 +147,7 @@ func ge(environment map[string]string, left, right Value) bool {
 			return dateTimeLTAny(r, resolveVar(environment, left.Value())) ||
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
-			return integerLTUnknown(environment, r, left.Value()) ||
+			return integerLTAny(r, resolveVar(environment, left.Value())) ||
 				integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleLTUnknown(environment, right.Value(), left.Value()) ||
@@ -184,7 +184,7 @@ func gt(environment map[string]string, left, right Value) bool {
 		case *DateTimeValue:
 			return dateTimeLTAny(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
-			return integerLTUnknown(environment, r, left.Value())
+			return integerLTAny(r, resolveVar(environment, left.Value()))
 		case *DoubleValue:
 			return doubleLTUnknown(environment, right.Value(), left.Value())
 		default:
@@ -272,13 +272,9 @@ func integerEQUnknown(environment map[string]string, iValue *IntegerValue, v int
 	return i == parsed
 }
 
-func integerLTUnknown(environment map[string]string, iValue *IntegerValue, v interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
+func integerLTAny(iValue *IntegerValue, val *AnyValue) bool {
 	i := iValue.value
-	parsed, err := parseInt(val)
-	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, i)
+	parsed, err := parseInt(val.raw)
 	if err != nil {
 		return false
 	}
