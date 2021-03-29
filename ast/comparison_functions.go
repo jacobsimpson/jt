@@ -34,7 +34,7 @@ func lt(environment map[string]string, left, right Value) bool {
 	case *IntegerValue:
 		switch right.(type) {
 		case *AnyValue:
-			return integerLTUnknown(environment, left.Value(), right.Value())
+			return integerLTUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -71,7 +71,7 @@ func le(environment map[string]string, left, right Value) bool {
 	case *IntegerValue:
 		switch right.(type) {
 		case *VarValue:
-			return integerLTUnknown(environment, left.Value(), right.Value()) ||
+			return integerLTUnknown(environment, l, right.Value()) ||
 				integerEQUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
@@ -149,7 +149,7 @@ func ge(environment map[string]string, left, right Value) bool {
 			return dateTimeLTUnknown(environment, r, left.Value()) ||
 				dateTimeEQUnknown(environment, right.Value(), left.Value())
 		case *IntegerValue:
-			return integerLTUnknown(environment, right.Value(), left.Value()) ||
+			return integerLTUnknown(environment, r, left.Value()) ||
 				integerEQUnknown(environment, right.Value(), left.Value())
 		case *DoubleValue:
 			return doubleLTUnknown(environment, right.Value(), left.Value()) ||
@@ -186,7 +186,7 @@ func gt(environment map[string]string, left, right Value) bool {
 		case *DateTimeValue:
 			return dateTimeLTUnknown(environment, r, left.Value())
 		case *IntegerValue:
-			return integerLTUnknown(environment, right.Value(), left.Value())
+			return integerLTUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleLTUnknown(environment, right.Value(), left.Value())
 		default:
@@ -284,11 +284,11 @@ func integerEQUnknown(environment map[string]string, iValue interface{}, v inter
 	return i == parsed
 }
 
-func integerLTUnknown(environment map[string]string, iValue interface{}, v interface{}) bool {
+func integerLTUnknown(environment map[string]string, iValue *IntegerValue, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	i := iValue.(int64)
+	i := iValue.value
 	parsed, err := parseInt(val)
 	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, i)
 	if err != nil {
