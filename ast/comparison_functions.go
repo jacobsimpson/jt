@@ -14,7 +14,7 @@ func lt(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeGTUnknown(environment, r, left.Value())
+			return dateTimeGTVar(environment, r, left.Value())
 		case *IntegerValue:
 			return integerGTUnknown(environment, r, left.Value())
 		case *DoubleValue:
@@ -47,7 +47,7 @@ func le(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeGTUnknown(environment, r, left.Value()) ||
+			return dateTimeGTVar(environment, r, left.Value()) ||
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerGTUnknown(environment, r, left.Value()) ||
@@ -158,7 +158,7 @@ func ge(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeGTUnknown(environment, l, right.Value()) ||
+			return dateTimeGTVar(environment, l, right.Value()) ||
 				dateTimeEQUnknown(environment, l, right.Value())
 		default:
 			return false
@@ -193,7 +193,7 @@ func gt(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeGTUnknown(environment, l, right.Value())
+			return dateTimeGTVar(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -255,7 +255,7 @@ func dateTimeLTUnknown(environment map[string]string, dtValue *DateTimeValue, v 
 	return dt.Before(coerced)
 }
 
-func dateTimeGTUnknown(environment map[string]string, dtValue *DateTimeValue, v interface{}) bool {
+func dateTimeGTVar(environment map[string]string, dtValue *DateTimeValue, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
