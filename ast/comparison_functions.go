@@ -52,7 +52,7 @@ func le(environment map[string]string, left, right Value) bool {
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerGTUnknown(environment, r, left.Value()) ||
-				integerEQUnknown(environment, right.Value(), left.Value())
+				integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleGTUnknown(environment, r, left.Value()) ||
 				doubleEQUnknown(environment, right.Value(), left.Value())
@@ -71,7 +71,7 @@ func le(environment map[string]string, left, right Value) bool {
 		switch right.(type) {
 		case *VarValue:
 			return integerLTUnknown(environment, l, right.Value()) ||
-				integerEQUnknown(environment, left.Value(), right.Value())
+				integerEQUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -110,7 +110,7 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *DateTimeValue:
 			return dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
-			return integerEQUnknown(environment, right.Value(), left.Value())
+			return integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleEQUnknown(environment, right.Value(), left.Value())
 		default:
@@ -126,7 +126,7 @@ func eq(environment map[string]string, left, right Value) bool {
 	case *IntegerValue:
 		switch right.(type) {
 		case *IntegerValue:
-			return integerEQUnknown(environment, left.Value(), right.Value())
+			return integerEQUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -149,7 +149,7 @@ func ge(environment map[string]string, left, right Value) bool {
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerLTUnknown(environment, r, left.Value()) ||
-				integerEQUnknown(environment, right.Value(), left.Value())
+				integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleLTUnknown(environment, right.Value(), left.Value()) ||
 				doubleEQUnknown(environment, right.Value(), left.Value())
@@ -168,7 +168,7 @@ func ge(environment map[string]string, left, right Value) bool {
 		switch right.(type) {
 		case *AnyValue:
 			return integerGTUnknown(environment, l, right.Value()) ||
-				integerEQUnknown(environment, left.Value(), right.Value())
+				integerEQUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -270,11 +270,11 @@ func dateTimeGTUnknown(environment map[string]string, dtValue *DateTimeValue, v 
 	return dt.After(coerced)
 }
 
-func integerEQUnknown(environment map[string]string, iValue interface{}, v interface{}) bool {
+func integerEQUnknown(environment map[string]string, iValue *IntegerValue, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	i := iValue.(int64)
+	i := iValue.value
 	parsed, err := parseInt(val)
 	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, i)
 	if err != nil {
