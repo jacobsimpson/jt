@@ -48,7 +48,7 @@ func le(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *DateTimeValue:
 			return dateTimeGTAny(r, resolveVar(environment, left.Value())) ||
-				dateTimeEQUnknown(environment, r, left.Value())
+				dateTimeEQAny(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
 			return integerGTAny(r, resolveVar(environment, left.Value())) ||
 				integerEQUnknown(environment, r, left.Value())
@@ -62,7 +62,7 @@ func le(environment map[string]string, left, right Value) bool {
 		switch right.(type) {
 		case *VarValue:
 			return dateTimeLTAny(l, resolveVar(environment, right.Value())) ||
-				dateTimeEQUnknown(environment, l, right.Value())
+				dateTimeEQAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -107,7 +107,7 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *RegexpValue:
 			return regexpEQUnknown(environment, r, left.Value())
 		case *DateTimeValue:
-			return dateTimeEQUnknown(environment, r, left.Value())
+			return dateTimeEQAny(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
 			return integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
@@ -118,7 +118,7 @@ func eq(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeEQUnknown(environment, l, right.Value())
+			return dateTimeEQAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -145,7 +145,7 @@ func ge(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *DateTimeValue:
 			return dateTimeLTAny(r, resolveVar(environment, left.Value())) ||
-				dateTimeEQUnknown(environment, r, left.Value())
+				dateTimeEQAny(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
 			return integerLTAny(r, resolveVar(environment, left.Value())) ||
 				integerEQUnknown(environment, r, left.Value())
@@ -159,7 +159,7 @@ func ge(environment map[string]string, left, right Value) bool {
 		switch right.(type) {
 		case *AnyValue:
 			return dateTimeGTAny(l, resolveVar(environment, right.Value())) ||
-				dateTimeEQUnknown(environment, l, right.Value())
+				dateTimeEQAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -229,13 +229,9 @@ func regexpEQUnknown(environment map[string]string, re *RegexpValue, s interface
 	return rev.MatchString(sv)
 }
 
-func dateTimeEQUnknown(environment map[string]string, dtValue *DateTimeValue, v interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
+func dateTimeEQAny(dtValue *DateTimeValue, val *AnyValue) bool {
 	dt := dtValue.value
-	debug.Info("comparing %s (%s) to %s", varName, val, dt)
-	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val.raw)
 	if err != nil {
 		return false
 	}
