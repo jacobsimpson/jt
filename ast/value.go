@@ -245,7 +245,10 @@ func (v *DoubleValue) String() string {
 }
 
 //
-// A Value implementation to hold a value that is, as yet, typeless.
+// AnyValue is a Value implementation to hold a value that is, as yet,
+// typeless. A value taken from a column is typeless. It is a string, but it
+// wasn't specified as a string by the programmer, so coercing it to a
+// different type, depending on parseability, is legal.
 //
 type AnyValue struct {
 	raw string
