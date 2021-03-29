@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/jacobsimpson/jt/datetime"
 	"github.com/jacobsimpson/jt/debug"
@@ -50,7 +49,7 @@ func le(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *DateTimeValue:
 			return dateTimeGTUnknown(environment, r, left.Value()) ||
-				dateTimeEQUnknown(environment, right.Value(), left.Value())
+				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerGTUnknown(environment, r, left.Value()) ||
 				integerEQUnknown(environment, right.Value(), left.Value())
@@ -64,7 +63,7 @@ func le(environment map[string]string, left, right Value) bool {
 		switch right.(type) {
 		case *VarValue:
 			return dateTimeLTUnknown(environment, l, right.Value()) ||
-				dateTimeEQUnknown(environment, left.Value(), right.Value())
+				dateTimeEQUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -83,7 +82,7 @@ func le(environment map[string]string, left, right Value) bool {
 }
 
 func eq(environment map[string]string, left, right Value) bool {
-	switch left.(type) {
+	switch l := left.(type) {
 	case *RegexpValue:
 		switch right.(type) {
 		case *StringValue:
@@ -105,11 +104,11 @@ func eq(environment map[string]string, left, right Value) bool {
 			return false
 		}
 	case *VarValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *RegexpValue:
 			return regexpEQUnknown(environment, right.Value(), left.Value())
 		case *DateTimeValue:
-			return dateTimeEQUnknown(environment, right.Value(), left.Value())
+			return dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerEQUnknown(environment, right.Value(), left.Value())
 		case *DoubleValue:
@@ -120,7 +119,7 @@ func eq(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeEQUnknown(environment, left.Value(), right.Value())
+			return dateTimeEQUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -147,7 +146,7 @@ func ge(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *DateTimeValue:
 			return dateTimeLTUnknown(environment, r, left.Value()) ||
-				dateTimeEQUnknown(environment, right.Value(), left.Value())
+				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerLTUnknown(environment, r, left.Value()) ||
 				integerEQUnknown(environment, right.Value(), left.Value())
@@ -161,7 +160,7 @@ func ge(environment map[string]string, left, right Value) bool {
 		switch right.(type) {
 		case *AnyValue:
 			return dateTimeGTUnknown(environment, l, right.Value()) ||
-				dateTimeEQUnknown(environment, left.Value(), right.Value())
+				dateTimeEQUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -233,11 +232,11 @@ func regexpEQUnknown(environment map[string]string, re interface{}, s interface{
 	return rev.MatchString(sv)
 }
 
-func dateTimeEQUnknown(environment map[string]string, dtValue interface{}, v interface{}) bool {
+func dateTimeEQUnknown(environment map[string]string, dtValue *DateTimeValue, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	dt := dtValue.(time.Time)
+	dt := dtValue.value
 	debug.Info("comparing %s (%s) to %s", varName, val, dt)
 	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
 	if err != nil {
