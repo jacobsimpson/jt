@@ -14,7 +14,7 @@ func lt(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeGTVar(environment, r, left.Value())
+			return dateTimeGTVar(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
 			return integerGTUnknown(environment, r, left.Value())
 		case *DoubleValue:
@@ -47,7 +47,7 @@ func le(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeGTVar(environment, r, left.Value()) ||
+			return dateTimeGTVar(r, resolveVar(environment, left.Value())) ||
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerGTUnknown(environment, r, left.Value()) ||
@@ -158,7 +158,7 @@ func ge(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeGTVar(environment, l, right.Value()) ||
+			return dateTimeGTVar(l, resolveVar(environment, right.Value())) ||
 				dateTimeEQUnknown(environment, l, right.Value())
 		default:
 			return false
@@ -193,7 +193,7 @@ func gt(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeGTVar(environment, l, right.Value())
+			return dateTimeGTVar(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -255,11 +255,8 @@ func dateTimeLTUnknown(environment map[string]string, dtValue *DateTimeValue, v 
 	return dt.Before(coerced)
 }
 
-func dateTimeGTVar(environment map[string]string, dtValue *DateTimeValue, v interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
-	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
+func dateTimeGTVar(dtValue *DateTimeValue, val *AnyValue) bool {
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val.raw)
 	if err != nil {
 		return false
 	}
@@ -370,4 +367,11 @@ func parseInt(s string) (int64, error) {
 		}
 	}
 	return strconv.ParseInt(s, 10, 64)
+}
+
+func resolveVar(environment map[string]string, v interface{}) *AnyValue {
+	// TODO: This is going to crash hard if the variable doesn't exist.
+	varName := v.(string)
+	val := environment[varName]
+	return &AnyValue{val}
 }
