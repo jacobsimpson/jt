@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/jacobsimpson/jt/datetime"
-	"github.com/jacobsimpson/jt/debug"
 	"github.com/shopspring/decimal"
 )
 
@@ -87,7 +86,7 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *StringValue:
 			return compareStringEQRegexp(r, l)
 		case *RegexpValue:
-			return regexpEQUnknown(environment, l, right.Value())
+			return regexpEQAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -105,7 +104,7 @@ func eq(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *RegexpValue:
-			return regexpEQUnknown(environment, r, left.Value())
+			return regexpEQAny(r, resolveVar(environment, left.Value()))
 		case *DateTimeValue:
 			return dateTimeEQAny(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
@@ -220,13 +219,9 @@ func compareStringEQString(left *StringValue, right *StringValue) bool {
 	return left.value == right.value
 }
 
-func regexpEQUnknown(environment map[string]string, re *RegexpValue, s interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := s.(string)
-	sv := environment[varName]
+func regexpEQAny(re *RegexpValue, val *AnyValue) bool {
 	rev := re.re
-	debug.Info("comparing %s (%s) to %s", varName, sv, rev)
-	return rev.MatchString(sv)
+	return rev.MatchString(val.raw)
 }
 
 func dateTimeEQAny(dtValue *DateTimeValue, val *AnyValue) bool {
