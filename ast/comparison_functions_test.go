@@ -33,6 +33,24 @@ func Test_lt(t *testing.T) {
 			},
 			true,
 		},
+		{
+			map[string]string{"varname": "12"},
+			&VarValue{"varname"},
+			&IntegerValue{
+				"12",
+				12,
+			},
+			false,
+		},
+		{
+			map[string]string{"varname": "12"},
+			&VarValue{"varname"},
+			&IntegerValue{
+				"13",
+				13,
+			},
+			true,
+		},
 	}
 
 	for _, test := range tests {
