@@ -18,7 +18,7 @@ func lt(environment map[string]string, left, right Value) bool {
 		case *IntegerValue:
 			return integerGTAny(r, resolveVar(environment, left.Value()))
 		case *DoubleValue:
-			return doubleGTUnknown(environment, r, left.Value())
+			return doubleGTAny(r, resolveVar(environment, left.Value()))
 		default:
 			return false
 		}
@@ -53,7 +53,7 @@ func le(environment map[string]string, left, right Value) bool {
 			return integerGTAny(r, resolveVar(environment, left.Value())) ||
 				integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
-			return doubleGTUnknown(environment, r, left.Value()) ||
+			return doubleGTAny(r, resolveVar(environment, left.Value())) ||
 				doubleEQUnknown(environment, r, left.Value())
 		default:
 			return false
@@ -328,20 +328,16 @@ func doubleLTUnknown(environment map[string]string, dValue interface{}, v interf
 	return d.LessThan(parsed)
 }
 
-func doubleGTUnknown(environment map[string]string, dValue *DoubleValue, v interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
+func doubleGTAny(dValue *DoubleValue, val *AnyValue) bool {
 	d := dValue.value
-	parsed, err := decimal.NewFromString(val)
+	parsed, err := decimal.NewFromString(val.raw)
 	if err != nil {
-		parsedInt, err := parseInt(val)
+		parsedInt, err := parseInt(val.raw)
 		if err != nil {
 			return false
 		}
 		parsed = decimal.New(parsedInt, 0)
 	}
-	debug.Info("comparing %s (%s = %v) to %v", varName, val, parsed, d)
 	return d.GreaterThan(parsed)
 }
 
