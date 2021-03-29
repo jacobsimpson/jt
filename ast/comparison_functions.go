@@ -20,7 +20,7 @@ func lt(environment map[string]string, left, right Value) bool {
 		case *IntegerValue:
 			return integerGTUnknown(environment, r, left.Value())
 		case *DoubleValue:
-			return doubleGTUnknown(environment, right.Value(), left.Value())
+			return doubleGTUnknown(environment, r, left.Value())
 		default:
 			return false
 		}
@@ -55,7 +55,7 @@ func le(environment map[string]string, left, right Value) bool {
 			return integerGTUnknown(environment, r, left.Value()) ||
 				integerEQUnknown(environment, right.Value(), left.Value())
 		case *DoubleValue:
-			return doubleGTUnknown(environment, right.Value(), left.Value()) ||
+			return doubleGTUnknown(environment, r, left.Value()) ||
 				doubleEQUnknown(environment, right.Value(), left.Value())
 		default:
 			return false
@@ -340,11 +340,11 @@ func doubleLTUnknown(environment map[string]string, dValue interface{}, v interf
 	return d.LessThan(parsed)
 }
 
-func doubleGTUnknown(environment map[string]string, dValue interface{}, v interface{}) bool {
+func doubleGTUnknown(environment map[string]string, dValue *DoubleValue, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	d := dValue.(*decimal.Decimal)
+	d := dValue.value
 	parsed, err := decimal.NewFromString(val)
 	if err != nil {
 		parsedInt, err := parseInt(val)
