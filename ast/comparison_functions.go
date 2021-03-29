@@ -12,7 +12,7 @@ import (
 )
 
 func lt(environment map[string]string, left, right Value) bool {
-	switch left.(type) {
+	switch l := left.(type) {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
@@ -27,7 +27,7 @@ func lt(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeLTUnknown(environment, left.Value(), right.Value())
+			return dateTimeLTUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -45,7 +45,7 @@ func lt(environment map[string]string, left, right Value) bool {
 }
 
 func le(environment map[string]string, left, right Value) bool {
-	switch left.(type) {
+	switch l := left.(type) {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
@@ -63,7 +63,7 @@ func le(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *VarValue:
-			return dateTimeLTUnknown(environment, left.Value(), right.Value()) ||
+			return dateTimeLTUnknown(environment, l, right.Value()) ||
 				dateTimeEQUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
@@ -144,9 +144,9 @@ func ne(environment map[string]string, left, right Value) bool {
 func ge(environment map[string]string, left, right Value) bool {
 	switch l := left.(type) {
 	case *VarValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeLTUnknown(environment, right.Value(), left.Value()) ||
+			return dateTimeLTUnknown(environment, r, left.Value()) ||
 				dateTimeEQUnknown(environment, right.Value(), left.Value())
 		case *IntegerValue:
 			return integerLTUnknown(environment, right.Value(), left.Value()) ||
@@ -182,9 +182,9 @@ func ge(environment map[string]string, left, right Value) bool {
 func gt(environment map[string]string, left, right Value) bool {
 	switch l := left.(type) {
 	case *VarValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeLTUnknown(environment, right.Value(), left.Value())
+			return dateTimeLTUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerLTUnknown(environment, right.Value(), left.Value())
 		case *DoubleValue:
@@ -246,11 +246,11 @@ func dateTimeEQUnknown(environment map[string]string, dtValue interface{}, v int
 	return dt.Equal(coerced)
 }
 
-func dateTimeLTUnknown(environment map[string]string, dtValue interface{}, v interface{}) bool {
+func dateTimeLTUnknown(environment map[string]string, dtValue *DateTimeValue, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	dt := dtValue.(time.Time)
+	dt := dtValue.value
 	debug.Info("comparing %s (%s) to %s", varName, val, dt)
 	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
 	if err != nil {
