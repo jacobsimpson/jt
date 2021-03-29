@@ -84,18 +84,18 @@ func le(environment map[string]string, left, right Value) bool {
 func eq(environment map[string]string, left, right Value) bool {
 	switch l := left.(type) {
 	case *RegexpValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *StringValue:
-			return compareStringEQRegexp(right.Value(), left.Value())
+			return compareStringEQRegexp(r, l)
 		case *RegexpValue:
 			return regexpEQUnknown(environment, left.Value(), right.Value())
 		default:
 			return false
 		}
 	case *StringValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *RegexpValue:
-			return compareStringEQRegexp(left.Value(), right.Value())
+			return compareStringEQRegexp(l, r)
 		case *StringValue:
 			return compareStringEQString(left.Value(), right.Value())
 		default:
@@ -211,9 +211,9 @@ func gt(environment map[string]string, left, right Value) bool {
 	return false
 }
 
-func compareStringEQRegexp(s, re interface{}) bool {
-	sv := s.(string)
-	rev := re.(*regexp.Regexp)
+func compareStringEQRegexp(s *StringValue, re *RegexpValue) bool {
+	sv := s.value
+	rev := re.re
 	return rev.MatchString(sv)
 }
 
