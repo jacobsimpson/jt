@@ -14,7 +14,7 @@ func lt(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeGTVar(r, resolveVar(environment, left.Value()))
+			return dateTimeGTAny(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
 			return integerGTAny(r, resolveVar(environment, left.Value()))
 		case *DoubleValue:
@@ -47,7 +47,7 @@ func le(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeGTVar(r, resolveVar(environment, left.Value())) ||
+			return dateTimeGTAny(r, resolveVar(environment, left.Value())) ||
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerGTAny(r, resolveVar(environment, left.Value())) ||
@@ -158,7 +158,7 @@ func ge(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeGTVar(l, resolveVar(environment, right.Value())) ||
+			return dateTimeGTAny(l, resolveVar(environment, right.Value())) ||
 				dateTimeEQUnknown(environment, l, right.Value())
 		default:
 			return false
@@ -193,7 +193,7 @@ func gt(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeGTVar(l, resolveVar(environment, right.Value()))
+			return dateTimeGTAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -255,7 +255,7 @@ func dateTimeLTUnknown(environment map[string]string, dtValue *DateTimeValue, v 
 	return dt.Before(coerced)
 }
 
-func dateTimeGTVar(dtValue *DateTimeValue, val *AnyValue) bool {
+func dateTimeGTAny(dtValue *DateTimeValue, val *AnyValue) bool {
 	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val.raw)
 	if err != nil {
 		return false
