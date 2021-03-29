@@ -55,7 +55,7 @@ func le(environment map[string]string, left, right Value) bool {
 				integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleGTUnknown(environment, r, left.Value()) ||
-				doubleEQUnknown(environment, right.Value(), left.Value())
+				doubleEQUnknown(environment, r, left.Value())
 		default:
 			return false
 		}
@@ -112,7 +112,7 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *IntegerValue:
 			return integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
-			return doubleEQUnknown(environment, right.Value(), left.Value())
+			return doubleEQUnknown(environment, r, left.Value())
 		default:
 			return false
 		}
@@ -152,7 +152,7 @@ func ge(environment map[string]string, left, right Value) bool {
 				integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleLTUnknown(environment, right.Value(), left.Value()) ||
-				doubleEQUnknown(environment, right.Value(), left.Value())
+				doubleEQUnknown(environment, r, left.Value())
 		default:
 			return false
 		}
@@ -309,11 +309,11 @@ func integerGTUnknown(environment map[string]string, iValue *IntegerValue, v int
 	return i > parsed
 }
 
-func doubleEQUnknown(environment map[string]string, dValue interface{}, v interface{}) bool {
+func doubleEQUnknown(environment map[string]string, dValue *DoubleValue, v interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	d := dValue.(*decimal.Decimal)
+	d := dValue.value
 	parsed, err := decimal.NewFromString(val)
 	debug.Info("comparing %s (%s = %s) to %s", varName, val, parsed, d)
 	if err != nil {
