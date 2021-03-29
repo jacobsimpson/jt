@@ -259,12 +259,11 @@ func dateTimeGTVar(environment map[string]string, dtValue *DateTimeValue, v inte
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := v.(string)
 	val := environment[varName]
-	dt := dtValue.value
 	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
 	if err != nil {
 		return false
 	}
-	return dt.After(coerced)
+	return dtValue.value.After(coerced)
 }
 
 func integerEQUnknown(environment map[string]string, iValue *IntegerValue, v interface{}) bool {
