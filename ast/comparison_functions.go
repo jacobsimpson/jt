@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -88,7 +87,7 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *StringValue:
 			return compareStringEQRegexp(r, l)
 		case *RegexpValue:
-			return regexpEQUnknown(environment, left.Value(), right.Value())
+			return regexpEQUnknown(environment, l, right.Value())
 		default:
 			return false
 		}
@@ -106,7 +105,7 @@ func eq(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *RegexpValue:
-			return regexpEQUnknown(environment, right.Value(), left.Value())
+			return regexpEQUnknown(environment, r, left.Value())
 		case *DateTimeValue:
 			return dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
@@ -223,11 +222,11 @@ func compareStringEQString(leftInterface interface{}, rightInterface interface{}
 	return left == right
 }
 
-func regexpEQUnknown(environment map[string]string, re interface{}, s interface{}) bool {
+func regexpEQUnknown(environment map[string]string, re *RegexpValue, s interface{}) bool {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	varName := s.(string)
 	sv := environment[varName]
-	rev := re.(*regexp.Regexp)
+	rev := re.re
 	debug.Info("comparing %s (%s) to %s", varName, sv, rev)
 	return rev.MatchString(sv)
 }
