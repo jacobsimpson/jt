@@ -9,7 +9,8 @@ import (
 )
 
 func lt(environment map[string]string, left, right Value) bool {
-	left = resolveVar(environment, left.Value())
+	left = resolveVar(environment, left)
+	right = resolveVar(environment, right)
 
 	switch l := left.(type) {
 	case *AnyValue:
@@ -44,7 +45,8 @@ func lt(environment map[string]string, left, right Value) bool {
 }
 
 func le(environment map[string]string, left, right Value) bool {
-	left = resolveVar(environment, left.Value())
+	left = resolveVar(environment, left)
+	right = resolveVar(environment, right)
 
 	switch l := left.(type) {
 	case *AnyValue:
@@ -79,13 +81,16 @@ func le(environment map[string]string, left, right Value) bool {
 }
 
 func eq(environment map[string]string, left, right Value) bool {
+	left = resolveVar(environment, left)
+	right = resolveVar(environment, right)
+
 	switch l := left.(type) {
 	case *RegexpValue:
 		switch r := right.(type) {
 		case *StringValue:
 			return compareStringEQRegexp(r, l)
-		case *RegexpValue:
-			return regexpEQAny(l, resolveVar(environment, right.Value()))
+		case *AnyValue:
+			return regexpEQAny(l, r)
 		default:
 			return false
 		}
@@ -100,30 +105,30 @@ func eq(environment map[string]string, left, right Value) bool {
 			//     left.Type(), right.Type(), operator
 			return false
 		}
-	case *VarValue:
+	case *AnyValue:
 		switch r := right.(type) {
 		case *RegexpValue:
-			return regexpEQAny(r, resolveVar(environment, left.Value()))
+			return regexpEQAny(r, l)
 		case *DateTimeValue:
-			return dateTimeEQAny(r, resolveVar(environment, left.Value()))
+			return dateTimeEQAny(r, l)
 		case *IntegerValue:
-			return integerEQAny(r, resolveVar(environment, left.Value()))
+			return integerEQAny(r, l)
 		case *DoubleValue:
-			return doubleEQAny(r, resolveVar(environment, left.Value()))
+			return doubleEQAny(r, l)
 		default:
 			return false
 		}
 	case *DateTimeValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *AnyValue:
-			return dateTimeEQAny(l, resolveVar(environment, right.Value()))
+			return dateTimeEQAny(l, r)
 		default:
 			return false
 		}
 	case *IntegerValue:
-		switch right.(type) {
-		case *IntegerValue:
-			return integerEQAny(l, resolveVar(environment, right.Value()))
+		switch r := right.(type) {
+		case *AnyValue:
+			return integerEQAny(l, r)
 		default:
 			return false
 		}
@@ -138,34 +143,32 @@ func ne(environment map[string]string, left, right Value) bool {
 }
 
 func ge(environment map[string]string, left, right Value) bool {
+	left = resolveVar(environment, left)
+	right = resolveVar(environment, right)
+
 	switch l := left.(type) {
-	case *VarValue:
+	case *AnyValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeLTAny(r, resolveVar(environment, left.Value())) ||
-				dateTimeEQAny(r, resolveVar(environment, left.Value()))
+			return dateTimeLTAny(r, l) || dateTimeEQAny(r, l)
 		case *IntegerValue:
-			return integerLTAny(r, resolveVar(environment, left.Value())) ||
-				integerEQAny(r, resolveVar(environment, left.Value()))
+			return integerLTAny(r, l) || integerEQAny(r, l)
 		case *DoubleValue:
-			return doubleLTAny(r, resolveVar(environment, left.Value())) ||
-				doubleEQAny(r, resolveVar(environment, left.Value()))
+			return doubleLTAny(r, l) || doubleEQAny(r, l)
 		default:
 			return false
 		}
 	case *DateTimeValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *AnyValue:
-			return dateTimeGTAny(l, resolveVar(environment, right.Value())) ||
-				dateTimeEQAny(l, resolveVar(environment, right.Value()))
+			return dateTimeGTAny(l, r) || dateTimeEQAny(l, r)
 		default:
 			return false
 		}
 	case *IntegerValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *AnyValue:
-			return integerGTAny(l, resolveVar(environment, right.Value())) ||
-				integerEQAny(l, resolveVar(environment, right.Value()))
+			return integerGTAny(l, r) || integerEQAny(l, r)
 		default:
 			return false
 		}
@@ -176,29 +179,32 @@ func ge(environment map[string]string, left, right Value) bool {
 }
 
 func gt(environment map[string]string, left, right Value) bool {
+	left = resolveVar(environment, left)
+	right = resolveVar(environment, right)
+
 	switch l := left.(type) {
-	case *VarValue:
+	case *AnyValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeLTAny(r, resolveVar(environment, left.Value()))
+			return dateTimeLTAny(r, l)
 		case *IntegerValue:
-			return integerLTAny(r, resolveVar(environment, left.Value()))
+			return integerLTAny(r, l)
 		case *DoubleValue:
-			return doubleLTAny(r, resolveVar(environment, left.Value()))
+			return doubleLTAny(r, l)
 		default:
 			return false
 		}
 	case *DateTimeValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *AnyValue:
-			return dateTimeGTAny(l, resolveVar(environment, right.Value()))
+			return dateTimeGTAny(l, r)
 		default:
 			return false
 		}
 	case *IntegerValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *AnyValue:
-			return integerGTAny(l, resolveVar(environment, right.Value()))
+			return integerGTAny(l, r)
 		default:
 			return false
 		}
@@ -331,9 +337,11 @@ func parseInt(s string) (int64, error) {
 	return strconv.ParseInt(s, 10, 64)
 }
 
-func resolveVar(environment map[string]string, v interface{}) *AnyValue {
+func resolveVar(environment map[string]string, v Value) Value {
 	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
-	return &AnyValue{val}
+	if vr, ok := v.(*VarValue); ok {
+		val := environment[vr.name]
+		return &AnyValue{val}
+	}
+	return v
 }
