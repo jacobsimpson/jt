@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,6 +49,18 @@ func Test_lt(t *testing.T) {
 			&IntegerValue{
 				"13",
 				13,
+			},
+			true,
+		},
+		{
+			map[string]string{"varname": "12"},
+			&VarValue{"varname"},
+			&DoubleValue{
+				"13.1",
+				func() *decimal.Decimal {
+					v := decimal.NewFromFloat(13.1)
+					return &v
+				}(),
 			},
 			true,
 		},
