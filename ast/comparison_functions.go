@@ -54,7 +54,7 @@ func le(environment map[string]string, left, right Value) bool {
 				integerEQAny(r, resolveVar(environment, left.Value()))
 		case *DoubleValue:
 			return doubleGTAny(r, resolveVar(environment, left.Value())) ||
-				doubleEQUnknown(environment, r, left.Value())
+				doubleEQAny(r, resolveVar(environment, left.Value()))
 		default:
 			return false
 		}
@@ -111,7 +111,7 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *IntegerValue:
 			return integerEQAny(r, resolveVar(environment, left.Value()))
 		case *DoubleValue:
-			return doubleEQUnknown(environment, r, left.Value())
+			return doubleEQAny(r, resolveVar(environment, left.Value()))
 		default:
 			return false
 		}
@@ -151,7 +151,7 @@ func ge(environment map[string]string, left, right Value) bool {
 				integerEQAny(r, resolveVar(environment, left.Value()))
 		case *DoubleValue:
 			return doubleLTUnknown(environment, right.Value(), left.Value()) ||
-				doubleEQUnknown(environment, r, left.Value())
+				doubleEQAny(r, resolveVar(environment, left.Value()))
 		default:
 			return false
 		}
@@ -282,13 +282,9 @@ func integerGTAny(iValue *IntegerValue, val *AnyValue) bool {
 	return i > parsed
 }
 
-func doubleEQUnknown(environment map[string]string, dValue *DoubleValue, v interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
+func doubleEQAny(dValue *DoubleValue, val *AnyValue) bool {
 	d := dValue.value
-	parsed, err := decimal.NewFromString(val)
-	debug.Info("comparing %s (%s = %s) to %s", varName, val, parsed, d)
+	parsed, err := decimal.NewFromString(val.raw)
 	if err != nil {
 		return false
 	}
