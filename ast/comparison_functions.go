@@ -25,7 +25,7 @@ func lt(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *AnyValue:
-			return dateTimeLTUnknown(environment, l, right.Value())
+			return dateTimeLTAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -61,7 +61,7 @@ func le(environment map[string]string, left, right Value) bool {
 	case *DateTimeValue:
 		switch right.(type) {
 		case *VarValue:
-			return dateTimeLTUnknown(environment, l, right.Value()) ||
+			return dateTimeLTAny(l, resolveVar(environment, right.Value())) ||
 				dateTimeEQUnknown(environment, l, right.Value())
 		default:
 			return false
@@ -144,7 +144,7 @@ func ge(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeLTUnknown(environment, r, left.Value()) ||
+			return dateTimeLTAny(r, resolveVar(environment, left.Value())) ||
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
 			return integerLTUnknown(environment, r, left.Value()) ||
@@ -182,7 +182,7 @@ func gt(environment map[string]string, left, right Value) bool {
 	case *VarValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeLTUnknown(environment, r, left.Value())
+			return dateTimeLTAny(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
 			return integerLTUnknown(environment, r, left.Value())
 		case *DoubleValue:
@@ -242,13 +242,9 @@ func dateTimeEQUnknown(environment map[string]string, dtValue *DateTimeValue, v 
 	return dt.Equal(coerced)
 }
 
-func dateTimeLTUnknown(environment map[string]string, dtValue *DateTimeValue, v interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
+func dateTimeLTAny(dtValue *DateTimeValue, val *AnyValue) bool {
 	dt := dtValue.value
-	debug.Info("comparing %s (%s) to %s", varName, val, dt)
-	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val)
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val.raw)
 	if err != nil {
 		return false
 	}
