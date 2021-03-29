@@ -16,7 +16,7 @@ func lt(environment map[string]string, left, right Value) bool {
 		case *DateTimeValue:
 			return dateTimeGTVar(r, resolveVar(environment, left.Value()))
 		case *IntegerValue:
-			return integerGTUnknown(environment, r, left.Value())
+			return integerGTAny(r, resolveVar(environment, left.Value()))
 		case *DoubleValue:
 			return doubleGTUnknown(environment, r, left.Value())
 		default:
@@ -50,7 +50,7 @@ func le(environment map[string]string, left, right Value) bool {
 			return dateTimeGTVar(r, resolveVar(environment, left.Value())) ||
 				dateTimeEQUnknown(environment, r, left.Value())
 		case *IntegerValue:
-			return integerGTUnknown(environment, r, left.Value()) ||
+			return integerGTAny(r, resolveVar(environment, left.Value())) ||
 				integerEQUnknown(environment, r, left.Value())
 		case *DoubleValue:
 			return doubleGTUnknown(environment, r, left.Value()) ||
@@ -166,7 +166,7 @@ func ge(environment map[string]string, left, right Value) bool {
 	case *IntegerValue:
 		switch right.(type) {
 		case *AnyValue:
-			return integerGTUnknown(environment, l, right.Value()) ||
+			return integerGTAny(l, resolveVar(environment, right.Value())) ||
 				integerEQUnknown(environment, l, right.Value())
 		default:
 			return false
@@ -200,7 +200,7 @@ func gt(environment map[string]string, left, right Value) bool {
 	case *IntegerValue:
 		switch right.(type) {
 		case *AnyValue:
-			return integerGTUnknown(environment, l, right.Value())
+			return integerGTAny(l, resolveVar(environment, right.Value()))
 		default:
 			return false
 		}
@@ -289,13 +289,9 @@ func integerLTUnknown(environment map[string]string, iValue *IntegerValue, v int
 	return i < parsed
 }
 
-func integerGTUnknown(environment map[string]string, iValue *IntegerValue, v interface{}) bool {
-	// TODO: This is going to crash hard if the variable doesn't exist.
-	varName := v.(string)
-	val := environment[varName]
+func integerGTAny(iValue *IntegerValue, val *AnyValue) bool {
 	i := iValue.value
-	parsed, err := parseInt(val)
-	debug.Info("comparing %s (%s = %d) to %d", varName, val, parsed, i)
+	parsed, err := parseInt(val.raw)
 	if err != nil {
 		return false
 	}
