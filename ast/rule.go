@@ -20,5 +20,5 @@ func (r *Rule) Execute(environment map[string]string) {
 }
 
 func (r *Rule) String() string {
-	return fmt.Sprintf("Rule[selection: %s, block: %s]", r.Selection, r.Block)
+	return fmt.Sprintf("Rule[selection: %v, block: %s]", r.Selection, r.Block)
 }

@@ -15,29 +15,40 @@ func TestParser(t *testing.T) {
 		{
 			"%1<9",
 			&ast.Program{[]*ast.Rule{
-				&ast.Rule{&ast.Comparison{
-					Left:  ast.NewVarValue("%1"),
-					Right: mustNewIntegerValue(t, "9"),
-				}, ast.NewPrintlnBlock()},
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%1"),
+						Operator: ast.LT_Operator,
+						Right:    mustNewIntegerValue(t, "9"),
+					},
+					ast.NewPrintlnBlock(),
+				},
 			}},
 		},
 		{
 			"%1<0x03",
 			&ast.Program{[]*ast.Rule{
-				&ast.Rule{&ast.Comparison{
-					Left:  ast.NewVarValue("%1"),
-					Right: mustNewIntegerValue(t, "03"),
-				}, ast.NewPrintlnBlock()},
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%1"),
+						Operator: ast.LT_Operator,
+						Right:    mustNewIntegerValue(t, "03"),
+					},
+					ast.NewPrintlnBlock(),
+				},
 			}},
 		},
 		{
 			"%0 == /things/ { print(%0) }",
 			&ast.Program{[]*ast.Rule{
-				&ast.Rule{&ast.Comparison{
-					Left:     ast.NewVarValue("%0"),
-					Operator: ast.EQ_Operator,
-					Right:    mustNewRegexpValue(t, "things"),
-				}, newPrintBlock()},
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewRegexpValue(t, "things"),
+					},
+					newPrintBlock(),
+				},
 			}},
 		},
 	}

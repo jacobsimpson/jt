@@ -11,19 +11,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type ValueType int
-
-const (
-	StringValue ValueType = iota
-	RegexpValue
-	IntegerValue
-	DateTimeValue
-	DoubleValue
-	UnknownValue
-)
-
 type Value interface {
-	Type() ValueType
 	Raw() string
 	Value() interface{}
 	String() string
@@ -42,10 +30,6 @@ type VarValue struct {
 	name string
 }
 
-func (v *VarValue) Type() ValueType {
-	return UnknownValue
-}
-
 func (v *VarValue) Raw() string {
 	return v.name
 }
@@ -61,7 +45,7 @@ func (v *VarValue) String() string {
 //
 // A Value implementation to hold a regular expression.
 //
-type regexpValue struct {
+type RegexpValue struct {
 	raw string
 	re  *regexp.Regexp
 }
@@ -71,65 +55,57 @@ func NewRegexpValue(regexpString string) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &regexpValue{
+	return &RegexpValue{
 		raw: regexpString,
 		re:  re,
 	}, nil
 }
 
-func (v *regexpValue) Type() ValueType {
-	return RegexpValue
-}
-
-func (v *regexpValue) Raw() string {
+func (v *RegexpValue) Raw() string {
 	return v.raw
 }
 
-func (v *regexpValue) Value() interface{} {
+func (v *RegexpValue) Value() interface{} {
 	return v.re
 }
 
-func (v *regexpValue) String() string {
+func (v *RegexpValue) String() string {
 	return v.raw
 }
 
 //
 // A Value implementation to hold a string.
 //
-type stringValue struct {
+type StringValue struct {
 	raw   string
 	value string
 }
 
 func NewStringValue(s string) Value {
-	return &stringValue{
+	return &StringValue{
 		raw:   s,
 		value: s,
 	}
 }
 
-func (v *stringValue) Type() ValueType {
-	return StringValue
-}
-
-func (v *stringValue) Raw() string {
+func (v *StringValue) Raw() string {
 	return v.raw
 }
 
-func (v *stringValue) Value() interface{} {
+func (v *StringValue) Value() interface{} {
 	return v.value
 }
 
-func (v *stringValue) String() string {
+func (v *StringValue) String() string {
 	return v.value
 }
 
 //
 // A Value implementation to hold a date/time.
 //
-type datetimeValue struct {
+type DateTimeValue struct {
 	raw   string
-	value *time.Time
+	value time.Time
 }
 
 func NewDateTimeValue(s string) (Value, error) {
@@ -137,32 +113,28 @@ func NewDateTimeValue(s string) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &datetimeValue{
+	return &DateTimeValue{
 		raw:   s,
 		value: date,
 	}, nil
 }
 
-func (v *datetimeValue) Type() ValueType {
-	return DateTimeValue
-}
-
-func (v *datetimeValue) Raw() string {
+func (v *DateTimeValue) Raw() string {
 	return v.raw
 }
 
-func (v *datetimeValue) Value() interface{} {
+func (v *DateTimeValue) Value() interface{} {
 	return v.value
 }
 
-func (v *datetimeValue) String() string {
+func (v *DateTimeValue) String() string {
 	return v.value.String()
 }
 
 //
 // A Value implementation to hold a integer.
 //
-type integerValue struct {
+type IntegerValue struct {
 	raw   string
 	value int64
 }
@@ -214,32 +186,28 @@ func parseIntFromString(s string, base int) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &integerValue{
+	return &IntegerValue{
 		raw:   s,
 		value: i,
 	}, nil
 }
 
-func (v *integerValue) Type() ValueType {
-	return IntegerValue
-}
-
-func (v *integerValue) Raw() string {
+func (v *IntegerValue) Raw() string {
 	return v.raw
 }
 
-func (v *integerValue) Value() interface{} {
+func (v *IntegerValue) Value() interface{} {
 	return v.value
 }
 
-func (v *integerValue) String() string {
+func (v *IntegerValue) String() string {
 	return fmt.Sprintf("%d", v.value)
 }
 
 //
 // A Value implementation to hold a double.
 //
-type doubleValue struct {
+type DoubleValue struct {
 	raw   string
 	value *decimal.Decimal
 }
@@ -258,24 +226,39 @@ func NewDoubleFromString(s string) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &doubleValue{
+	return &DoubleValue{
 		raw:   s,
 		value: &d,
 	}, nil
 }
 
-func (v *doubleValue) Type() ValueType {
-	return DoubleValue
-}
-
-func (v *doubleValue) Raw() string {
+func (v *DoubleValue) Raw() string {
 	return v.raw
 }
 
-func (v *doubleValue) Value() interface{} {
+func (v *DoubleValue) Value() interface{} {
 	return v.value
 }
 
-func (v *doubleValue) String() string {
+func (v *DoubleValue) String() string {
 	return v.value.String()
+}
+
+//
+// A Value implementation to hold a value that is, as yet, typeless.
+//
+type AnyValue struct {
+	raw string
+}
+
+func (v *AnyValue) Raw() string {
+	return v.raw
+}
+
+func (v *AnyValue) Value() interface{} {
+	return v.raw
+}
+
+func (v *AnyValue) String() string {
+	return v.raw
 }

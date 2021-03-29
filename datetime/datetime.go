@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+var Zero = time.Date(0, 0, 0, 0, 0, 0, 0, time.UTC)
+
 type DateTimeFormat struct {
 	Layout string
 	// Used to indicate that the layout doesn't have a year in it, so assume
@@ -62,7 +64,7 @@ var CoercionFormats = []DateTimeFormat{
 	{"Jan _2 2006", false, false, true}, // Older files in `ls -l`
 }
 
-func ParseDateTime(formats []DateTimeFormat, str string) (*time.Time, error) {
+func ParseDateTime(formats []DateTimeFormat, str string) (time.Time, error) {
 	for _, f := range formats {
 		if t, err := time.Parse(f.Layout, str); err == nil {
 			if f.UseCurrentYear {
@@ -95,8 +97,8 @@ func ParseDateTime(formats []DateTimeFormat, str string) (*time.Time, error) {
 					t.Nanosecond(),
 					time.Now().Location())
 			}
-			return &t, nil
+			return t, nil
 		}
 	}
-	return nil, fmt.Errorf("Unable to convert %q to a date", str)
+	return Zero, fmt.Errorf("Unable to convert %q to a date", str)
 }
