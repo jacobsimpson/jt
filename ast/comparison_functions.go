@@ -9,29 +9,31 @@ import (
 )
 
 func lt(environment map[string]string, left, right Value) bool {
+	left = resolveVar(environment, left.Value())
+
 	switch l := left.(type) {
-	case *VarValue:
+	case *AnyValue:
 		switch r := right.(type) {
 		case *DateTimeValue:
-			return dateTimeGTAny(r, resolveVar(environment, left.Value()))
+			return dateTimeGTAny(r, l)
 		case *IntegerValue:
-			return integerGTAny(r, resolveVar(environment, left.Value()))
+			return integerGTAny(r, l)
 		case *DoubleValue:
-			return doubleGTAny(r, resolveVar(environment, left.Value()))
+			return doubleGTAny(r, l)
 		default:
 			return false
 		}
 	case *DateTimeValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *AnyValue:
-			return dateTimeLTAny(l, resolveVar(environment, right.Value()))
+			return dateTimeLTAny(l, r)
 		default:
 			return false
 		}
 	case *IntegerValue:
-		switch right.(type) {
+		switch r := right.(type) {
 		case *AnyValue:
-			return integerLTAny(l, resolveVar(environment, right.Value()))
+			return integerLTAny(l, r)
 		default:
 			return false
 		}
