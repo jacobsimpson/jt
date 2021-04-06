@@ -66,6 +66,19 @@ func TestParser(t *testing.T) {
 			}},
 		},
 		{
+			" %19 == 0b01_10     ",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%19"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewBinaryIntegerValue(t, "0b0110"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
+		{
 			" %0   ==  /things/ ",
 			&ast.Program{[]*ast.Rule{
 				&ast.Rule{
