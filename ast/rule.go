@@ -9,14 +9,12 @@ type Rule struct {
 	Block     *Block
 }
 
-// TODO: Add errors to return status.
 func (r *Rule) Evaluate(environment map[string]string) (interface{}, error) {
 	return r.Selection.Evaluate(environment)
 }
 
-// TODO: Add errors to return status.
-func (r *Rule) Execute(environment map[string]string) {
-	r.Block.Execute(environment)
+func (r *Rule) Execute(environment map[string]string) error {
+	return r.Block.Execute(environment)
 }
 
 func (r *Rule) String() string {

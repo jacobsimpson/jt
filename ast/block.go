@@ -20,10 +20,13 @@ func NewPrintlnBlock() *Block {
 	}
 }
 
-func (b *Block) Execute(environment map[string]string) {
+func (b *Block) Execute(environment map[string]string) error {
 	for _, command := range b.Commands {
-		command.Execute(environment)
+		if err := command.Execute(environment); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (b *Block) LastCommand() *Command {

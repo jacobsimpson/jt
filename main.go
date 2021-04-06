@@ -149,7 +149,11 @@ func applyRules(interpreter *ast.Program, line string, lineNumber int) bool {
 			fmt.Fprintf(os.Stderr, "Could not evaluate %q: %v", rule, err)
 		} else if b, ok := result.(bool); ok && b {
 			debug.Info("        Executing block\n")
-			rule.Execute(environment)
+			if err := rule.Execute(environment); err != nil {
+				fmt.Fprintf(os.Stderr, "## Found some errors.\n")
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+				os.Exit(1)
+			}
 		}
 	}
 	return true

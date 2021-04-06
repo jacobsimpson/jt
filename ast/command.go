@@ -2,7 +2,6 @@ package ast
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -11,7 +10,7 @@ type Command struct {
 	Parameters []Expression
 }
 
-func (c *Command) Execute(environment map[string]string) {
+func (c *Command) Execute(environment map[string]string) error {
 	switch c.Name {
 	case "println", "print":
 		formats := []string{}
@@ -20,10 +19,7 @@ func (c *Command) Execute(environment map[string]string) {
 			formats = append(formats, "%s")
 			v, err := p.Evaluate(environment)
 			if err != nil {
-				// TODO This is not real error handling. This should propagate up
-				// the stack.
-				fmt.Fprintf(os.Stderr, "could not evaluate parameter %s: %v", p, err)
-				return
+				return fmt.Errorf("could not evaluate parameter %s: %v", p, err)
 			}
 			values = append(values, v)
 		}
@@ -32,7 +28,10 @@ func (c *Command) Execute(environment map[string]string) {
 			format = format + "\n"
 		}
 		fmt.Printf(format, values...)
+	default:
+		return fmt.Errorf("unknown function %q: 1:11", c.Name)
 	}
+	return nil
 }
 
 func (c *Command) AddParameter(parameter Expression) {
