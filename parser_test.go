@@ -105,6 +105,32 @@ func TestParser(t *testing.T) {
 			}},
 		},
 		//{
+		//	" %9 == -3     ",
+		//	&ast.Program{[]*ast.Rule{
+		//		&ast.Rule{
+		//			&ast.Comparison{
+		//				Left:     ast.NewVarValue("%99"),
+		//				Operator: ast.EQ_Operator,
+		//				Right:    mustNewBinaryIntegerValue(t, "0b0110"),
+		//			},
+		//			ast.NewPrintlnBlock(),
+		//		},
+		//	}},
+		//},
+		//{
+		//	" %3 == +6786     ",
+		//	&ast.Program{[]*ast.Rule{
+		//		&ast.Rule{
+		//			&ast.Comparison{
+		//				Left:     ast.NewVarValue("%99"),
+		//				Operator: ast.EQ_Operator,
+		//				Right:    mustNewBinaryIntegerValue(t, "0b0110"),
+		//			},
+		//			ast.NewPrintlnBlock(),
+		//		},
+		//	}},
+		//},
+		//{
 		//	"%0 == /things/ { print(%0) }",
 		//	&ast.Program{[]*ast.Rule{
 		//		&ast.Rule{
