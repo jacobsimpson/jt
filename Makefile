@@ -2,7 +2,7 @@
 jt: *.go datetime/*.go ast/*.go pparser/grammar.go
 	go build .
 
-pparser/grammar.go: pparser/grammar.pigeon
+pparser/grammar.go: pparser/grammar.peg
 	go generate ./...
 
 test: jt

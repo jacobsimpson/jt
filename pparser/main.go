@@ -1,4 +1,4 @@
-//go:generate pigeon -o grammar.go grammar.pigeon
+//go:generate pigeon -o grammar.go grammar.peg
 //go:generate goimports -w grammar.go
 package pparser
 
