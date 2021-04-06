@@ -183,19 +183,19 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
-		//{
-		//	" %9 == -3     ",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%99"),
-		//				Operator: ast.EQ_Operator,
-		//				Right:    mustNewBinaryIntegerValue(t, "0b0110"),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//},
+		{
+			" %9 == -3     ",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%9"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewIntegerValue(t, "-3"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		{
 			"/things/ { print(%2[3:7]) }",
 			&ast.Program{[]*ast.Rule{
