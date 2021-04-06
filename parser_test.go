@@ -196,6 +196,28 @@ func TestParser(t *testing.T) {
 		//		},
 		//	}},
 		//},
+
+		//{
+		//	"/things/ { print(%2[1:3]) }",
+		//	&ast.Program{[]*ast.Rule{
+		//		&ast.Rule{
+		//			&ast.Comparison{
+		//				Left:     ast.NewVarValue("%0"),
+		//				Operator: ast.EQ_Operator,
+		//				Right:    mustNewRegexpValue(t, "things"),
+		//			},
+		//			&ast.Block{
+		//				Commands: []*ast.Command{
+		//					&ast.Command{
+		//						Name:       "print",
+		//						Parameters: []ast.Expression{ast.NewVariableExpression("%2")},
+		//					},
+		//				},
+		//			},
+		//		},
+		//	}},
+		//},
+
 		//{
 		//	" %3 == +6786     ",
 		//	&ast.Program{[]*ast.Rule{

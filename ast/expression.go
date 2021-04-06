@@ -34,35 +34,35 @@ func (e *variableExpression) String() string {
 // Range Expression
 //
 type RangeExpression struct {
-	expression Expression
-	start      *int
-	end        *int
+	Expression Expression
+	Start      *int
+	End        *int
 }
 
 func NewRangeExpression(expression Expression, start, end *int) Expression {
 	return &RangeExpression{
-		expression: expression,
-		start:      start,
-		end:        end,
+		Expression: expression,
+		Start:      start,
+		End:        end,
 	}
 }
 
 func (e *RangeExpression) Evaluate(environment map[string]string) (interface{}, error) {
-	v, err := e.expression.Evaluate(environment)
+	v, err := e.Expression.Evaluate(environment)
 	if err != nil {
 		return nil, err
 	}
 	if s, ok := v.(string); ok {
 		start := 0
-		if e.start != nil {
-			start = *e.start
+		if e.Start != nil {
+			start = *e.Start
 		}
 		if start < 0 {
 			start = len(s) + start
 		}
 		end := len(s)
-		if e.end != nil {
-			end = *e.end
+		if e.End != nil {
+			end = *e.End
 		}
 		if end < 0 {
 			end = len(s) + end
@@ -72,15 +72,15 @@ func (e *RangeExpression) Evaluate(environment map[string]string) (interface{}, 
 		}
 		return s[start:end], nil
 	}
-	return nil, fmt.Errorf("range can not be applied to %q", e.expression)
+	return nil, fmt.Errorf("range can not be applied to %q", e.Expression)
 }
 
 func (e *RangeExpression) SetExpression(expression Expression) {
-	e.expression = expression
+	e.Expression = expression
 }
 
 func (e *RangeExpression) String() string {
-	return fmt.Sprintf("%v[%d:%d]", e.expression, e.start, e.end)
+	return fmt.Sprintf("%v[%d:%d]", e.Expression, e.Start, e.End)
 }
 
 //
