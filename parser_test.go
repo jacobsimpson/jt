@@ -227,9 +227,9 @@ func TestParser(t *testing.T) {
 		//	&ast.Program{[]*ast.Rule{
 		//		&ast.Rule{
 		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%99"),
+		//				Left:     ast.NewVarValue("%3"),
 		//				Operator: ast.EQ_Operator,
-		//				Right:    mustNewBinaryIntegerValue(t, "0b0110"),
+		//				Right:    mustNewIntegerValue(t, "+6786"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
