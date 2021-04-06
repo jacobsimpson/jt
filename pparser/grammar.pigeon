@@ -36,7 +36,7 @@ binary_int =  "0b" [0-1_]+    { return ast.NewIntegerValueFromBinaryString(strin
 hex_int =     "0x" [0-9A-F_]+ { return ast.NewIntegerValueFromHexString(string(c.text)) }
 decimal_int = [0-9_]+         { return ast.NewIntegerValue(string(c.text)) }
 
-comparison = comparison:(lt / le / eq / ge / gt) { return comparison, nil }
+comparison = comparison:(le / lt / eq / ne / ge / gt) { return comparison, nil }
 lt = '<'  { return ast.LT_Operator, nil }
 le = "<=" { return ast.LE_Operator, nil }
 eq = "==" { return ast.EQ_Operator, nil }
