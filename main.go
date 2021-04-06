@@ -80,6 +80,7 @@ func main() {
 	}
 
 	if err := execute(rules, inputFiles); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 		os.Exit(1)
 	}
 }

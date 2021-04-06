@@ -1,5 +1,8 @@
 # Roadmap
 
+- Parser specific errors that can turn into useful user output. Right now,
+  generic errors are used everywhere, and when it is printed out at the top
+  level, it isn't very helpful.
 - implement duration literals
     - using strict ISO-8601 duration literals (e.g. P1Y3M ...) will mean that
       during parsing, duration literals could potentially be valid identifiers
