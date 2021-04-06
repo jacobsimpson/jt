@@ -1,2 +1,3 @@
 ## Found some errors.
 unknown function "nofunc": 1:11
+error: parse: found some errors: 2

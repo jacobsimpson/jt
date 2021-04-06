@@ -288,9 +288,10 @@ func (v *astVisitor) VisitBlock(ctx *antlrgen.BlockContext) interface{} {
 	if err := getError(children); err != nil {
 		return err
 	}
-	commands := []ast.Command{}
+	commands := []*ast.Command{}
 	for _, c := range children.([]interface{}) {
-		commands = append(commands, c.(ast.Command))
+		command := c.(*ast.Command)
+		commands = append(commands, command)
 	}
 	block := &ast.Block{Commands: commands}
 	return block

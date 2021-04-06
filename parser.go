@@ -32,20 +32,20 @@ func parse(rules string) (*ast.Program, error) {
 		for _, e := range errorReporter.Errors {
 			fmt.Fprintf(os.Stderr, "%s\n", e)
 		}
-		os.Exit(1)
+		return nil, fmt.Errorf("parse: found some errors: 1")
 	}
 	visitor := parser.NewASTVisitor()
 	r := visitor.Visit(tree)
 	if err, ok := r.(error); ok && err != nil {
 		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("parse: found some errors: 2")
 	}
 
 	if err, ok := r.(error); ok {
 		fmt.Fprintf(os.Stderr, "## Found some errors.\n")
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("parse: found some errors: 3")
 	}
 
 	return r.(*ast.Program), nil
