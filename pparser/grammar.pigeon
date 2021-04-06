@@ -1,5 +1,30 @@
 {
 package pparser
+
+import (
+    "github.com/jacobsimpson/jt/ast"
+)
+
+// A common desire is to extract a string from labeled expression.
+// https://pkg.go.dev/github.com/PuerkitoBio/pigeon#hdr-Labeled_expression
+// There a specific rules that describe how a matching expression will be
+// turned into a sequence of nested []interface{}. In practice, I don't care, I
+// just want a simple byte sequence that can be mapped to a string. This method
+// will flatten arbitrarily deeply nested []interface{} containing various
+// lengths of byte sequences into a simple []byte.
+func flatten(v interface{}) []byte {
+    result := []byte{}
+    for _, i := range v.([]interface{}) {
+        switch t := i.(type) {
+        case []byte:
+            result = append(result, t...)
+        case []interface{}:
+            result = append(result, flatten(i)...)
+        }
+    }
+    return result
+}
+
 }
 
 program = rule:rule {
@@ -15,14 +40,13 @@ rule = rule:(block_rule / no_block_rule) {
 }
 
 block_rule = _ expression:boolean_expression _ '{' _ identifier:identifier _ '(' _ column:column_identifier _ ')' _ '}' _EOL {
-    col := column.(*ast.VarValue)
     return &ast.Rule{
         Selection: expression.(ast.Expression),
         Block:     &ast.Block{
 		    []*ast.Command{
                 &ast.Command{
                     identifier.(string),
-                    []ast.Expression{ast.NewVarValue(col.Raw())},
+                    []ast.Expression{column.(ast.Expression)},
                 },
             },
 	    },
@@ -60,7 +84,25 @@ full_boolean_expression = lhs:term _ comparison:comparison _ rhs:term {
 
 term = identifier:(column_identifier / date / decimal / integer / regular_expression) { return identifier, nil }
 
-column_identifier = '%' [0-9]+ { return ast.NewVarValue(string(c.text)), nil }
+column_identifier = identifier:('%' [0-9]+) rng:range_expression? {
+    if rng == nil {
+        return ast.NewVarValue(string(flatten(identifier))), nil
+    }
+
+    r := rng.(*ast.RangeExpression)
+    r.Expression = ast.NewVarValue(string(flatten(identifier)))
+    return r, nil
+}
+
+range_expression = '[' start:integer ':' end:integer ']' {
+    s := int(start.(*ast.IntegerValue).Value().(int64))
+    e := int(end.(*ast.IntegerValue).Value().(int64))
+
+    return &ast.RangeExpression{
+        Start: &s,
+        End:   &e,
+    }, nil
+}
 
 regular_expression = ('/' [^/]* '/' / '|' [^|]* '|') {
     s := string(c.text)
