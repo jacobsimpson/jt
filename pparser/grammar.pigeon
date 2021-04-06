@@ -13,6 +13,10 @@ import (
 // will flatten arbitrarily deeply nested []interface{} containing various
 // lengths of byte sequences into a simple []byte.
 func flatten(v interface{}) []byte {
+    if v, ok := v.([]byte); ok {
+        return v
+    }
+
     result := []byte{}
     for _, i := range v.([]interface{}) {
         switch t := i.(type) {
@@ -94,7 +98,7 @@ column_identifier = identifier:('%' [0-9]+) rng:range_expression? {
     return r, nil
 }
 
-range_expression = '[' start:[0-9]* ':' end:[0-9]* ']' {
+range_expression = '[' start:('-' [0-9]+ / [0-9]*) ':' end:('-' [0-9]+ / [0-9]*) ']' {
     var si, ei *int
     if s := string(flatten(start)); len(s) > 0 {
         i64, err := strconv.ParseInt(s, 10, 32)

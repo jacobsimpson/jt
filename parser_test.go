@@ -223,7 +223,7 @@ func TestParser(t *testing.T) {
 			}},
 		},
 		{
-			"/things/ { print(%2[3:]) }",
+			"/things/ { print(%2[-3:]) }",
 			&ast.Program{[]*ast.Rule{
 				&ast.Rule{
 					&ast.Comparison{
@@ -238,7 +238,7 @@ func TestParser(t *testing.T) {
 								Parameters: []ast.Expression{
 									&ast.RangeExpression{
 										ast.NewVarValue("%2"),
-										func(i int) *int { return &i }(3),
+										func(i int) *int { return &i }(-3),
 										nil,
 									},
 								},

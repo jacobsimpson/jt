@@ -11,7 +11,10 @@ type Expression interface {
 
 // RangeExpression contains some range constraints to be applied to an
 // expression. If Start or End are nil, that means go all the way to the
-// boundary of the value of the underlying Expression.
+// boundary of the value of the underlying Expression. Positive values are
+// referenced off the beginning of the underlying value (1 means one character
+// in from the left of a string), negative values are referenced off the end of
+// the underlying value (-1 means one character in from the right of a string).
 type RangeExpression struct {
 	Expression Expression
 	Start      *int
