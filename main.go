@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
+	"regexp"
 
 	"github.com/jacobsimpson/jt/ast"
 	"github.com/jacobsimpson/jt/debug"
@@ -19,6 +19,9 @@ import (
 )
 
 const VERSION = "0.0.1"
+
+// The regexp to use for splitting input lines into columns.
+var defaultSplit = regexp.MustCompile("[[:blank:]]+")
 
 func execName() string {
 	return filepath.Base(os.Args[0])
@@ -136,10 +139,15 @@ func applyRules(interpreter *ast.Program, line string, lineNumber int) bool {
 
 	environment["%0"] = line
 	environment["%#"] = fmt.Sprintf("%d", lineNumber)
-	for i, c := range strings.Split(line, " ") {
-		environment[fmt.Sprintf("%%%d", i+1)] = c
+
+	column := 1
+	for i, c := range defaultSplit.Split(line, -1) {
+		if !(i == 0 && c == "") {
+			environment[fmt.Sprintf("%%%d", column)] = c
+			column++
+		}
 	}
-	debug.Debug("Line %d splits as %s", lineNumber, environment)
+	debug.Debug("Line %d splits as %+v", lineNumber, environment)
 
 	debug.Info("There are %d rules", len(interpreter.Rules))
 	for _, rule := range interpreter.Rules {

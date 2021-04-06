@@ -1,19 +1,9 @@
 
-jt: *.go datetime/*.go parser/*.go ast/*.go antlrgen/*.go
+jt: *.go datetime/*.go ast/*.go pparser/grammar.go
 	go build .
 
-antlrgen/*.go: Program.g4 pparser/grammar.pigeon
+pparser/grammar.go: pparser/grammar.pigeon
 	go generate ./...
-	java \
-		-Xmx500M \
-		-cp tools/antlr-4.7.1-complete.jar \
-		org.antlr.v4.Tool \
-		-Dlanguage=Go \
-		-o antlrgen \
-		-package antlrgen \
-		-no-listener \
-		-visitor \
-		Program.g4
 
 test: jt
 	go test ./...
@@ -63,4 +53,4 @@ install: jt
 	cp ./jt /usr/bin/jt
 
 clean::
-	rm -Rf jt antlrgen
+	rm -Rf jt pparser/grammar.go
