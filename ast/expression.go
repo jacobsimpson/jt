@@ -9,9 +9,9 @@ type Expression interface {
 	String() string
 }
 
-//
-// Range Expression
-//
+// RangeExpression contains some range constraints to be applied to an
+// expression. If Start or End are nil, that means go all the way to the
+// boundary of the value of the underlying Expression.
 type RangeExpression struct {
 	Expression Expression
 	Start      *int

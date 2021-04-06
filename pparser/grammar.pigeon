@@ -94,13 +94,24 @@ column_identifier = identifier:('%' [0-9]+) rng:range_expression? {
     return r, nil
 }
 
-range_expression = '[' start:integer ':' end:integer ']' {
-    s := int(start.(*ast.IntegerValue).Value().(int64))
-    e := int(end.(*ast.IntegerValue).Value().(int64))
+range_expression = '[' start:[0-9]* ':' end:[0-9]* ']' {
+    var si, ei *int
+    if s := string(flatten(start)); len(s) > 0 {
+        i64, err := strconv.ParseInt(s, 10, 32)
+        if err != nil { return nil, err }
+        i := int(i64)
+        si = &i
+    }
+    if s := string(flatten(end)); len(s) > 0 {
+        i64, err := strconv.ParseInt(s, 10, 32)
+        if err != nil { return nil, err }
+        i := int(i64)
+        ei = &i
+    }
 
     return &ast.RangeExpression{
-        Start: &s,
-        End:   &e,
+        Start: si,
+        End:   ei,
     }, nil
 }
 
