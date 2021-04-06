@@ -14,7 +14,7 @@ func NewPrintlnBlock() *Block {
 		Commands: []*Command{
 			&Command{
 				Name:       "println",
-				Parameters: []Expression{NewVariableExpression("%0")},
+				Parameters: []Expression{NewVarValue("%0")},
 			},
 		},
 	}

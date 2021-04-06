@@ -22,7 +22,7 @@ block_rule = _ expression:boolean_expression _ '{' _ identifier:identifier _ '('
 		    []*ast.Command{
                 &ast.Command{
                     identifier.(string),
-                    []ast.Expression{ast.NewVariableExpression(col.Raw())},
+                    []ast.Expression{ast.NewVarValue(col.Raw())},
                 },
             },
 	    },

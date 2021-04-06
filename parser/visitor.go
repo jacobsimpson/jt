@@ -344,9 +344,9 @@ func (v *astVisitor) VisitVariable(ctx *antlrgen.VariableContext) interface{} {
 	debug.Debug("astVisitor.VisitVariable")
 	var expression ast.Expression
 	if ctx.COLUMN() != nil {
-		expression = ast.NewVariableExpression(ctx.COLUMN().GetSymbol().GetText())
+		expression = ast.NewVarValue(ctx.COLUMN().GetSymbol().GetText())
 	} else if ctx.IDENTIFIER() != nil {
-		expression = ast.NewVariableExpression(ctx.IDENTIFIER().GetSymbol().GetText())
+		expression = ast.NewVarValue(ctx.IDENTIFIER().GetSymbol().GetText())
 	}
 	for _, c := range v.VisitChildren(ctx).([]interface{}) {
 		if e, ok := c.(*ast.RangeExpression); ok {

@@ -156,7 +156,7 @@ func TestParser(t *testing.T) {
 		//				Commands: []*ast.Command{
 		//					&ast.Command{
 		//						Name:       "notarealfunc",
-		//						Parameters: []ast.Expression{ast.NewVariableExpression("%2")},
+		//						Parameters: []ast.Expression{ast.NewVarValue("%2")},
 		//					},
 		//				},
 		//			},
@@ -176,7 +176,7 @@ func TestParser(t *testing.T) {
 						Commands: []*ast.Command{
 							&ast.Command{
 								Name:       "print",
-								Parameters: []ast.Expression{ast.NewVariableExpression("%2")},
+								Parameters: []ast.Expression{ast.NewVarValue("%2")},
 							},
 						},
 					},
@@ -210,7 +210,7 @@ func TestParser(t *testing.T) {
 		//				Commands: []*ast.Command{
 		//					&ast.Command{
 		//						Name:       "print",
-		//						Parameters: []ast.Expression{ast.NewVariableExpression("%2")},
+		//						Parameters: []ast.Expression{ast.NewVarValue("%2")},
 		//					},
 		//				},
 		//			},
@@ -456,6 +456,6 @@ func mustNewDoubleFromString(t *testing.T, value string) ast.Value {
 
 func newPrintBlock() *ast.Block {
 	return &ast.Block{
-		[]*ast.Command{ast.NewPrintCommand([]ast.Expression{ast.NewVariableExpression("%0")})},
+		[]*ast.Command{ast.NewPrintCommand([]ast.Expression{ast.NewVarValue("%0")})},
 	}
 }

@@ -10,27 +10,6 @@ type Expression interface {
 }
 
 //
-// Variable Expression
-//
-type variableExpression struct {
-	name string
-}
-
-func NewVariableExpression(name string) Expression {
-	return &variableExpression{
-		name: name,
-	}
-}
-
-func (e *variableExpression) Evaluate(environment map[string]string) (interface{}, error) {
-	return environment[e.name], nil
-}
-
-func (e *variableExpression) String() string {
-	return e.name
-}
-
-//
 // Range Expression
 //
 type RangeExpression struct {
