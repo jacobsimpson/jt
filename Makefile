@@ -2,7 +2,8 @@
 jt: *.go datetime/*.go parser/*.go ast/*.go antlrgen/*.go
 	go build .
 
-antlrgen/*.go: Program.g4
+antlrgen/*.go: Program.g4 pparser/grammar.pigeon
+	go generate ./...
 	java \
 		-Xmx500M \
 		-cp tools/antlr-4.7.1-complete.jar \

@@ -17,11 +17,13 @@
 .sw?
 .*.sw?
 
-# The executable. Sometimes I'm in this directory when doing development.
+# Files generated from the build.
+# The executable.
 /jt
-
 # antlr generated files that shouldn't be checked in.
 /antlrgen/
+# pigeon generated files.
+pparser/grammar.go
 
 # Keep downloaded dependencies from getting checked in.
 /vendor/

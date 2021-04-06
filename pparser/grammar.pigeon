@@ -1,0 +1,64 @@
+{
+package pparser
+}
+
+program = _ expression:boolean_expression _EOL {
+    return &ast.Program{
+        []*ast.Rule{
+            &ast.Rule{
+                Selection: expression.(ast.Expression),
+                Block:     ast.NewPrintlnBlock(),
+            },
+        },
+    }, nil
+}
+
+boolean_expression = _ lhs:term _ comparison:comparison _ rhs:term {
+    return &ast.Comparison{
+        Left:     lhs.(ast.Value),
+        Operator: comparison.(ast.Operator),
+        Right:    rhs.(ast.Value),
+    }, nil
+}
+
+term = identifier:(column_identifier / integer / regular_expression) { return identifier, nil }
+
+column_identifier = '%' [0-9]+ { return ast.NewVarValue(string(c.text)), nil }
+
+regular_expression = ('/' [^/]* '/' / '|' [^|]* '|') {
+    s := string(c.text)
+	return ast.NewRegexpValue(s[1:len(s)-1])
+}
+
+integer = integer:(hex_int / decimal_int) { return integer, nil }
+
+hex_int = "0x" [0-9A-F]+ { return ast.NewIntegerValueFromHexString(string(c.text)) }
+
+decimal_int = [0-9]+ { return ast.NewIntegerValue(string(c.text)) }
+
+comparison = comparison:(lt / le / eq / ge / gt) { return comparison, nil }
+lt = '<'  { return ast.LT_Operator, nil }
+le = "<=" { return ast.LE_Operator, nil }
+eq = "==" { return ast.EQ_Operator, nil }
+ne = "!=" { return ast.NE_Operator, nil }
+ge = ">=" { return ast.GE_Operator, nil }
+gt = '>'  { return ast.GT_Operator, nil }
+
+// The whitespace rule is used to capture whitespace. Most grammars that I
+// build are not whitespace sensitive, so the results of matching this will
+// normally be discarded somehow.
+_ "whitespace" <- [ \n\t\r]*
+
+// Using the whitespace rule before an EOL means the _ rule will consume the
+// EOL characters, and the EOL won't be available to match.
+_EOL "whitespaceEOL" = [ \t]* EOL
+
+// Windows             - Lines end with both a <CR> (\r) followed by a <LF> (/n) character
+// Linux               - Lines end with only a <LF> (\n) character
+// Macintosh (Mac OSX) - Lines end with only a <LF> (\n) character
+// Macintosh (old)     - Lines end with only a <CR> (\r) character
+// The line might be the last line in the file, so EOF is a valid EOL too.
+EOL = [\n\r] / "\r\n" / EOF
+
+// An EOF character is anything that is not a character.
+EOF = !.

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/jacobsimpson/jt/ast"
+	"github.com/jacobsimpson/jt/pparser"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,12 +14,12 @@ func TestParser(t *testing.T) {
 		want  *ast.Program
 	}{
 		{
-			"%1<9",
+			"%1>9",
 			&ast.Program{[]*ast.Rule{
 				&ast.Rule{
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%1"),
-						Operator: ast.LT_Operator,
+						Operator: ast.GT_Operator,
 						Right:    mustNewIntegerValue(t, "9"),
 					},
 					ast.NewPrintlnBlock(),
@@ -39,7 +40,20 @@ func TestParser(t *testing.T) {
 			}},
 		},
 		{
-			"%0 == /things/ { print(%0) }",
+			" %1 == 0x03     ",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%1"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewIntegerValue(t, "03"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
+		{
+			" %0   ==  /things/ ",
 			&ast.Program{[]*ast.Rule{
 				&ast.Rule{
 					&ast.Comparison{
@@ -47,10 +61,23 @@ func TestParser(t *testing.T) {
 						Operator: ast.EQ_Operator,
 						Right:    mustNewRegexpValue(t, "things"),
 					},
-					newPrintBlock(),
+					ast.NewPrintlnBlock(),
 				},
 			}},
 		},
+		//{
+		//	"%0 == /things/ { print(%0) }",
+		//	&ast.Program{[]*ast.Rule{
+		//		&ast.Rule{
+		//			&ast.Comparison{
+		//				Left:     ast.NewVarValue("%0"),
+		//				Operator: ast.EQ_Operator,
+		//				Right:    mustNewRegexpValue(t, "things"),
+		//			},
+		//			newPrintBlock(),
+		//		},
+		//	}},
+		//},
 		//{
 		//	"<9",
 		//	&ast.Program{[]*ast.Rule{
@@ -214,6 +241,11 @@ func TestParser(t *testing.T) {
 			assert := assert.New(t)
 
 			got, err := parse(test.input)
+
+			assert.NoError(err)
+			assert.Equal(test.want, got)
+
+			got, err = pparser.ParseString(test.input)
 
 			assert.NoError(err)
 			assert.Equal(test.want, got)
