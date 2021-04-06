@@ -14,13 +14,23 @@ rule = rule:(block_rule / no_block_rule) {
     return rule, nil
 }
 
-block_rule = _ expression:boolean_expression _ '{' _ "print" _ '(' _ "%0" _ ')' _ '}' _EOL {
+block_rule = _ expression:boolean_expression _ '{' _ identifier:identifier _ '(' _ column:column_identifier _ ')' _ '}' _EOL {
+    col := column.(*ast.VarValue)
     return &ast.Rule{
         Selection: expression.(ast.Expression),
         Block:     &ast.Block{
-		    []*ast.Command{ast.NewPrintCommand([]ast.Expression{ast.NewVariableExpression("%0")})},
+		    []*ast.Command{
+                &ast.Command{
+                    identifier.(string),
+                    []ast.Expression{ast.NewVariableExpression(col.Raw())},
+                },
+            },
 	    },
     }, nil
+}
+
+identifier = [a-zA-Z][a-zA-Z0-9]* {
+    return string(c.text), nil
 }
 
 no_block_rule = _ expression:boolean_expression _EOL {
@@ -30,7 +40,17 @@ no_block_rule = _ expression:boolean_expression _EOL {
     }, nil
 }
 
-boolean_expression = _ lhs:term _ comparison:comparison _ rhs:term {
+boolean_expression = _ expression:(full_boolean_expression / single_term_boolean_expression) { return expression, nil}
+
+single_term_boolean_expression = term:term {
+    return &ast.Comparison{
+        Left:     ast.NewVarValue("%0"),
+        Operator: ast.EQ_Operator,
+        Right:    term.(ast.Value),
+    }, nil
+}
+
+full_boolean_expression = lhs:term _ comparison:comparison _ rhs:term {
     return &ast.Comparison{
         Left:     lhs.(ast.Value),
         Operator: comparison.(ast.Operator),

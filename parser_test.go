@@ -143,26 +143,46 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
-		//{
-		//	"%0 == /things/ { nofunc(%0) }",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.EQ_Operator,
-		//				Right:    mustNewRegexpValue(t, "things"),
-		//			},
-		//			&ast.Block{
-		//				Commands: []*ast.Command{
-		//					&ast.Command{
-		//						Name:       "nofunc",
-		//						Parameters: []ast.Expression{ast.NewVariableExpression("%0")},
-		//					},
-		//				},
-		//			},
-		//		},
-		//	}},
-		//},
+		{
+			"%0 == /things/ { nofunc(%2) }",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewRegexpValue(t, "things"),
+					},
+					&ast.Block{
+						Commands: []*ast.Command{
+							&ast.Command{
+								Name:       "nofunc",
+								Parameters: []ast.Expression{ast.NewVariableExpression("%2")},
+							},
+						},
+					},
+				},
+			}},
+		},
+		{
+			"/things/ { print(%2) }",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewRegexpValue(t, "things"),
+					},
+					&ast.Block{
+						Commands: []*ast.Command{
+							&ast.Command{
+								Name:       "print",
+								Parameters: []ast.Expression{ast.NewVariableExpression("%2")},
+							},
+						},
+					},
+				},
+			}},
+		},
 		//{
 		//	" %9 == -3     ",
 		//	&ast.Program{[]*ast.Rule{
