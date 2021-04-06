@@ -104,6 +104,19 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
+		{
+			" %1   ==  2014-09-12T ",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%1"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewDateTimeValue(t, "2014-09-12T"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	" %9 == -3     ",
 		//	&ast.Program{[]*ast.Rule{
@@ -344,6 +357,14 @@ func mustNewHexIntegerValue(t *testing.T, value string) ast.Value {
 
 func mustNewRegexpValue(t *testing.T, value string) ast.Value {
 	v, err := ast.NewRegexpValue(value)
+	if err != nil {
+		t.Fatalf("Unable to convert %q to a value", value)
+	}
+	return v
+}
+
+func mustNewDateTimeValue(t *testing.T, value string) ast.Value {
+	v, err := ast.NewDateTimeValue(value)
 	if err != nil {
 		t.Fatalf("Unable to convert %q to a value", value)
 	}
