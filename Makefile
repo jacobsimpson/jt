@@ -1,8 +1,8 @@
 
-jt: *.go datetime/*.go ast/*.go pparser/grammar.go
+jt: *.go datetime/*.go ast/*.go parser/grammar.go
 	go build .
 
-pparser/grammar.go: pparser/grammar.peg
+parser/grammar.go: parser/grammar.peg
 	go generate ./...
 
 test: jt
@@ -53,4 +53,4 @@ install: jt
 	cp ./jt /usr/bin/jt
 
 clean::
-	rm -Rf jt pparser/grammar.go
+	rm -Rf jt parser/grammar.go

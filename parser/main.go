@@ -1,6 +1,6 @@
 //go:generate pigeon -o grammar.go grammar.peg
 //go:generate goimports -w grammar.go
-package pparser
+package parser
 
 import (
 	"github.com/jacobsimpson/jt/ast"

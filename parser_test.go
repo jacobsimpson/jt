@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/jacobsimpson/jt/ast"
-	"github.com/jacobsimpson/jt/pparser"
+	"github.com/jacobsimpson/jt/parser"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -428,7 +428,7 @@ func TestParser(t *testing.T) {
 			assert.NoError(err)
 			assert.Equal(test.want, got)
 
-			got, err = pparser.ParseString(test.input)
+			got, err = parser.ParseString(test.input)
 
 			assert.NoError(err)
 			assert.Equal(test.want, got)

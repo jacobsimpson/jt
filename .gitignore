@@ -23,7 +23,7 @@
 # antlr generated files that shouldn't be checked in.
 /antlrgen/
 # pigeon generated files.
-pparser/grammar.go
+parser/grammar.go
 
 # Keep downloaded dependencies from getting checked in.
 /vendor/
