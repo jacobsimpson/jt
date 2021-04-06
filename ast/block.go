@@ -1,18 +1,20 @@
 package ast
 
+import "fmt"
+
 // Block represents a block of commands in a program.
 type Block struct {
-	Commands []Command
+	Commands []*Command
 }
 
 // NewPrintlnBlock is a convenience method for a block with a single println
 // statement that prints the complete line.
 func NewPrintlnBlock() *Block {
 	return &Block{
-		Commands: []Command{
-			&printCommand{
-				parameters: []Expression{NewVariableExpression("%0")},
-				newline:    true,
+		Commands: []*Command{
+			&Command{
+				Name:       "println",
+				Parameters: []Expression{NewVariableExpression("%0")},
 			},
 		},
 	}
@@ -24,6 +26,10 @@ func (b *Block) Execute(environment map[string]string) {
 	}
 }
 
-func (b *Block) LastCommand() Command {
+func (b *Block) LastCommand() *Command {
 	return b.Commands[len(b.Commands)-1]
+}
+
+func (b *Block) String() string {
+	return fmt.Sprintf("Block[%+v]", b.Commands)
 }
