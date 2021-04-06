@@ -53,6 +53,19 @@ func TestParser(t *testing.T) {
 			}},
 		},
 		{
+			" %99 == 0b0110     ",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%99"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewBinaryIntegerValue(t, "0b0110"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
+		{
 			" %0   ==  /things/ ",
 			&ast.Program{[]*ast.Rule{
 				&ast.Rule{
@@ -255,6 +268,14 @@ func TestParser(t *testing.T) {
 
 func mustNewIntegerValue(t *testing.T, value string) ast.Value {
 	v, err := ast.NewIntegerValue(value)
+	if err != nil {
+		t.Fatalf("Unable to convert %q to a value", value)
+	}
+	return v
+}
+
+func mustNewBinaryIntegerValue(t *testing.T, value string) ast.Value {
+	v, err := ast.NewIntegerValueFromBinaryString(value)
 	if err != nil {
 		t.Fatalf("Unable to convert %q to a value", value)
 	}
