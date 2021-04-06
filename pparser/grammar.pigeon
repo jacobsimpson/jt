@@ -21,7 +21,7 @@ boolean_expression = _ lhs:term _ comparison:comparison _ rhs:term {
     }, nil
 }
 
-term = identifier:(column_identifier / date / integer / regular_expression) { return identifier, nil }
+term = identifier:(column_identifier / date / decimal / integer / regular_expression) { return identifier, nil }
 
 column_identifier = '%' [0-9]+ { return ast.NewVarValue(string(c.text)), nil }
 
@@ -33,6 +33,8 @@ regular_expression = ('/' [^/]* '/' / '|' [^|]* '|') {
 date        = [0-9][0-9][0-9][0-9] '-' [0-9][0-9] '-' [0-9][0-9] 'T' {
     return ast.NewDateTimeValue(string(c.text))
 }
+
+decimal     = [0-9]+ '.' [0-9]* { return ast.NewDoubleFromString(string(c.text)) }
 
 integer     = integer:(binary_int / hex_int / decimal_int) { return integer, nil }
 binary_int  = "0b" [0-1_]+    { return ast.NewIntegerValueFromBinaryString(string(c.text)) }

@@ -117,6 +117,19 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
+		{
+			" %1   >=  13.45 ",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%1"),
+						Operator: ast.GE_Operator,
+						Right:    mustNewDoubleFromString(t, "13.45"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	" %9 == -3     ",
 		//	&ast.Program{[]*ast.Rule{
@@ -365,6 +378,14 @@ func mustNewRegexpValue(t *testing.T, value string) ast.Value {
 
 func mustNewDateTimeValue(t *testing.T, value string) ast.Value {
 	v, err := ast.NewDateTimeValue(value)
+	if err != nil {
+		t.Fatalf("Unable to convert %q to a value", value)
+	}
+	return v
+}
+
+func mustNewDoubleFromString(t *testing.T, value string) ast.Value {
+	v, err := ast.NewDoubleFromString(value)
 	if err != nil {
 		t.Fatalf("Unable to convert %q to a value", value)
 	}
