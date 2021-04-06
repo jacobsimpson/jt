@@ -15,6 +15,7 @@ type Value interface {
 	Raw() string
 	Value() interface{}
 	String() string
+	Evaluate(environment map[string]string) (interface{}, error)
 }
 
 //
@@ -40,6 +41,10 @@ func (v *VarValue) Value() interface{} {
 
 func (v *VarValue) String() string {
 	return v.name
+}
+
+func (v *VarValue) Evaluate(environment map[string]string) (interface{}, error) {
+	return environment[v.name], nil
 }
 
 //
@@ -73,6 +78,10 @@ func (v *RegexpValue) String() string {
 	return v.raw
 }
 
+func (v *RegexpValue) Evaluate(environment map[string]string) (interface{}, error) {
+	return v.re, nil
+}
+
 //
 // A Value implementation to hold a string.
 //
@@ -98,6 +107,10 @@ func (v *StringValue) Value() interface{} {
 
 func (v *StringValue) String() string {
 	return v.value
+}
+
+func (v *StringValue) Evaluate(environment map[string]string) (interface{}, error) {
+	return v.value, nil
 }
 
 //
@@ -129,6 +142,10 @@ func (v *DateTimeValue) Value() interface{} {
 
 func (v *DateTimeValue) String() string {
 	return v.value.String()
+}
+
+func (v *DateTimeValue) Evaluate(environment map[string]string) (interface{}, error) {
+	return v.value, nil
 }
 
 //
@@ -204,6 +221,10 @@ func (v *IntegerValue) String() string {
 	return fmt.Sprintf("%d", v.value)
 }
 
+func (v *IntegerValue) Evaluate(environment map[string]string) (interface{}, error) {
+	return v.value, nil
+}
+
 //
 // A Value implementation to hold a double.
 //
@@ -244,6 +265,10 @@ func (v *DoubleValue) String() string {
 	return v.value.String()
 }
 
+func (v *DoubleValue) Evaluate(environment map[string]string) (interface{}, error) {
+	return v.value, nil
+}
+
 //
 // AnyValue is a Value implementation to hold a value that is, as yet,
 // typeless. A value taken from a column is typeless. It is a string, but it
@@ -264,4 +289,8 @@ func (v *AnyValue) Value() interface{} {
 
 func (v *AnyValue) String() string {
 	return v.raw
+}
+
+func (v *AnyValue) Evaluate(environment map[string]string) (interface{}, error) {
+	return v.raw, nil
 }
