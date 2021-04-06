@@ -261,19 +261,19 @@ func TestParser(t *testing.T) {
 		//		},
 		//	}},
 		//},
-		//{
-		//	"<9",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//},
+		{
+			"<9",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.LT_Operator,
+						Right:    mustNewIntegerValue(t, "9"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	"==/this/",
 		//	&ast.Program{[]*ast.Rule{

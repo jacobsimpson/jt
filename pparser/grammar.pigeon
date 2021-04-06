@@ -68,7 +68,17 @@ no_block_rule = _ expression:boolean_expression _EOL {
     }, nil
 }
 
-boolean_expression = _ expression:(full_boolean_expression / single_term_boolean_expression) { return expression, nil}
+boolean_expression = _ expression:(operator_first_boolean_expression / full_boolean_expression / single_term_boolean_expression) {
+    return expression, nil
+}
+
+operator_first_boolean_expression = comparison:comparison term:term {
+    return &ast.Comparison{
+        Left:     ast.NewVarValue("%0"),
+        Operator: comparison.(ast.Operator),
+        Right:    term.(ast.Value),
+    }, nil
+}
 
 single_term_boolean_expression = term:term {
     return &ast.Comparison{
