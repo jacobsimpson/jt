@@ -2,14 +2,31 @@
 package pparser
 }
 
-program = _ expression:boolean_expression _EOL {
+program = rule:rule {
     return &ast.Program{
         []*ast.Rule{
-            &ast.Rule{
-                Selection: expression.(ast.Expression),
-                Block:     ast.NewPrintlnBlock(),
-            },
+            rule.(*ast.Rule),
         },
+    }, nil
+}
+
+rule = rule:(block_rule / no_block_rule) {
+    return rule, nil
+}
+
+block_rule = _ expression:boolean_expression _ '{' _ "print" _ '(' _ "%0" _ ')' _ '}' _EOL {
+    return &ast.Rule{
+        Selection: expression.(ast.Expression),
+        Block:     &ast.Block{
+		    []ast.Command{ast.NewPrintCommand([]ast.Expression{ast.NewVariableExpression("%0")})},
+	    },
+    }, nil
+}
+
+no_block_rule = _ expression:boolean_expression _EOL {
+    return &ast.Rule{
+        Selection: expression.(ast.Expression),
+        Block:     ast.NewPrintlnBlock(),
     }, nil
 }
 

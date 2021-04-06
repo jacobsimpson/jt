@@ -130,6 +130,19 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
+		{
+			"%0 == /things/ { print(%0) }",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewRegexpValue(t, "things"),
+					},
+					newPrintBlock(),
+				},
+			}},
+		},
 		//{
 		//	" %9 == -3     ",
 		//	&ast.Program{[]*ast.Rule{
@@ -153,19 +166,6 @@ func TestParser(t *testing.T) {
 		//				Right:    mustNewBinaryIntegerValue(t, "0b0110"),
 		//			},
 		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//},
-		//{
-		//	"%0 == /things/ { print(%0) }",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.EQ_Operator,
-		//				Right:    mustNewRegexpValue(t, "things"),
-		//			},
-		//			newPrintBlock(),
 		//		},
 		//	}},
 		//},
