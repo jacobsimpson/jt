@@ -96,7 +96,7 @@ full_boolean_expression = lhs:term _ comparison:comparison _ rhs:term {
     }, nil
 }
 
-term = identifier:(column_identifier / date / decimal / integer / regular_expression) { return identifier, nil }
+term = identifier:(column_identifier / date / decimal / integer / regular_expression / string_literal) { return identifier, nil }
 
 column_identifier = identifier:('%' [0-9]+) rng:range_expression? {
     if rng == nil {
@@ -145,6 +145,10 @@ binary_int  = [+-]? "0b" [0-1_]+    { return ast.NewIntegerValueFromBinaryString
 octal_int   = [+-]? "0o" [0-7]+     { return ast.NewIntegerValueFromOctalString(string(c.text))}
 hex_int     = [+-]? "0x" [0-9A-F_]+ { return ast.NewIntegerValueFromHexString(string(c.text)) }
 decimal_int = [+-]? [0-9_]+         { return ast.NewIntegerValueFromDecString(string(c.text)) }
+
+string_literal = '"' [^"]* '"' {
+    return ast.NewStringValue(string(c.text)), nil
+}
 
 comparison = comparison:(le / lt / eq / ne / ge / gt) { return comparison, nil }
 lt = '<'  { return ast.LT_Operator, nil }

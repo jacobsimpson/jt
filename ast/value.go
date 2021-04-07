@@ -93,7 +93,7 @@ type StringValue struct {
 func NewStringValue(s string) Value {
 	return &StringValue{
 		raw:   s,
-		value: s,
+		value: s[1 : len(s)-1],
 	}
 }
 

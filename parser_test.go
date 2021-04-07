@@ -378,19 +378,19 @@ func TestParser(t *testing.T) {
 		//		},
 		//	}},
 		//},
-		//{
-		//	"%3 == 'this is the thing'",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//},
+		{
+			`%3 == "this is the thing"`,
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%3"),
+						Operator: ast.EQ_Operator,
+						Right:    ast.NewStringValue(`"this is the thing"`),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	"%3 == 2.4",
 		//	&ast.Program{[]*ast.Rule{
@@ -418,7 +418,7 @@ func TestParser(t *testing.T) {
 		//	}},
 		//},
 		//{
-		//	"%3[-4] == '.txt'",
+		//	"%3[-4:] == '.txt'",
 		//	&ast.Program{[]*ast.Rule{
 		//		&ast.Rule{
 		//			&ast.Comparison{

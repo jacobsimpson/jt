@@ -21,6 +21,8 @@ func lt(environment map[string]string, left, right Value) bool {
 			return integerGTAny(r, l)
 		case *DoubleValue:
 			return doubleGTAny(r, l)
+		case *StringValue:
+			return stringGTAny(r, l)
 		default:
 			return false
 		}
@@ -35,6 +37,13 @@ func lt(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerLTAny(l, r)
+		default:
+			return false
+		}
+	case *StringValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return stringLTAny(l, r)
 		default:
 			return false
 		}
@@ -57,6 +66,8 @@ func le(environment map[string]string, left, right Value) bool {
 			return integerGTAny(r, l) || integerEQAny(r, l)
 		case *DoubleValue:
 			return doubleGTAny(r, l) || doubleEQAny(r, l)
+		case *StringValue:
+			return stringGTAny(r, l) || stringEQAny(r, l)
 		default:
 			return false
 		}
@@ -71,6 +82,13 @@ func le(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerLTAny(l, r) || integerEQAny(l, r)
+		default:
+			return false
+		}
+	case *StringValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return stringLTAny(l, r) || stringEQAny(l, r)
 		default:
 			return false
 		}
@@ -94,17 +112,6 @@ func eq(environment map[string]string, left, right Value) bool {
 		default:
 			return false
 		}
-	case *StringValue:
-		switch r := right.(type) {
-		case *RegexpValue:
-			return compareStringEQRegexp(l, r)
-		case *StringValue:
-			return compareStringEQString(l, r)
-		default:
-			// Error: "Can not compare %s to %s using %s",
-			//     left.Type(), right.Type(), operator
-			return false
-		}
 	case *AnyValue:
 		switch r := right.(type) {
 		case *RegexpValue:
@@ -115,6 +122,8 @@ func eq(environment map[string]string, left, right Value) bool {
 			return integerEQAny(r, l)
 		case *DoubleValue:
 			return doubleEQAny(r, l)
+		case *StringValue:
+			return stringEQAny(r, l)
 		default:
 			return false
 		}
@@ -130,6 +139,19 @@ func eq(environment map[string]string, left, right Value) bool {
 		case *AnyValue:
 			return integerEQAny(l, r)
 		default:
+			return false
+		}
+	case *StringValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return stringEQAny(l, r)
+		case *RegexpValue:
+			return compareStringEQRegexp(l, r)
+		case *StringValue:
+			return compareStringEQString(l, r)
+		default:
+			// Error: "Can not compare %s to %s using %s",
+			//     left.Type(), right.Type(), operator
 			return false
 		}
 	default:
@@ -155,6 +177,8 @@ func ge(environment map[string]string, left, right Value) bool {
 			return integerLTAny(r, l) || integerEQAny(r, l)
 		case *DoubleValue:
 			return doubleLTAny(r, l) || doubleEQAny(r, l)
+		case *StringValue:
+			return stringLTAny(r, l) || stringEQAny(r, l)
 		default:
 			return false
 		}
@@ -169,6 +193,13 @@ func ge(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerGTAny(l, r) || integerEQAny(l, r)
+		default:
+			return false
+		}
+	case *StringValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return stringGTAny(l, r) || stringEQAny(l, r)
 		default:
 			return false
 		}
@@ -191,6 +222,8 @@ func gt(environment map[string]string, left, right Value) bool {
 			return integerLTAny(r, l)
 		case *DoubleValue:
 			return doubleLTAny(r, l)
+		case *StringValue:
+			return stringLTAny(r, l)
 		default:
 			return false
 		}
@@ -205,6 +238,13 @@ func gt(environment map[string]string, left, right Value) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerGTAny(l, r)
+		default:
+			return false
+		}
+	case *StringValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return stringGTAny(l, r)
 		default:
 			return false
 		}
@@ -315,6 +355,18 @@ func doubleGTAny(dValue *DoubleValue, val *AnyValue) bool {
 		parsed = decimal.New(parsedInt, 0)
 	}
 	return d.GreaterThan(parsed)
+}
+
+func stringEQAny(lValue *StringValue, val *AnyValue) bool {
+	return lValue.value == val.raw
+}
+
+func stringLTAny(lValue *StringValue, val *AnyValue) bool {
+	return lValue.value < val.raw
+}
+
+func stringGTAny(lValue *StringValue, val *AnyValue) bool {
+	return lValue.value > val.raw
 }
 
 func parseInt(s string) (int64, error) {
