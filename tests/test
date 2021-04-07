@@ -41,7 +41,8 @@ for name in \
         substring_column_overlapping_range \
         string_eq_operator \
         string_ge_operator \
-        string_gt_operator; do
+        string_gt_operator \
+        string_le_operator; do
 
     export JT=./jt
     export TEST_DIR="tests/$name"
