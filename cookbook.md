@@ -4,12 +4,15 @@ Simple recipes for working with text.
 
 ## Table of Contents
 
-- [Basic Explanation](#basic-explanation)
+- [Basic explanation](#basic-explanation)
+- [Comparison operators](#comparison-operators)
+- [Input column names](#input-column-names)
+- [Type system](#type-system)
 - [Literals](#literals)
 - [Like Grep](#like-grep)
 - [Matching Dates and Times](#matching-dates-and-times)
 
-### Basic Explanation
+### Basic explanation
 
 `jt` is a line by line stream processor, much like `awk`. It takes a boolean
 statement, applies the statement to each line of incoming text and executes the
@@ -44,7 +47,24 @@ This behavior is common enough that there are a few useful defaults that apply.
     jt '/things/'
     ```
 
-#### Other Valid Examples
+### Comparison operators
+
+There are the usual gang of comparison operators, `<`, `<=`, `==`, `!=`, `>=`,
+and `>`.
+
+Print all the lines where column 3 is an integer less than 3:
+
+    ```
+    jt '%3<3'
+    ```
+
+Print all the lines where the regular expression `ab[cd]` occurs somewhere in the line:
+
+   ```
+   jt '==/ab[cd]/'
+   ```
+
+#### Other valid examples
 
 ```sh
 jt '<2020-01-01T'
@@ -60,7 +80,7 @@ jt '>2020-02-03T'
 - print all lines which can be coerced into a date, and are greater than
   2020-02-03T23:59:59.
 
-### Input Column Names
+### Input column names
 
 This is an input stream processing language. Addressing the input is an
 important part of what it does.
@@ -85,27 +105,38 @@ a=3
 jt "%3 > $a"
 ```
 
-### Literals
+### Type system
 
-There are a few types of literals supported:
+`jt` recognizes a few different types. Integer, reals, strings, dates and
+regular expressions. Values that are read from data input have no type (they
+are the `any` type). Input values will be coerced to match the type they are
+compared again. If they can not be coerced, the match is always false.
 
 - string
 - integer
-- double
+- reals
 - date/time (date, timestamp, time??)
-- duration
 - regular expressions
-- boolean
 
-I think there should be an `any` type, which would be the type of the input
-columns. An any type would be the type for any data that hasn't received a
-type, making it distinct from a `string`. In this way, people would be able to
-specify the type of data they know to be a string, and stronger type checking
-could happen when the string type is specified. Otherwise, if unknown data
-starts life as a string, you wouldn't be able to differentiate unknown typed
-data from known typed data.
+There is an `any` type, which is the type of the input columns. An `any` type
+means that the data hasn't yet received a type. Although this data is
+represented as a string internally, during comparison operations `any` values
+will behave differently from a string. Data represented as the `any` type will
+be coerced to match the type it is being compared to. If it can not be coerced,
+then there is no match, no matter what comparison is occurring.  `any` to `any`
+comparisons are string to string comparisons.
 
-#### Type Coercion Rules
+#### Literals
+
+There are a few types of literals supported:
+
+-   Integers: 1, -10, 0b001, -0xA
+-   Dates: 2012-06-01T
+-   Regular expressions: /ab[cd]/
+-   Reals: 2.5644
+-   Strings: "ab"
+
+#### Type coercion rules
 
 `jt` will attempt to coerce to match the literal, if a literal is involved. So,
 for the examples like:
@@ -118,19 +149,15 @@ jt '%3 == 2006T'
 date/time, then the literal `2006T` will _not_ be coerced to a string. Instead,
 the expression will evaluate to false.
 
-#### Explicit Coercions
+More examples:
 
-`string(%2)`, `int(%2)`, `regex(%2)`, will attempt to coerce the second column
-of input data to the specified data type. Failure to coerce will ...? (Not
-sure. Something analogous to how the implicit coersion failures result in the
-row not printing.)
-
-### Complex Data Types
-
-- set - {1, 2, 3}
-- list - [1, 2, 3], ["January", "February"]
-- table - {"one": 1, "two": 2}
-- tuples - <"abc", 1>
+```
+$ echo "1\n2\n3" | ./jt '<2006-03-01T'
+$ echo "1\n2\n3" | ./jt '>=2006-03-01T'
+$ echo "1\n2\n3\n2006-04-01T" | ./jt '<2006-03-01T'
+$ echo "1\n2\n3\n2006-04-01T" | ./jt '>=2006-03-01T'
+2006-04-01T
+```
 
 ### Strings
 
@@ -138,13 +165,6 @@ row not printing.)
     - s = "ab.cd.txt"
     - s[:] == s[0:] == s
     - s[0:-1] == "ab.cd.tx"
-    - s[:"."] == "ab"
-    - s[:-"."] == "ab.cd"
-    - s[".":"."] == ".cd"
-    - s["."+:"."] == "cd"
-    - s[:/txt/] == "ab.cd."
-- s.len()
-- s.format("ab${c}d", {c: "3"})
 
 ### Integers
 
@@ -157,15 +177,6 @@ row not printing.)
     - 0x0001 == 0x00_01 == 0x0_0_0_0_1 == 0b1
     - 0b1111_0001
 
-```
-1 - 3
-1*3
-3\2 = 1
-5%3 = 2
-2^3=8
-3/2=1.5
-```
-
 ### Regular Expressions
 
 - Regular expressions are a first class type with a literal representation in
@@ -177,86 +188,8 @@ row not printing.)
     - /a[bc]d/
     - |things.|
 
-### Dates
-
-- Dates are a first class type with a literal represenation in the language,
-  just like an integer, a boolean or a string. The complete literal
-  representation is basically ISO-8601. However, there is extra support for
-  partial date specifications.  Here are some example date literals:
-    - 2013T
-    - 2007-01-11T
-    - 20070111T
-    - 2018-02-12T14
-    - 2018-02-12T14:02:01
-- Comparisons to dates get interesting
-    - Consider the date 2013T
-        - `jt '<2013T'` prints all lines where the line can be coerced into a
-          date, and the date is before 2013-01-01T00:00:00
-        - `jt '==2013T'` prints all lines where the line can be coerced into a
-          date, and the date is greater than or equal to 2013-01-01T00:00:00
-          and less than 2014-01-01T00:00:00.
-        - `jt '>2013T'` prints all lines where the line can be coerced into a
-          date, and the date is greater than or equal to 2014-01-01T00:00:00.
-        - `jt '!=2013T'` prints all lines where the line can be coerced into a
-          date, and the date is less than 2013-01-01T00:00:00 or greater than
-          or equal to 2014-01-01T00:00:00
-- `jt` supports date/time as a native type, and has syntax support for
-  date/time literals
-- Print all lines where the 3rd column is a date before Dec 11, 2017 at
-  6:43:00am local time. Since the 3rd column is being compared to a date, `jt`
-  will attempt to parse it as a date/time, trying out various formats to see if
-  one is successful. If none are successful, column 3 can not be coerced to a
-  date/time, the comparison will be false.
-    ```sh
-    jt '%3 < 2017-12-11T06:43'
-    ```
-
-- `jt '{print 2013T-1M;}'`
-- `jt '%3 < today()' - print all the lines where the 3rd column can be coerced
-  into a date which is before 00:00am of today.
-    - `yesterday()`
-    - `tomorrow()`
-
-#### Durations
-
-- A duration literal starts with a P. P[n]Y[n]M[n]DT[n]H[n]M[n]S or P[n]W
-
-### Like Grep
+### Like grep
 
 ```sh
 ps -ef | jt '/jt/'
 ```
-
-### Blocks of Execution
-
-Expressions can be executed for each matching line by enclosing them in braces:
-
-    jt '/abc/{%3 = %3 + 10; print(%0)}'
-
-- matches each line that has 'abc' somewhere in it.
-
-### Formatting
-
-    jt '{%3 = %3.blue(); print(%0)}'
-
-- matches all lines, changes the 3rd column to blue and prints the whole line
-
-- There are a number of color convenience functions available.
-    - `blue`
-    - `red`
-- Background color is available by prefacing the color name with `on_`
-    - `on_blue`
-- Formatting functions:
-    - `italic`
-    - `bold`
-    - `clear`
-
-### Printing
-
-By default, the final expression evaluated in a block will be printed.
-
-    jt '{print %0;}'
-
-Can be represented more succinctly as:
-
-    jt '{%0}'

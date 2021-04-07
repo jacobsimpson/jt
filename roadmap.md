@@ -1,5 +1,14 @@
 # Roadmap
 
+- Looks like string comparisons aren't working. Make it work: `echo "ab\ncd\nde" | ./jt '=="ab"'`
+- make this a valid shortcut: `jt '%1'`
+- 0o127
+- Add support for booleans
+- Add support for duration
+- these kinds of regular expressions should work: |things.|
+- implement a `now` keyword.
+- implement negative column addressing. %-1 will address the last column, %-2
+  will address the second to last column.
 - Parser specific errors that can turn into useful user output. Right now,
   generic errors are used everywhere, and when it is printed out at the top
   level, it isn't very helpful.
@@ -9,9 +18,166 @@
       too. Requiring the P at the end instead of the beginning would give
       behavior more like the date/time literal. It would also make parsing a
       little more consistent.
-- implement a `now()` function.
 - implement time literals
     - right now I think time literals only work if there is a preceeding date.
+- TypeScript has a cute little thing which returns an alternate value if the
+  initial variable is falsy.
+- elvis operator for safe chaining.
+- The third column will be coerced into the matching type for each comparison
+  expression and the appropriate comparison run. If the column value can not be
+  coerced, it fails the comparison, no matter what the comparison is.
+    - the reasoning is, the programmer supplied type information (the literal
+      in the `jt` script). If the incoming text doesn't match the type
+      expectation, it isn't meeting the programmer's selection criteria.
+    ```sh
+    jt '%3 < "that"'
+    jt '%3 < 14'
+    jt '%3 < 2017-12-11T06:43'
+    jt '2017-12-11T06:00 < %3 < 2017-12-11T06:43'
+    jt '%3 < 12 and %4 == "joe"'
+    jt '%3 < 12 or %4 == "joe"'
+    ```
+
+### Dates
+
+- date related keywords that might be nice: `today`, `tomorrow`, `yesterday`,
+  `now`
+- Dates are a first class type with a literal represenation in the language,
+  just like an integer, a boolean or a string. The complete literal
+  representation is basically ISO-8601. However, there is extra support for
+  partial date specifications.  Here are some example date literals:
+    - 2013T
+    - 2007-01-11T
+    - 20070111T
+    - 2018-02-12T14
+    - 2018-02-12T14:02:01
+- Comparisons to dates get interesting
+    - Consider the date 2013T
+        - `jt '<2013T'` prints all lines where the line can be coerced into a
+          date, and the date is before 2013-01-01T00:00:00
+        - `jt '==2013T'` prints all lines where the line can be coerced into a
+          date, and the date is greater than or equal to 2013-01-01T00:00:00
+          and less than 2014-01-01T00:00:00.
+        - `jt '>2013T'` prints all lines where the line can be coerced into a
+          date, and the date is greater than or equal to 2014-01-01T00:00:00.
+        - `jt '!=2013T'` prints all lines where the line can be coerced into a
+          date, and the date is less than 2013-01-01T00:00:00 or greater than
+          or equal to 2014-01-01T00:00:00
+- `jt` supports date/time as a native type, and has syntax support for
+  date/time literals
+- Print all lines where the 3rd column is a date before Dec 11, 2017 at
+  6:43:00am local time. Since the 3rd column is being compared to a date, `jt`
+  will attempt to parse it as a date/time, trying out various formats to see if
+  one is successful. If none are successful, column 3 can not be coerced to a
+  date/time, the comparison will be false.
+    ```sh
+    jt '%3 < 2017-12-11T06:43'
+    ```
+
+- `jt '{print 2013T-1M;}'`
+- `jt '%3 < today()' - print all the lines where the 3rd column can be coerced
+  into a date which is before 00:00am of today.
+    - `yesterday()`
+    - `tomorrow()`
+
+### Integers
+
+```
+1 - 3
+1*3
+3\2 = 1
+5%3 = 2
+2^3=8
+3/2=1.5
+```
+
+### Strings
+
+- Substrings
+    - s = "ab.cd.txt"
+    - s[:] == s[0:] == s
+    - s[0:-1] == "ab.cd.tx"
+    - s[:"."] == "ab"
+    - s[:-"."] == "ab.cd"
+    - s[".":"."] == ".cd"
+    - s["."+:"."] == "cd"
+    - s[:/txt/] == "ab.cd."
+- s.len()
+- s.format("ab${c}d", {c: "3"})
+
+#### Explicit coercions
+
+`string(%2)`, `int(%2)`, `regex(%2)`, will attempt to coerce the second column
+of input data to the specified data type. Failure to coerce will ...? (Not
+sure. Something analogous to how the implicit coersion failures result in the
+row not printing.)
+
+### Complex Data Types
+
+- set - {1, 2, 3}
+- list - [1, 2, 3], ["January", "February"]
+- table - {"one": 1, "two": 2}
+- tuples - <"abc", 1>
+
+- It would be nice if there was start and end specifiers, so that you would
+  turn on certain selections when start was matched, and turn off certain
+  selections when end was matched. Say there was some report type text file,
+  with some header information, and a table of dates and other columns
+  following the line with 'Results' going all the way to the blank line. This
+  would adjust the value of the date column one day backward.
+
+    ```
+    jt '
+        /Results/ start
+            {%1.asDate() - 1D}
+        /^$/ end
+    ' input.txt
+    ```
+
+    ```
+    jt '
+        /Results/ -> /^$/ {
+            {%1.asDate() - 1D}
+        }
+    ' input.txt
+    ```
+
+- program block, colorizes the first column, prints the rest of the columns.
+  Not sure if this is the right syntax. Ideally there would be a way of
+  representing split the row, colorize 1 column and reconstitute the row.
+    ```sh
+    jt '{print color(%1, blue), %[2:]}'
+    ```
+    - Note, I had some thought that the colors would only have to be keywords
+      for the color function, but what about passing the color values as
+      parameters to user defined functions, which pass variables to the color
+      function. No, I think they will have to be language wide keywords. Maybe
+      just some basic colors as language wide keywords, some other way to
+      specify the longer list of possible colors.
+
+- really easy date/time handling. Like, as a first class primitive, not
+  different from string or integer. Coming up with some method of specifying a
+  date that is simple and fluent would be great. ISO8601 would probably be
+  good, but some additional flexibility.
+    ```sh
+    2012-06                  # could be an arithmetic expression. Instead, use
+                             # 2012-06T.
+	2012-06-03               # could be an arithmetic expression, but less likely
+    2012-06-03T              # I think if all the way up to the T was required
+                             # for specifying a date/time literal (leaving the
+                             # time parts optional), that should be sufficiently
+                             # unambiguous.
+    2012T                    # Unambiguously a date literal, just the year
+                             # granularity.
+    2012-06T                 # Unambiguously a date literal, just the month
+                             # granularity.
+	2012-06-03T23            # Unambiguously a date literal.
+	```
+- With respect to dates and times, there are some intricacies to be worked out
+  with respect the date granularity. For example, is 2016-03-01T05:43:44 equal
+  to 2016T, because the granularity of the second is just the year? Or is it
+  =~? It should be > 2015T, and < 2017T, but what about 2016T?
+
 - convert everything to be an expression
     - `if` statements (when they get implemented)
     - blocks - the value of the last expression in a block is the value of the
@@ -49,14 +215,6 @@
 - implement native sets
 - implement user defined functions
 - implement multiple processing rules in 1 script.
-- `jt 'x/kadk/ {print(%0)}' <input>`
-    - appears to succeed, gives no error message. I don't think it should do
-      that.
-- implement negative column addressing. %-1 will address the last column, %-2
-  will address the second to last column.
-- TypeScript has a cute little thing which returns an alternate value if the
-  initial variable is falsy.
-- elvis operator for safe chaining.
 
 ## Aspirational Examples
 
@@ -86,34 +244,6 @@
     jt '%3 == "that"'             # Exact string matching on the 3rd column.
     jt "%3 == 'that' {print %0}"  # Exact string matching on the 3rd column.
     ```
-
-- The third column will be coerced into the matching type for each comparison
-  expression and the appropriate comparison run. If the column value can not be
-  coerced, it fails the comparison, no matter what the comparison is.
-    - the reasoning is, the programmer supplied type information (the literal
-      in the `jt` script). If the incoming text doesn't match the type
-      expectation, it isn't meeting the programmer's selection criteria.
-    ```sh
-    jt '%3 < "that"'
-    jt '%3 < 14'
-    jt '%3 < 2017-12-11T06:43'
-    jt '2017-12-11T06:00 < %3 < 2017-12-11T06:43'
-    jt '%3 < 12 and %4 == "joe"'
-    jt '%3 < 12 or %4 == "joe"'
-    ```
-
-- program block, colorizes the first column, prints the rest of the columns.
-  Not sure if this is the right syntax. Ideally there would be a way of
-  representing split the row, colorize 1 column and reconstitute the row.
-    ```sh
-    jt '{print color(%1, blue), %[2:]}'
-    ```
-    - Note, I had some thought that the colors would only have to be keywords
-      for the color function, but what about passing the color values as
-      parameters to user defined functions, which pass variables to the color
-      function. No, I think they will have to be language wide keywords. Maybe
-      just some basic colors as language wide keywords, some other way to
-      specify the longer list of possible colors.
 
 - as an optimization, if no one actually uses the columns, there is no need to
   split the columns.
@@ -267,24 +397,37 @@
     jt 'BEGIN merge(2,3,4); %2 < 2012-01-03T06:00'
     ```
 
-- really easy date/time handling. Like, as a first class primitive, not
-  different from string or integer. Coming up with some method of specifying a
-  date that is simple and fluent would be great. ISO8601 would probably be
-  good, but some additional flexibility.
-    ```sh
-    2012-06                  # could be an arithmetic expression. Instead, use
-                             # 2012-06T.
-	2012-06-03               # could be an arithmetic expression, but less likely
-    2012-06-03T              # I think if all the way up to the T was required
-                             # for specifying a date/time literal (leaving the
-                             # time parts optional), that should be sufficiently
-                             # unambiguous.
-    2012T                    # Unambiguously a date literal, just the year
-                             # granularity.
-    2012-06T                 # Unambiguously a date literal, just the month
-                             # granularity.
-	2012-06-03T23            # Unambiguously a date literal.
-	```
+### Blocks of Execution
+
+Expressions can be executed for each matching line by enclosing them in braces:
+
+    jt '/abc/{%3 = %3 + 10; print(%0)}'
+
+- matches each line that has 'abc' somewhere in it.
+
+### Formatting
+
+    jt '{%3 = %3.blue(); print(%0)}'
+
+- matches all lines, changes the 3rd column to blue and prints the whole line
+
+- There are a number of color convenience functions available.
+    - `blue`
+    - `red`
+- Background color is available by prefacing the color name with `on_`
+    - `on_blue`
+- Formatting functions:
+    - `italic`
+    - `bold`
+    - `clear`
+
+#### Durations
+
+- A duration literal starts with a P. P[n]Y[n]M[n]DT[n]H[n]M[n]S or P[n]W
+- On second thought, don't prefix a duration with a P. It would be nice, to be
+  compliant with 8601, but it can't be differenciated from a standard
+  identifier during parsing.
+
 - add, subtract and compare dates and times. Durations should be a first class
   type too. Do best guessing to auto parse the dates and durations as part of
   type coercion. In this example, column 3 should be parsed as a number of
@@ -297,12 +440,6 @@
     ps -ef | jt 'format(%5, "%Y-%M-%DT")'
     ```
 
-- allow integer representations in different bases.
-- allow integer representations with _ separators
-    ```sh
-    jt '%1 < 0b0000_0000_0001'
-    jt '%1 < 0x001'
-    ```
 - full complement of bitwise operators
 
 - make networks addresses native data types.
@@ -379,29 +516,6 @@
   specified? (like ag does), instead of just freezing like grep does when it
   doesn't have any piped input or files specified?
 
-- It would be nice if there was start and end specifiers, so that you would
-  turn on certain selections when start was matched, and turn off certain
-  selections when end was matched. Say there was some report type text file,
-  with some header information, and a table of dates and other columns
-  following the line with 'Results' going all the way to the blank line. This
-  would adjust the value of the date column one day backward.
-
-    ```
-    jt '
-        /Results/ start
-            {%1.asDate() - 1D}
-        /^$/ end
-    ' input.txt
-    ```
-
-    ```
-    jt '
-        /Results/ -> /^$/ {
-            {%1.asDate() - 1D}
-        }
-    ' input.txt
-    ```
-
 - It would be nice if the super common case of printing a modified line as a
   result of a match was a little more straightforward. What if the last
   statement of a block evaluates to the value of the block, and the value of
@@ -430,3 +544,13 @@
   ```
   jt '%1'
   ```
+
+### Printing
+
+By default, the final expression evaluated in a block will be printed.
+
+    jt '{print(%0)}'
+
+Can be represented more succinctly as:
+
+    jt '{%0}'
