@@ -91,23 +91,23 @@ for name in \
         exit 1
     fi
 
-    if ! diff $EXPECTED_STDOUT $STDOUT >& /dev/null ; then
+    if ! diff $STDOUT $EXPECTED_STDOUT >& /dev/null ; then
         printf "%-60s Fail\n" $name
         echo "        stdout did not match expected"
         echo
         cat "$TEST" | grep -v "^#" | envsubst
         echo
-        echo "diff -y $EXPECTED_STDOUT $STDOUT"
+        echo "diff -y $STDOUT $EXPECTED_STDOUT"
         exit 1
     fi
 
-    if ! diff $EXPECTED_STDERR $STDERR >& /dev/null ; then
+    if ! diff $STDERR $EXPECTED_STDERR >& /dev/null ; then
         printf "%-60s Fail\n" $name
         echo "        stderr did not match expected"
         echo
         cat "$TEST" | grep -v "^#" | envsubst
         echo
-        echo "diff -y $EXPECTED_STDERR $STDERR"
+        echo "diff -y $STDERR $EXPECTED_STDERR"
         exit 1
     fi
 
