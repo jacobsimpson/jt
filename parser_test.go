@@ -20,7 +20,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%1"),
 						Operator: ast.GT_Operator,
-						Right:    mustNewIntegerValue(t, "9"),
+						Right:    ast.NewIntegerValue("9", 9),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -33,7 +33,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%1"),
 						Operator: ast.LT_Operator,
-						Right:    mustNewIntegerValue(t, "03"),
+						Right:    ast.NewIntegerValue("0x03", 3),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -46,7 +46,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%1"),
 						Operator: ast.EQ_Operator,
-						Right:    mustNewIntegerValue(t, "03"),
+						Right:    ast.NewIntegerValue("0x03", 3),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -59,7 +59,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%99"),
 						Operator: ast.EQ_Operator,
-						Right:    mustNewBinaryIntegerValue(t, "0b0110"),
+						Right:    ast.NewIntegerValue("0b0110", 6),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -72,7 +72,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%19"),
 						Operator: ast.EQ_Operator,
-						Right:    mustNewBinaryIntegerValue(t, "0b0110"),
+						Right:    ast.NewIntegerValue("0b01_10", 6),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -85,7 +85,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%2"),
 						Operator: ast.LE_Operator,
-						Right:    mustNewBinaryIntegerValue(t, "0b00_00_10_00"),
+						Right:    ast.NewIntegerValue("0b00_00_10_00", 8),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -190,7 +190,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%9"),
 						Operator: ast.EQ_Operator,
-						Right:    mustNewIntegerValue(t, "-3"),
+						Right:    ast.NewIntegerValue("-3", -3),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -255,7 +255,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%3"),
 		//				Operator: ast.EQ_Operator,
-		//				Right:    mustNewIntegerValue(t, "+6786"),
+		//				Right:    ast.NewIntegerValue(t, "+6786"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -268,7 +268,7 @@ func TestParser(t *testing.T) {
 					&ast.Comparison{
 						Left:     ast.NewVarValue("%0"),
 						Operator: ast.LT_Operator,
-						Right:    mustNewIntegerValue(t, "9"),
+						Right:    ast.NewIntegerValue("9", 9),
 					},
 					ast.NewPrintlnBlock(),
 				},
@@ -281,7 +281,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -294,7 +294,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -307,7 +307,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -320,7 +320,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -333,7 +333,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -346,7 +346,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -359,7 +359,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -372,7 +372,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -385,7 +385,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -398,7 +398,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -411,7 +411,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    mustNewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue(t, "9"),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -434,30 +434,6 @@ func TestParser(t *testing.T) {
 			assert.Equal(test.want, got)
 		})
 	}
-}
-
-func mustNewIntegerValue(t *testing.T, value string) ast.Value {
-	v, err := ast.NewIntegerValueFromDecString(value)
-	if err != nil {
-		t.Fatalf("Unable to convert %q to a value", value)
-	}
-	return v
-}
-
-func mustNewBinaryIntegerValue(t *testing.T, value string) ast.Value {
-	v, err := ast.NewIntegerValueFromBinaryString(value)
-	if err != nil {
-		t.Fatalf("Unable to convert %q to a value", value)
-	}
-	return v
-}
-
-func mustNewHexIntegerValue(t *testing.T, value string) ast.Value {
-	v, err := ast.NewIntegerValueFromHexString(value)
-	if err != nil {
-		t.Fatalf("Unable to convert %q to a value", value)
-	}
-	return v
 }
 
 func mustNewRegexpValue(t *testing.T, value string) ast.Value {

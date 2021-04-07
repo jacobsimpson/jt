@@ -12,7 +12,7 @@ func TestNewIntegerValueFromBinaryString(t *testing.T) {
 	v, err := NewIntegerValueFromBinaryString("0b1000")
 
 	assert.NoError(err)
-	assert.Equal(v, &IntegerValue{raw: "1000", value: 8})
+	assert.Equal(v, &IntegerValue{raw: "0b1000", value: 8})
 }
 
 func TestAllValuesAreExpressions(t *testing.T) {

@@ -156,8 +156,15 @@ type IntegerValue struct {
 	value int64
 }
 
-func NewIntegerValueFromBinaryString(s string) (Value, error) {
-	s = s[2:]
+func NewIntegerValue(raw string, value int64) Value {
+	return &IntegerValue{
+		raw:   raw,
+		value: value,
+	}
+}
+
+func NewIntegerValueFromBinaryString(r string) (Value, error) {
+	s := r[2:]
 	// '_' characters are allowed in integer representations to improve
 	// readability, but they have no other purpose and are stripped here to
 	// allow parsing.
@@ -168,11 +175,15 @@ func NewIntegerValueFromBinaryString(s string) (Value, error) {
 		return r
 	}, s)
 	v, err := parseIntFromString(s, 2)
-	return v, err
+	if err != nil {
+		return nil, err
+	}
+	v.raw = r
+	return v, nil
 }
 
-func NewIntegerValueFromHexString(s string) (Value, error) {
-	s = s[2:]
+func NewIntegerValueFromHexString(r string) (Value, error) {
+	s := r[2:]
 	// '_' characters are allowed in integer representations to improve
 	// readability, but they have no other purpose and are stripped here to
 	// allow parsing.
@@ -182,23 +193,33 @@ func NewIntegerValueFromHexString(s string) (Value, error) {
 		}
 		return r
 	}, s)
-	return parseIntFromString(s, 16)
+	v, err := parseIntFromString(s, 16)
+	if err != nil {
+		return nil, err
+	}
+	v.raw = r
+	return v, nil
 }
 
-func NewIntegerValueFromDecString(s string) (Value, error) {
+func NewIntegerValueFromDecString(r string) (Value, error) {
 	// '_' characters are allowed in integer representations to improve
 	// readability, but they have no other purpose and are stripped here to
 	// allow parsing.
-	s = strings.Map(func(r rune) rune {
+	s := strings.Map(func(r rune) rune {
 		if r == '_' {
 			return -1
 		}
 		return r
-	}, s)
-	return parseIntFromString(s, 10)
+	}, r)
+	v, err := parseIntFromString(s, 10)
+	if err != nil {
+		return nil, err
+	}
+	v.raw = r
+	return v, nil
 }
 
-func parseIntFromString(s string, base int) (Value, error) {
+func parseIntFromString(s string, base int) (*IntegerValue, error) {
 	i, err := strconv.ParseInt(s, base, 64)
 	if err != nil {
 		return nil, err
