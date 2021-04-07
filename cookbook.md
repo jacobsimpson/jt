@@ -33,19 +33,18 @@ This behavior is common enough that there are a few useful defaults that apply.
 
 1. If there is no action block, it is assumed that `{ print(%0) }` is the
    action block, so the example can be reduced to:
-    ```sh
+
     jt '%0 == /things/'
-    ```
+
 1. If there is nothing to match against, it is assumed that the match should be
    performed against the whole line (%0), so the example can be reduced to:
-    ```sh
+
     jt '==/things/'
-    ```
+
 1. If there is no comparison operator, it assumed to be an equality comparison,
    so the example can be reduced to:
-    ```sh
+
     jt '/things/'
-    ```
 
 ### Comparison operators
 
@@ -54,15 +53,11 @@ and `>`.
 
 Print all the lines where column 3 is an integer less than 3:
 
-    ```
     jt '%3<3'
-    ```
 
 Print all the lines where the regular expression `ab[cd]` occurs somewhere in the line:
 
-   ```
-   jt '==/ab[cd]/'
-   ```
+    jt '==/ab[cd]/'
 
 #### Other valid examples
 
@@ -71,14 +66,14 @@ jt '<2020-01-01T'
 ```
 
 - print all lines which can be coercered into a date, and are less than
-  2020-01-01T00:00:00.
+  `2020-01-01T00:00:00`.
 
 ```sh
 jt '>2020-02-03T'
 ```
 
 - print all lines which can be coerced into a date, and are greater than
-  2020-02-03T23:59:59.
+  `2020-02-03T23:59:59`.
 
 ### Input column names
 
@@ -162,9 +157,9 @@ $ echo "1\n2\n3\n2006-04-01T" | ./jt '>=2006-03-01T'
 ### Strings
 
 - Substrings
-    - s = "ab.cd.txt"
-    - s[:] == s[0:] == s
-    - s[0:-1] == "ab.cd.tx"
+    - `s = "ab.cd.txt"`
+    - `s[:] == s[0:] == s`
+    - `s[0:-1] == "ab.cd.tx"`
 
 ### Integers
 
@@ -172,10 +167,10 @@ $ echo "1\n2\n3\n2006-04-01T" | ./jt '>=2006-03-01T'
   formats, with `_` included for formatting purposes. Embedded `_` has no
   semantic value, it is just for visual purposes. Here are some example integer
   literals:
-    - 1000 == 1_000 == 1_0_0_0
-    - 0o127
-    - 0x0001 == 0x00_01 == 0x0_0_0_0_1 == 0b1
-    - 0b1111_0001
+    - `1000 == 1_000 == 1_0_0_0`
+    - `0o127`
+    - `0x0001 == 0x00_01 == 0x0_0_0_0_1 == 0b1`
+    - `0b1111_0001`
 
 ### Regular Expressions
 
@@ -185,8 +180,8 @@ $ echo "1\n2\n3\n2006-04-01T" | ./jt '>=2006-03-01T'
   expressions use the extended regular expressions syntax from
   [Golang](https://golang.org/pkg/regexp/syntax/). Here are some example
   regular expression literals:
-    - /a[bc]d/
-    - |things.|
+    - `/a[bc]d/`
+    - `|things.|`
 
 ### Like grep
 
