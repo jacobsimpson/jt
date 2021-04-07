@@ -300,19 +300,19 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
-		//{
-		//	"/this/",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//},
+		{
+			"/this/",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewRegexpValue(t, "this"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	"<2020-01-01T",
 		//	&ast.Program{[]*ast.Rule{
