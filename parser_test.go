@@ -391,19 +391,19 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
-		//{
-		//	"%3 == 2.4",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//},
+		{
+			"%3 == 2.4",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%3"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewDoubleFromString(t, "2.4"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	"%3 in {1, 3, 5}",
 		//	&ast.Program{[]*ast.Rule{
