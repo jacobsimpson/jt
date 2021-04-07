@@ -34,17 +34,23 @@ This behavior is common enough that there are a few useful defaults that apply.
 1. If there is no action block, it is assumed that `{ print(%0) }` is the
    action block, so the example can be reduced to:
 
+    ```sh
     jt '%0 == /things/'
+    ```
 
 1. If there is nothing to match against, it is assumed that the match should be
    performed against the whole line (%0), so the example can be reduced to:
 
+    ```sh
     jt '==/things/'
+    ```
 
 1. If there is no comparison operator, it assumed to be an equality comparison,
    so the example can be reduced to:
 
+    ```sh
     jt '/things/'
+    ```
 
 ### Comparison operators
 
