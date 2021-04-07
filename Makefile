@@ -8,7 +8,7 @@ parser/grammar.go: parser/grammar.peg
 test: jt
 	go test ./...
 
-tests: jt
+tests: jt tests/*/*
 	go test ./...
 	tests/test tests/binary_eq_operator
 	tests/test tests/binary_ge_operator
@@ -48,6 +48,7 @@ tests: jt
 	tests/test tests/substring_column_empty_start_range
 	tests/test tests/substring_column_negative_range
 	tests/test tests/substring_column_overlapping_range
+	tests/test tests/string_eq_operator
 
 install: jt
 	cp ./jt /usr/bin/jt
