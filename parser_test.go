@@ -437,7 +437,7 @@ func TestParser(t *testing.T) {
 }
 
 func mustNewIntegerValue(t *testing.T, value string) ast.Value {
-	v, err := ast.NewIntegerValue(value)
+	v, err := ast.NewIntegerValueFromDecString(value)
 	if err != nil {
 		t.Fatalf("Unable to convert %q to a value", value)
 	}

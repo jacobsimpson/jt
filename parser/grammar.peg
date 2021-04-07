@@ -143,7 +143,7 @@ decimal     = [0-9]+ '.' [0-9]* { return ast.NewDoubleFromString(string(c.text))
 integer     = integer:(binary_int / hex_int / decimal_int) { return integer, nil }
 binary_int  = [+-]? "0b" [0-1_]+    { return ast.NewIntegerValueFromBinaryString(string(c.text)) }
 hex_int     = [+-]? "0x" [0-9A-F_]+ { return ast.NewIntegerValueFromHexString(string(c.text)) }
-decimal_int = [+-]? [0-9_]+         { return ast.NewIntegerValue(string(c.text)) }
+decimal_int = [+-]? [0-9_]+         { return ast.NewIntegerValueFromDecString(string(c.text)) }
 
 comparison = comparison:(le / lt / eq / ne / ge / gt) { return comparison, nil }
 lt = '<'  { return ast.LT_Operator, nil }

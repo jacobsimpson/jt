@@ -185,7 +185,7 @@ func NewIntegerValueFromHexString(s string) (Value, error) {
 	return parseIntFromString(s, 16)
 }
 
-func NewIntegerValue(s string) (Value, error) {
+func NewIntegerValueFromDecString(s string) (Value, error) {
 	// '_' characters are allowed in integer representations to improve
 	// readability, but they have no other purpose and are stripped here to
 	// allow parsing.
