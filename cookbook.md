@@ -130,11 +130,11 @@ comparisons are string to string comparisons.
 
 There are a few types of literals supported:
 
--   Integers: 1, -10, 0b001, -0xA
--   Dates: 2012-06-01T
--   Regular expressions: /ab[cd]/
--   Reals: 2.5644
--   Strings: "ab"
+-   Integers: `1`, `-10`, `0b001`, `-0xA`, `0o127`, `127_981`
+-   Dates: `2012-06-01T`
+-   Regular expressions: `/ab[cd]/`
+-   Reals: `2.5644`
+-   Strings: `"ab"`
 
 #### Type coercion rules
 

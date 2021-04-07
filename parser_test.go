@@ -118,6 +118,19 @@ func TestParser(t *testing.T) {
 			}},
 		},
 		{
+			" >=0o723 ",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.GE_Operator,
+						Right:    ast.NewIntegerValue("0o723", 467),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
+		{
 			" %1   >=  13.45 ",
 			&ast.Program{[]*ast.Rule{
 				&ast.Rule{

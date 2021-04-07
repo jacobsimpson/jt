@@ -2,7 +2,6 @@
 
 - Looks like string comparisons aren't working. Make it work: `echo "ab\ncd\nde" | ./jt '=="ab"'`
 - make this a valid shortcut: `jt '%1'`
-- 0o127
 - Add support for booleans
 - Add support for duration
 - these kinds of regular expressions should work: |things.|

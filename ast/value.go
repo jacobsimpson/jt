@@ -182,6 +182,25 @@ func NewIntegerValueFromBinaryString(r string) (Value, error) {
 	return v, nil
 }
 
+func NewIntegerValueFromOctalString(r string) (Value, error) {
+	s := r[2:]
+	// '_' characters are allowed in integer representations to improve
+	// readability, but they have no other purpose and are stripped here to
+	// allow parsing.
+	s = strings.Map(func(r rune) rune {
+		if r == '_' {
+			return -1
+		}
+		return r
+	}, s)
+	v, err := parseIntFromString(s, 8)
+	if err != nil {
+		return nil, err
+	}
+	v.raw = r
+	return v, nil
+}
+
 func NewIntegerValueFromHexString(r string) (Value, error) {
 	s := r[2:]
 	// '_' characters are allowed in integer representations to improve
