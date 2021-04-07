@@ -313,19 +313,19 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
-		//{
-		//	"<2020-01-01T",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//},
+		{
+			"<2020-01-01T",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.LT_Operator,
+						Right:    mustNewDateTimeValue(t, "2020-01-01T"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	">2020-01-01T",
 		//	&ast.Program{[]*ast.Rule{
