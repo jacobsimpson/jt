@@ -4,7 +4,6 @@
 - make this a valid shortcut: `jt '%1'`
 - Add support for booleans
 - Add support for duration
-- these kinds of regular expressions should work: |things.|
 - implement a `now` keyword.
 - implement negative column addressing. %-1 will address the last column, %-2
   will address the second to last column.
