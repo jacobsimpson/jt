@@ -1,76 +1,117 @@
 #! /bin/bash
 
-printf "%-60s" $1
+for name in \
+		binary_eq_operator \
+	    binary_ge_operator \
+	    binary_gt_operator \
+	    binary_le_operator \
+	    binary_lt_operator \
+	    datetime_eq_operator \
+	    datetime_ge_operator \
+	    datetime_gt_operator \
+	    datetime_le_operator \
+	    datetime_lt_operator \
+	    hex_eq_operator \
+	    hex_ge_operator \
+	    hex_gt_operator \
+	    hex_le_operator \
+	    hex_lt_operator \
+	    double_eq_operator \
+	    double_ge_operator \
+	    double_gt_operator \
+	    double_le_operator \
+	    double_lt_operator \
+	    integer_eq_operator \
+	    integer_ge_operator \
+	    integer_gt_operator \
+	    integer_le_operator \
+	    integer_lt_operator \
+	    no_such_function \
+	    print_column \
+	    println_column \
+	    re_column_match_comparison_operator \
+	    re_line_match_comparison_operator \
+	    re_line_match_implicit \
+	    re_line_match_implicit_pipe_delimited \
+	    stdin \
+	    substring_column \
+	    substring_column_empty_end_range \
+	    substring_column_empty_start_range \
+	    substring_column_negative_range \
+	    substring_column_overlapping_range \
+	    string_eq_operator ; do
 
+    JT=./jt
+    TEST_DIR="tests/$name"
+    TMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir')"
+    TEST="${TEST_DIR}/test"
+    INPUT="${TEST_DIR}/input.txt"
+    STDOUT="${TMP_DIR}/stdout.txt"
+    STDERR="${TMP_DIR}/stderr.txt"
+    EXPECTED_STDOUT="${TEST_DIR}/expected-stdout.txt"
+    EXPECTED_STDERR="${TEST_DIR}/expected-stderr.txt"
+    EXPECTED_STATUS_FILE="${TEST_DIR}/expected-status.txt"
 
-JT=./jt
-TEST_DIR="$1"
-TMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir')"
-TEST="${TEST_DIR}/test"
-INPUT="${TEST_DIR}/input.txt"
-STDOUT="${TMP_DIR}/stdout.txt"
-STDERR="${TMP_DIR}/stderr.txt"
-EXPECTED_STDOUT="${TEST_DIR}/expected-stdout.txt"
-EXPECTED_STDERR="${TEST_DIR}/expected-stderr.txt"
-EXPECTED_STATUS_FILE="${TEST_DIR}/expected-status.txt"
+    if [[ ! -e $TEST_DIR ]]; then
+        printf "%-60s Fail\n" $name
+        echo "        Error: the test directory '$TEST_DIR' does not exist."
+        exit 1
+    fi
+    if [[ ! -e $INPUT ]]; then
+        printf "%-60s Fail\n" $name
+        echo "        Error: the test input '$INPUT' does not exist."
+        exit 1
+    fi
+    if [[ ! -e $EXPECTED_STDOUT ]]; then
+        printf "%-60s Fail\n" $name
+        echo "        Error: the expected stdout '$EXPECTED_STDOUT' does not exist."
+        exit 1
+    fi
+    if [[ ! -e $EXPECTED_STDERR ]]; then
+        printf "%-60s Fail\n" $name
+        echo "        Error: the expected stderr '$EXPECTED_STDERR' does not exist."
+        exit 1
+    fi
+    expectedStatus=0
+    if [[ -e $EXPECTED_STATUS_FILE ]]; then
+        expectedStatus=$(cat "$EXPECTED_STATUS_FILE")
+    fi
 
-if [[ ! -e $TEST_DIR ]]; then
-    echo Fail
-    echo "        Error: the test directory '$TEST_DIR' does not exist."
-    exit 1
-fi
-if [[ ! -e $INPUT ]]; then
-    echo Fail
-    echo "        Error: the test input '$INPUT' does not exist."
-    exit 1
-fi
-if [[ ! -e $EXPECTED_STDOUT ]]; then
-    echo Fail
-    echo "        Error: the expected stdout '$EXPECTED_STDOUT' does not exist."
-    exit 1
-fi
-if [[ ! -e $EXPECTED_STDERR ]]; then
-    echo Fail
-    echo "        Error: the expected stderr '$EXPECTED_STDERR' does not exist."
-    exit 1
-fi
-expectedStatus=0
-if [[ -e $EXPECTED_STATUS_FILE ]]; then
-    expectedStatus=$(cat "$EXPECTED_STATUS_FILE")
-fi
+    [[ ! -e ${JT} ]] && exit 1
 
-[[ ! -e ${JT} ]] && exit 1
+    source "$TEST"
 
-source "$TEST"
+    status=$?
+    if [[ ! $status -eq $expectedStatus ]]; then
+        printf "%-60s Fail\n" $name
+        echo "        Status was $status but expected $expectedStatus"
+        echo "        ${STDOUT}"
+        echo "        ${STDERR}"
+        exit 1
+    fi
 
-status=$?
-if [[ ! $status -eq $expectedStatus ]]; then
-    echo Fail
-    echo "        Status was $status but expected $expectedStatus"
-    echo "        ${STDOUT}"
-    echo "        ${STDERR}"
-    exit 1
-fi
+    if ! diff $EXPECTED_STDOUT $STDOUT >& /dev/null ; then
+        printf "%-60s Fail\n" $name
+        echo "        stdout did not match expected"
+        echo
+        cat "$TEST" | grep -v "^#"
+        echo
+        echo "        diff $EXPECTED_STDOUT $STDOUT"
+        exit 1
+    fi
 
-if ! diff $EXPECTED_STDOUT $STDOUT >& /dev/null ; then
-    echo Fail
-    echo "        stdout did not match expected"
-    echo
-    cat "$TEST" | grep -v "^#"
-    echo
-    echo "        diff $EXPECTED_STDOUT $STDOUT"
-    exit 1
-fi
+    if ! diff $EXPECTED_STDERR $STDERR >& /dev/null ; then
+        printf "%-60s Fail\n" $name
+        echo "        stderr did not match expected"
+        echo
+        cat "$TEST" | grep -v "^#"
+        echo
+        echo "        diff $EXPECTED_STDERR $STDERR"
+        exit 1
+    fi
 
-if ! diff $EXPECTED_STDERR $STDERR >& /dev/null ; then
-    echo Fail
-    echo "        stderr did not match expected"
-    echo
-    cat "$TEST" | grep -v "^#"
-    echo
-    echo "        diff $EXPECTED_STDERR $STDERR"
-    exit 1
-fi
+    #rm -Rf ${TMP_DIR}
 
-echo Success
-#rm -Rf ${TMP_DIR}
+done
+
+printf "%-60s Success\n" "All tests"
