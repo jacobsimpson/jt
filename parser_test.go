@@ -4,13 +4,15 @@ import (
 	"testing"
 
 	"github.com/jacobsimpson/jt/ast"
+	"github.com/jacobsimpson/jt/parser"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestParser(t *testing.T) {
 	tests := []struct {
-		input string
-		want  *ast.Program
+		input      string
+		want       *ast.Program
+		wantErrors parser.ErrorLister
 	}{
 		{
 			"%1>9",
@@ -24,6 +26,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"%1<0x03",
@@ -37,6 +40,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			" %1 == 0x03     ",
@@ -50,6 +54,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			" %99 == 0b0110     ",
@@ -63,6 +68,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			" %19 == 0b01_10     ",
@@ -76,6 +82,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"%2 <= 0b00_00_10_00",
@@ -89,6 +96,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			" %0   ==  /things/ ",
@@ -102,6 +110,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			" %1   ==  2014-09-12T ",
@@ -115,6 +124,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			" >=0o723 ",
@@ -128,6 +138,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			" %1   >=  13.45 ",
@@ -141,6 +152,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"%0 == /things/ { print(%0) }",
@@ -154,6 +166,7 @@ func TestParser(t *testing.T) {
 					newPrintBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"%0 == /things/ { notarealfunc(%2) }",
@@ -174,6 +187,7 @@ func TestParser(t *testing.T) {
 					},
 				},
 			}},
+			nil,
 		},
 		{
 			"/things/ { print(%2) }",
@@ -194,6 +208,7 @@ func TestParser(t *testing.T) {
 					},
 				},
 			}},
+			nil,
 		},
 		{
 			" %9 == -3     ",
@@ -207,6 +222,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"/things/ { print(%2[3:7]) }",
@@ -233,6 +249,7 @@ func TestParser(t *testing.T) {
 					},
 				},
 			}},
+			nil,
 		},
 		{
 			"/things/ { print(%2[-3:]) }",
@@ -259,6 +276,7 @@ func TestParser(t *testing.T) {
 					},
 				},
 			}},
+			nil,
 		},
 		{
 			"1.0 < %3 <= 2.4",
@@ -279,6 +297,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"3.0 >= %4 > 2.4",
@@ -299,6 +318,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		//{
 		//	" %3 == +6786     ",
@@ -312,6 +332,7 @@ func TestParser(t *testing.T) {
 		//			ast.NewPrintlnBlock(),
 		//		},
 		//	}},
+		//		nil,
 		//},
 		{
 			"<9",
@@ -325,6 +346,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"==/this/",
@@ -338,6 +360,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"/this/",
@@ -351,6 +374,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"<2020-01-01T",
@@ -364,6 +388,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			">2020-01-01T",
@@ -377,6 +402,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		//{
 		//	"%2 == today",
@@ -390,6 +416,7 @@ func TestParser(t *testing.T) {
 		//			ast.NewPrintlnBlock(),
 		//		},
 		//	}},
+		//nil,
 		//},
 		//{
 		//	"%2 == yesterday",
@@ -403,6 +430,7 @@ func TestParser(t *testing.T) {
 		//			ast.NewPrintlnBlock(),
 		//		},
 		//	}},
+		//nil,
 		//},
 		//{
 		//	"%2 == tomorrow",
@@ -416,6 +444,7 @@ func TestParser(t *testing.T) {
 		//			ast.NewPrintlnBlock(),
 		//		},
 		//	}},
+		//nil,
 		//},
 		{
 			`%3 == "this is the thing"`,
@@ -429,6 +458,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		{
 			"%3 == 2.4",
@@ -442,6 +472,7 @@ func TestParser(t *testing.T) {
 					ast.NewPrintlnBlock(),
 				},
 			}},
+			nil,
 		},
 		//{
 		//	"%3 in {1, 3, 5}",
@@ -455,6 +486,7 @@ func TestParser(t *testing.T) {
 		//			ast.NewPrintlnBlock(),
 		//		},
 		//	}},
+		//nil,
 		//},
 		// This test case requires that a rule comparison be updated to support
 		// arbitrary expressions on LHS and RHS.
@@ -474,6 +506,7 @@ func TestParser(t *testing.T) {
 		//			ast.NewPrintlnBlock(),
 		//		},
 		//	}},
+		//nil,
 		//},
 	}
 
@@ -483,7 +516,7 @@ func TestParser(t *testing.T) {
 
 			got, err := parse(test.input)
 
-			assert.NoError(err)
+			assert.Equal(test.wantErrors, err)
 			assert.Equal(test.want, got)
 		})
 	}
