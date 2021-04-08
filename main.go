@@ -11,6 +11,7 @@ import (
 
 	"github.com/jacobsimpson/jt/ast"
 	"github.com/jacobsimpson/jt/debug"
+	"github.com/jacobsimpson/jt/parser"
 
 	// For some reason if this import is done without the alias, golang assumes
 	// this is imported as `listener`. No idea why.
@@ -83,7 +84,15 @@ func main() {
 	}
 
 	if err := execute(rules, inputFiles); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %+v\n", err)
+		switch e := err.(type) {
+		case parser.ErrorLister:
+			for _, err := range e.Errors() {
+				p := err.(parser.ParserError)
+				fmt.Fprintf(os.Stderr, "%+v\n", p.InnerError())
+			}
+		default:
+			fmt.Fprintf(os.Stderr, "error: %+v\n", err)
+		}
 		os.Exit(1)
 	}
 }
