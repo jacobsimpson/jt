@@ -1,2 +1,2 @@
 # vi: ft=sh
-${JT} '/things/ { println(%2[1:3]) }' ${INPUT} > ${STDOUT} 2> ${STDERR}
+${JT} '/things/ { println(%2[1:3]) }' ${INPUT}

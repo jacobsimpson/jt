@@ -1,2 +1,2 @@
 # vi: ft=sh
-${JT} '%0 > 2016-03-29T' ${INPUT} > ${STDOUT} 2> ${STDERR}
+${JT} '%0 > 2016-03-29T' ${INPUT}

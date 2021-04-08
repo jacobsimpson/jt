@@ -1,2 +1,2 @@
 # vi: ft=sh
-${JT} '%2 == /is/' ${INPUT} > ${STDOUT} 2> ${STDERR}
+${JT} '%2 == /is/' ${INPUT}

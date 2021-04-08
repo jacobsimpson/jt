@@ -79,7 +79,7 @@ for name in \
 
     [[ ! -e ${JT} ]] && exit 1
 
-    source "$TEST"
+    source "$TEST" > ${STDOUT} 2> ${STDERR}
 
     status=$?
     if [[ ! $status -eq $expectedStatus ]]; then

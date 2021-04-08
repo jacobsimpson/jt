@@ -1,2 +1,2 @@
 # vi: ft=sh
-${JT} '|this is|' ${INPUT} > ${STDOUT} 2> ${STDERR}
+${JT} '|this is|' ${INPUT}
