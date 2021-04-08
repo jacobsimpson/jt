@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/jacobsimpson/jt/ast"
@@ -319,6 +320,17 @@ func TestParser(t *testing.T) {
 				},
 			}},
 			nil,
+		},
+		{
+			"3.0 >= %4 < 2.4",
+			nil,
+			parser.NewErrorLister([]error{parser.NewParserError(
+				fmt.Errorf("can not build a ternary boolean expression out of >= and < comparisons"),
+				1,
+				1,
+				0,
+				"test:1:1 (0): rule three_term_boolean_expression",
+			)}),
 		},
 		//{
 		//	" %3 == +6786     ",

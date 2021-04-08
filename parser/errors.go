@@ -21,6 +21,14 @@ type ParserError interface {
 	Pos() (int, int, int)
 }
 
+func NewParserError(err error, line, col, offset int, prefix string) ParserError {
+	return &parserError{
+		Inner:  err,
+		pos:    position{line: line, col: col, offset: offset},
+		prefix: prefix,
+	}
+}
+
 func (p *parserError) InnerError() error {
 	return p.Inner
 }

@@ -114,6 +114,13 @@ three_term_boolean_expression = lhs:term _ left_comparison:less_comparison _ ct:
             Right:    rhs.(ast.Value),
         },
     }, nil
+} / lhs:term _ left_comparison:comparison _ ct:term _ right_comparison:comparison _ rhs:term {
+    // When an error is returned, pigeon will add the error to the list of
+    // errors and attempt to continue the parse. If you want to fully stop the
+    // parsing, panic.
+    return &ast.Comparison{}, fmt.Errorf("can not build a ternary boolean expression out of %s and %s comparisons",
+                    left_comparison,
+                    right_comparison)
 }
 
 full_boolean_expression = lhs:term _ comparison:comparison _ rhs:term {
