@@ -156,26 +156,26 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
-		//{
-		//	"%0 == /things/ { notarealfunc(%2) }",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.EQ_Operator,
-		//				Right:    mustNewRegexpValue(t, "things"),
-		//			},
-		//			&ast.Block{
-		//				Commands: []*ast.Command{
-		//					&ast.Command{
-		//						Name:       "notarealfunc",
-		//						Parameters: []ast.Expression{ast.NewVarValue("%2")},
-		//					},
-		//				},
-		//			},
-		//		},
-		//	}},
-		//},
+		{
+			"%0 == /things/ { notarealfunc(%2) }",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.EQ_Operator,
+						Right:    mustNewRegexpValue(t, "things"),
+					},
+					&ast.Block{
+						Commands: []*ast.Command{
+							&ast.Command{
+								Name:       "notarealfunc",
+								Parameters: []ast.Expression{ast.NewVarValue("%2")},
+							},
+						},
+					},
+				},
+			}},
+		},
 		{
 			"/things/ { print(%2) }",
 			&ast.Program{[]*ast.Rule{
