@@ -1,45 +1,46 @@
 #! /bin/bash
 
 for name in \
-		binary_eq_operator \
-	    binary_ge_operator \
-	    binary_gt_operator \
-	    binary_le_operator \
-	    binary_lt_operator \
-	    datetime_eq_operator \
-	    datetime_ge_operator \
-	    datetime_gt_operator \
-	    datetime_le_operator \
-	    datetime_lt_operator \
-	    hex_eq_operator \
-	    hex_ge_operator \
-	    hex_gt_operator \
-	    hex_le_operator \
-	    hex_lt_operator \
-	    double_eq_operator \
-	    double_ge_operator \
-	    double_gt_operator \
-	    double_le_operator \
-	    double_lt_operator \
-	    integer_eq_operator \
-	    integer_ge_operator \
-	    integer_gt_operator \
-	    integer_le_operator \
-	    integer_lt_operator \
-	    no_such_function \
-	    print_column \
-	    println_column \
-	    re_column_match_comparison_operator \
-	    re_line_match_comparison_operator \
-	    re_line_match_implicit \
-	    re_line_match_implicit_pipe_delimited \
-	    stdin \
-	    substring_column \
-	    substring_column_empty_end_range \
-	    substring_column_empty_start_range \
-	    substring_column_negative_range \
-	    substring_column_overlapping_range \
-	    string_eq_operator ; do
+        binary_eq_operator \
+        binary_ge_operator \
+        binary_gt_operator \
+        binary_le_operator \
+        binary_lt_operator \
+        datetime_eq_operator \
+        datetime_ge_operator \
+        datetime_gt_operator \
+        datetime_le_operator \
+        datetime_lt_operator \
+        hex_eq_operator \
+        hex_ge_operator \
+        hex_gt_operator \
+        hex_le_operator \
+        hex_lt_operator \
+        double_eq_operator \
+        double_ge_operator \
+        double_gt_operator \
+        double_le_operator \
+        double_lt_operator \
+        integer_eq_operator \
+        integer_ge_operator \
+        integer_gt_operator \
+        integer_le_operator \
+        integer_lt_operator \
+        no_such_function \
+        print_column \
+        println_column \
+        re_column_match_comparison_operator \
+        re_line_match_comparison_operator \
+        re_line_match_implicit \
+        re_line_match_implicit_pipe_delimited \
+        stdin \
+        substring_column \
+        substring_column_empty_end_range \
+        substring_column_empty_start_range \
+        substring_column_negative_range \
+        substring_column_overlapping_range \
+        string_eq_operator \
+        string_ge_operator; do
 
     export JT=./jt
     export TEST_DIR="tests/$name"

@@ -1,0 +1,6 @@
+what  1       aaa
+butt  8       bbb
+when  1_503   ccc
+where 0x00_0A ddd
+why   0x03    eee
+how   0x0F    fff
