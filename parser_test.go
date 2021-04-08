@@ -261,6 +261,46 @@ func TestParser(t *testing.T) {
 				},
 			}},
 		},
+		{
+			"1.0 < %3 <= 2.4",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.AndComparison{
+						&ast.Comparison{
+							Left:     mustNewDoubleFromString(t, "1.0"),
+							Operator: ast.LT_Operator,
+							Right:    ast.NewVarValue("%3"),
+						},
+						&ast.Comparison{
+							Left:     ast.NewVarValue("%3"),
+							Operator: ast.LE_Operator,
+							Right:    mustNewDoubleFromString(t, "2.4"),
+						},
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
+		{
+			"3.0 >= %4 > 2.4",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.AndComparison{
+						&ast.Comparison{
+							Left:     mustNewDoubleFromString(t, "3.0"),
+							Operator: ast.GE_Operator,
+							Right:    ast.NewVarValue("%4"),
+						},
+						&ast.Comparison{
+							Left:     ast.NewVarValue("%4"),
+							Operator: ast.GT_Operator,
+							Right:    mustNewDoubleFromString(t, "2.4"),
+						},
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+		},
 		//{
 		//	" %3 == +6786     ",
 		//	&ast.Program{[]*ast.Rule{

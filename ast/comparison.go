@@ -26,3 +26,33 @@ func (c *Comparison) Evaluate(environment map[string]string) (interface{}, error
 func (c *Comparison) String() string {
 	return fmt.Sprintf("%s %s %s", c.Left, c.Operator, c.Right)
 }
+
+type AndComparison struct {
+	Left  Expression
+	Right Expression
+}
+
+func (c *AndComparison) Evaluate(environment map[string]string) (interface{}, error) {
+	l, err := c.Left.Evaluate(environment)
+	if err != nil {
+		return nil, err
+	}
+	r, err := c.Right.Evaluate(environment)
+	if err != nil {
+		return nil, err
+	}
+	lb, ok := l.(bool)
+	if !ok {
+		return false, nil
+	}
+	rb, ok := r.(bool)
+	if !ok {
+		return false, nil
+	}
+
+	return lb && rb, nil
+}
+
+func (c *AndComparison) String() string {
+	return fmt.Sprintf("%s and %s", c.Left, c.Right)
+}

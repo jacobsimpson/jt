@@ -43,7 +43,8 @@ for name in \
         string_ge_operator \
         string_gt_operator \
         string_le_operator \
-        string_lt_operator; do
+        string_lt_operator \
+        double_lt_any_le_double_operator; do
 
     export JT=./jt
     export TEST_DIR="tests/$name"

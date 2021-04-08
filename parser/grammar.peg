@@ -68,7 +68,7 @@ no_block_rule = _ expression:boolean_expression _EOL {
     }, nil
 }
 
-boolean_expression = _ expression:(operator_first_boolean_expression / full_boolean_expression / single_term_boolean_expression) {
+boolean_expression = _ expression:(operator_first_boolean_expression / three_term_boolean_expression / full_boolean_expression / single_term_boolean_expression) {
     return expression, nil
 }
 
@@ -85,6 +85,34 @@ single_term_boolean_expression = term:term {
         Left:     ast.NewVarValue("%0"),
         Operator: ast.EQ_Operator,
         Right:    term.(ast.Value),
+    }, nil
+}
+
+three_term_boolean_expression = lhs:term _ left_comparison:less_comparison _ ct:term _ right_comparison:less_comparison _ rhs:term {
+    return &ast.AndComparison{
+        &ast.Comparison{
+            Left:     lhs.(ast.Value),
+            Operator: left_comparison.(ast.Operator),
+            Right:    ct.(ast.Value),
+        },
+        &ast.Comparison{
+            Left:     ct.(ast.Value),
+            Operator: right_comparison.(ast.Operator),
+            Right:    rhs.(ast.Value),
+        },
+    }, nil
+} / lhs:term _ left_comparison:greater_comparison _ ct:term _ right_comparison:greater_comparison _ rhs:term {
+    return &ast.AndComparison{
+        &ast.Comparison{
+            Left:     lhs.(ast.Value),
+            Operator: left_comparison.(ast.Operator),
+            Right:    ct.(ast.Value),
+        },
+        &ast.Comparison{
+            Left:     ct.(ast.Value),
+            Operator: right_comparison.(ast.Operator),
+            Right:    rhs.(ast.Value),
+        },
     }, nil
 }
 
@@ -151,6 +179,8 @@ string_literal = '"' [^"]* '"' {
 }
 
 comparison = comparison:(le / lt / eq / ne / ge / gt) { return comparison, nil }
+less_comparison = comparison:(le / lt)                { return comparison, nil }
+greater_comparison = comparison:(ge / gt)             { return comparison, nil }
 lt = '<'  { return ast.LT_Operator, nil }
 le = "<=" { return ast.LE_Operator, nil }
 eq = "==" { return ast.EQ_Operator, nil }

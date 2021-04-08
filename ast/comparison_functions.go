@@ -33,6 +33,13 @@ func lt(environment map[string]string, left, right Expression) bool {
 		default:
 			return false
 		}
+	case *DoubleValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return doubleLTAny(l, r)
+		default:
+			return false
+		}
 	case *IntegerValue:
 		switch r := right.(type) {
 		case *AnyValue:
