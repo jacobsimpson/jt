@@ -5,12 +5,12 @@ import (
 )
 
 type Comparison struct {
-	Left     Value
+	Left     Expression
 	Operator Operator
-	Right    Value
+	Right    Expression
 }
 
-var Comparisons = map[Operator]func(map[string]string, Value, Value) bool{
+var Comparisons = map[Operator]func(map[string]string, Expression, Expression) bool{
 	LT_Operator: lt,
 	LE_Operator: le,
 	EQ_Operator: eq,
