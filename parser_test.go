@@ -268,7 +268,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%3"),
 		//				Operator: ast.EQ_Operator,
-		//				Right:    ast.NewIntegerValue(t, "+6786"),
+		//				Right:    ast.NewIntegerValue("+6786", 6786),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -346,7 +346,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue("9", 9),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -359,7 +359,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue("9", 9),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -372,7 +372,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue("9", 9),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
@@ -411,7 +411,7 @@ func TestParser(t *testing.T) {
 		//			&ast.Comparison{
 		//				Left:     ast.NewVarValue("%0"),
 		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue(t, "9"),
+		//				Right:    ast.NewIntegerValue("9", 9),
 		//			},
 		//			ast.NewPrintlnBlock(),
 		//		},
