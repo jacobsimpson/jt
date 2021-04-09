@@ -10,7 +10,7 @@ type Comparison struct {
 	Right    Expression
 }
 
-var Comparisons = map[Operator]func(map[string]string, Expression, Expression) bool{
+var Comparisons = map[Operator]func(*Environment, Expression, Expression) bool{
 	LT_Operator: lt,
 	LE_Operator: le,
 	EQ_Operator: eq,
@@ -19,7 +19,7 @@ var Comparisons = map[Operator]func(map[string]string, Expression, Expression) b
 	GT_Operator: gt,
 }
 
-func (c *Comparison) Evaluate(environment map[string]string) (interface{}, error) {
+func (c *Comparison) Evaluate(environment *Environment) (interface{}, error) {
 	return Comparisons[c.Operator](environment, c.Left, c.Right), nil
 }
 
@@ -32,7 +32,7 @@ type AndComparison struct {
 	Right Expression
 }
 
-func (c *AndComparison) Evaluate(environment map[string]string) (interface{}, error) {
+func (c *AndComparison) Evaluate(environment *Environment) (interface{}, error) {
 	l, err := c.Left.Evaluate(environment)
 	if err != nil {
 		return nil, err

@@ -11,13 +11,13 @@ import (
 
 func Test_lt(t *testing.T) {
 	tests := []struct {
-		environment map[string]string
+		environment *Environment
 		left        Value
 		right       Value
 		want        bool
 	}{
 		{
-			map[string]string{},
+			&Environment{},
 			&AnyValue{"123"},
 			&DateTimeValue{
 				"2010-10-11T06:45",
@@ -26,7 +26,11 @@ func Test_lt(t *testing.T) {
 			false,
 		},
 		{
-			map[string]string{"varname": "2010-10-11T05:15"},
+			&Environment{
+				Variables: map[string]Value{
+					"varname": &AnyValue{"2010-10-11T05:15"},
+				},
+			},
 			&VarValue{"varname"},
 			&DateTimeValue{
 				"2010-10-11T06:45",
@@ -35,25 +39,31 @@ func Test_lt(t *testing.T) {
 			true,
 		},
 		{
-			map[string]string{"varname": "12"},
-			&VarValue{"varname"},
-			&IntegerValue{
-				"12",
-				12,
+			&Environment{
+				Variables: map[string]Value{
+					"varname": &AnyValue{"12"},
+				},
 			},
+			&VarValue{"varname"},
+			&IntegerValue{"12", 12},
 			false,
 		},
 		{
-			map[string]string{"varname": "12"},
-			&VarValue{"varname"},
-			&IntegerValue{
-				"13",
-				13,
+			&Environment{
+				Variables: map[string]Value{
+					"varname": &AnyValue{"12"},
+				},
 			},
+			&VarValue{"varname"},
+			&IntegerValue{"13", 13},
 			true,
 		},
 		{
-			map[string]string{"varname": "12"},
+			&Environment{
+				Variables: map[string]Value{
+					"varname": &AnyValue{"12"},
+				},
+			},
 			&VarValue{"varname"},
 			&DoubleValue{
 				"13.1",
@@ -79,31 +89,35 @@ func Test_lt(t *testing.T) {
 
 func Test_eq(t *testing.T) {
 	tests := []struct {
-		environment map[string]string
+		environment *Environment
 		left        Value
 		right       Value
 		want        bool
 	}{
 		{
-			map[string]string{"%2": "8"},
+			&Environment{
+				Row: &Row{1, []string{"whole 8", "whole", "8"}},
+			},
 			&VarValue{"%2"},
 			&IntegerValue{raw: "1000", value: 8},
 			true,
 		},
 		{
-			map[string]string{"%2": "7"},
+			&Environment{
+				Row: &Row{1, []string{"whole 8", "whole", "7"}},
+			},
 			&VarValue{"%2"},
 			&IntegerValue{raw: "1000", value: 8},
 			false,
 		},
 		{
-			map[string]string{},
+			&Environment{},
 			&StringValue{raw: "abcd", value: "abcd"},
 			&StringValue{raw: "abcd", value: "abcd"},
 			true,
 		},
 		{
-			map[string]string{},
+			&Environment{},
 			&StringValue{raw: "abcde", value: "abcde"},
 			&StringValue{raw: "abcd", value: "abcd"},
 			false,

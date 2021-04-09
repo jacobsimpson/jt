@@ -143,23 +143,24 @@ func processReader(interpreter *ast.Program, reader io.Reader) error {
 	return nil
 }
 
-func applyRules(interpreter *ast.Program, line string, lineNumber int) bool {
-	environment := make(map[string]string)
-
-	environment["%0"] = line
-	environment["%#"] = fmt.Sprintf("%d", lineNumber)
-
-	column := 1
+func applyRules(interp *ast.Program, line string, lineNumber int) bool {
+	columns := []string{line}
 	for i, c := range defaultSplit.Split(line, -1) {
 		if !(i == 0 && c == "") {
-			environment[fmt.Sprintf("%%%d", column)] = c
-			column++
+			columns = append(columns, c)
 		}
 	}
+	environment := &ast.Environment{
+		Row: &ast.Row{
+			LineNumber: lineNumber,
+			Columns:    columns,
+		},
+	}
+
 	debug.Debug("Line %d splits as %+v", lineNumber, environment)
 
-	debug.Info("There are %d rules", len(interpreter.Rules))
-	for _, rule := range interpreter.Rules {
+	debug.Info("There are %d rules", len(interp.Rules))
+	for _, rule := range interp.Rules {
 		debug.Info("    Evaluating: %s\n", rule)
 		result, err := rule.Evaluate(environment)
 		if err != nil {

@@ -5,7 +5,7 @@ import (
 )
 
 type Expression interface {
-	Evaluate(environment map[string]string) (interface{}, error)
+	Evaluate(environment *Environment) (interface{}, error)
 	String() string
 }
 
@@ -29,30 +29,30 @@ func NewRangeExpression(expression Expression, start, end *int) Expression {
 	}
 }
 
-func (e *RangeExpression) Evaluate(environment map[string]string) (interface{}, error) {
+func (e *RangeExpression) Evaluate(environment *Environment) (interface{}, error) {
 	v, err := e.Expression.Evaluate(environment)
 	if err != nil {
 		return nil, err
 	}
-	if s, ok := v.(string); ok {
+	if s, ok := v.(*AnyValue); ok {
 		start := 0
 		if e.Start != nil {
 			start = *e.Start
 		}
 		if start < 0 {
-			start = len(s) + start
+			start = len(s.raw) + start
 		}
-		end := len(s)
+		end := len(s.raw)
 		if e.End != nil {
 			end = *e.End
 		}
 		if end < 0 {
-			end = len(s) + end
+			end = len(s.raw) + end
 		}
 		if start > end {
 			return "", nil
 		}
-		return s[start:end], nil
+		return s.raw[start:end], nil
 	}
 	return nil, fmt.Errorf("range can not be applied to %q", e.Expression)
 }
@@ -78,7 +78,7 @@ func NewNegativeExpression(expression Expression) Expression {
 	}
 }
 
-func (e *negativeExpression) Evaluate(environment map[string]string) (interface{}, error) {
+func (e *negativeExpression) Evaluate(environment *Environment) (interface{}, error) {
 	o, err := e.expression.Evaluate(environment)
 	if err != nil {
 		return nil, err

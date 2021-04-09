@@ -8,7 +8,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func lt(environment map[string]string, left, right Expression) bool {
+func lt(environment *Environment, left, right Expression) bool {
 	left = resolveVar(environment, left)
 	right = resolveVar(environment, right)
 
@@ -60,7 +60,7 @@ func lt(environment map[string]string, left, right Expression) bool {
 	return false
 }
 
-func le(environment map[string]string, left, right Expression) bool {
+func le(environment *Environment, left, right Expression) bool {
 	left = resolveVar(environment, left)
 	right = resolveVar(environment, right)
 
@@ -105,7 +105,7 @@ func le(environment map[string]string, left, right Expression) bool {
 	return false
 }
 
-func eq(environment map[string]string, left, right Expression) bool {
+func eq(environment *Environment, left, right Expression) bool {
 	left = resolveVar(environment, left)
 	right = resolveVar(environment, right)
 
@@ -167,11 +167,11 @@ func eq(environment map[string]string, left, right Expression) bool {
 	return false
 }
 
-func ne(environment map[string]string, left, right Expression) bool {
+func ne(environment *Environment, left, right Expression) bool {
 	return !eq(environment, left, right)
 }
 
-func ge(environment map[string]string, left, right Expression) bool {
+func ge(environment *Environment, left, right Expression) bool {
 	left = resolveVar(environment, left)
 	right = resolveVar(environment, right)
 
@@ -216,7 +216,7 @@ func ge(environment map[string]string, left, right Expression) bool {
 	return false
 }
 
-func gt(environment map[string]string, left, right Expression) bool {
+func gt(environment *Environment, left, right Expression) bool {
 	left = resolveVar(environment, left)
 	right = resolveVar(environment, right)
 
@@ -396,11 +396,10 @@ func parseInt(s string) (int64, error) {
 	return strconv.ParseInt(s, 10, 64)
 }
 
-func resolveVar(environment map[string]string, v Expression) Expression {
+func resolveVar(environment *Environment, v Expression) Expression {
 	// TODO: This is going to crash hard if the variable doesn't exist.
 	if vr, ok := v.(*VarValue); ok {
-		val := environment[vr.name]
-		return &AnyValue{val}
+		return environment.Resolve(vr)
 	}
 	return v
 }

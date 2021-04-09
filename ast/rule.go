@@ -9,11 +9,11 @@ type Rule struct {
 	Block     *Block
 }
 
-func (r *Rule) Evaluate(environment map[string]string) (interface{}, error) {
+func (r *Rule) Evaluate(environment *Environment) (interface{}, error) {
 	return r.Selection.Evaluate(environment)
 }
 
-func (r *Rule) Execute(environment map[string]string) error {
+func (r *Rule) Execute(environment *Environment) error {
 	return r.Block.Execute(environment)
 }
 

@@ -10,7 +10,7 @@ type Command struct {
 	Parameters []Expression
 }
 
-func (c *Command) Execute(environment map[string]string) error {
+func (c *Command) Execute(environment *Environment) error {
 	switch c.Name {
 	case "println", "print":
 		formats := []string{}

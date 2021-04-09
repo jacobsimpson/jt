@@ -1,6 +1,8 @@
 package ast
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Block represents a block of commands in a program.
 type Block struct {
@@ -20,7 +22,7 @@ func NewPrintlnBlock() *Block {
 	}
 }
 
-func (b *Block) Execute(environment map[string]string) error {
+func (b *Block) Execute(environment *Environment) error {
 	for _, command := range b.Commands {
 		if err := command.Execute(environment); err != nil {
 			return err
