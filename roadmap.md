@@ -1,17 +1,29 @@
 # Roadmap
 
-- make this a valid shortcut: `jt '%1'`
-    - this would be great, if that was a shortcut to print column %1, but how
-      is that statement different from `jt '3'`, meaning only print the lines
-      where `%0 == 3`.
-- Add support for booleans
-- Add support for duration
-- implement a `now` keyword.
 - implement negative column addressing. %-1 will address the last column, %-2
   will address the second to last column.
-- Parser specific errors that can turn into useful user output. Right now,
-  generic errors are used everywhere, and when it is printed out at the top
-  level, it isn't very helpful.
+- Add string deliniation support for '' and ``
+- substrings of column identifiers in the selection of a rule.
+- Substrings
+    - s = "ab.cd.txt"
+    - s[:] == s[0:] == s
+    - s[0:-1] == "ab.cd.tx"
+    - s[:"."] == "ab"
+    - s[:-"."] == "ab.cd"
+    - s[".":"."] == ".cd"
+    - s["."+:"."] == "cd"
+    - s[:/txt/] == "ab.cd."
+- expand boolean expressions to conjunctions and disjunctions.
+    ```
+    jt '%3 < 12 and %4 == "joe"'
+    jt '%3 < 12 or %4 == "joe"'
+    ```
+- Environment variable access (Using $ syntax)
+- Add support for booleans
+- Allow decimals to correctly compare to integers
+- fully expand the type comparison matrix.
+- Add support for duration
+- implement a `now` keyword.
 - implement duration literals
     - using strict ISO-8601 duration literals (e.g. P1Y3M ...) will mean that
       during parsing, duration literals could potentially be valid identifiers
@@ -30,14 +42,14 @@
       in the `jt` script). If the incoming text doesn't match the type
       expectation, it isn't meeting the programmer's selection criteria.
     ```sh
-    jt '%3 < "that"'
-    jt '%3 < 14'
-    jt '%3 < 2017-12-11T06:43'
-    jt '2017-12-11T06:00 < %3 < 2017-12-11T06:43'
     jt '%3 < 12 and %4 == "joe"'
     jt '%3 < 12 or %4 == "joe"'
     ```
 
+- make this a valid shortcut: `jt '%1'`
+    - this would be great, if that was a shortcut to print column %1, but how
+      is that statement different from `jt '3'`, meaning only print the lines
+      where `%0 == 3`.
 ### Dates
 
 - date related keywords that might be nice: `today`, `tomorrow`, `yesterday`,
@@ -93,15 +105,6 @@
 
 ### Strings
 
-- Substrings
-    - s = "ab.cd.txt"
-    - s[:] == s[0:] == s
-    - s[0:-1] == "ab.cd.tx"
-    - s[:"."] == "ab"
-    - s[:-"."] == "ab.cd"
-    - s[".":"."] == ".cd"
-    - s["."+:"."] == "cd"
-    - s[:/txt/] == "ab.cd."
 - s.len()
 - s.format("ab${c}d", {c: "3"})
 
@@ -218,33 +221,6 @@ row not printing.)
 
 ## Aspirational Examples
 
-- these statements are all equivalent, and analogous to `awk '/this/ {print
-  $0;}'`
-    ```sh
-    jt '/this/'
-    jt '%0 == /this/'
-    jt '%0 == /this/ %0'
-    jt '%0 == /this/ print %0'  # Hopefully I can parse a single statement after
-                                # the selection without the braces to indicate a
-                                # block.
-    jt '%0 == /this/ {print %0}'
-    ```
-- extended regular expression matcher, will automatically echo matching lines
-  if there is no program block.
-    ```sh
-    jt '/this/'
-    jt '%0 == /this/'
-    ```
-
-- extended regular expression matcher, will automatically echo lines where the
-  third column matches the RE. Auto echo matching lines when there is no
-  program block.
-    ```sh
-    jt '%3 == /that/'             # Regular expression matching on the 3rd column.
-    jt '%3 == "that"'             # Exact string matching on the 3rd column.
-    jt "%3 == 'that' {print %0}"  # Exact string matching on the 3rd column.
-    ```
-
 - as an optimization, if no one actually uses the columns, there is no need to
   split the columns.
 
@@ -333,7 +309,7 @@ row not printing.)
 
 - easy access to environment variables.
     ```sh
-    jt 'print env["PATH"].split(":")'
+    jt 'print $PATH.split(":")'
     ```
 
     -   What if `$abc` always meant an environment variable? Then, if the
@@ -341,11 +317,6 @@ row not printing.)
         the string is single quoted, or otherwise escaped, the `jt` interpreter
         would map the `$abc` to an environment variable.
 
-- and a better way of accessing environment variables would be good too. Maybe
-  even just making them directly available, like `%PATH`, and `%GOPATH`.
-    ```sh
-    jt 'env["GOPATH"].split(":")[0]'
-    ```
 - simple, robust string indexing
 - this will return a string that is the last 3 characters of %2, if there are 3
   characters. If there are less than 3 characters, it will return whatever it
@@ -356,7 +327,8 @@ row not printing.)
 
 - string multiplications. `"."*5 == "....."`
 - `.lower()`, `.upper()`, `.title()`, `.capitalize()`, `.swapcase()`, `.reverse()`,
-  `.join()`, `ltrim()`, `rtrim()`, `.trim()`, `.endswith()`, `.startswith()`
+  `.join()`, `ltrim()`, `rtrim()`, `.trim()`, `.endswith()`, `.startswith()`,
+  `.contains()`
 
 - it would be nice if there was a simpler way to do this. It's such a common
   type operation for shell code to manipulate paths.
@@ -368,14 +340,14 @@ row not printing.)
 
 - remove unwanted path entries
     ```sh
-    jt 'env["GOPATH"].split(":").filter("some-unwanted-path").join(":")'
+    jt '$GOPATH.split(":").filter("some-unwanted-path").join(":")'
     ```
 
 - remove duplicates. Notice it doesn't require sorting in order to work, so it
   won't change order.
     ```sh
-    jt 'env["GOPATH"].split(":").dedup().join(":")'
-    jt 'env["GOPATH"].split(":").unique().join(":")'
+    jt '$GOPATH.split(":").dedup().join(":")'
+    jt '$GOPATH.split(":").unique().join(":")'
     ```
 
 - newline replacements.
