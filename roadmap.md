@@ -1,6 +1,5 @@
 # Roadmap
 
-- Looks like string comparisons aren't working. Make it work: `echo "ab\ncd\nde" | ./jt '=="ab"'`
 - make this a valid shortcut: `jt '%1'`
     - this would be great, if that was a shortcut to print column %1, but how
       is that statement different from `jt '3'`, meaning only print the lines

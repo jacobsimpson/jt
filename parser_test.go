@@ -473,6 +473,20 @@ func TestParser(t *testing.T) {
 			nil,
 		},
 		{
+			`   ==      "this is the thing"   `,
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%0"),
+						Operator: ast.EQ_Operator,
+						Right:    ast.NewStringValue(`"this is the thing"`),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+			nil,
+		},
+		{
 			"%3 == 2.4",
 			&ast.Program{[]*ast.Rule{
 				&ast.Rule{

@@ -72,7 +72,7 @@ boolean_expression = _ expression:(operator_first_boolean_expression / three_ter
     return expression, nil
 }
 
-operator_first_boolean_expression = comparison:comparison term:term {
+operator_first_boolean_expression = comparison:comparison _ term:term {
     return &ast.Comparison{
         Left:     ast.NewVarValue("%0"),
         Operator: comparison.(ast.Operator),
