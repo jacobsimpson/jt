@@ -68,7 +68,11 @@ no_block_rule = _ expression:boolean_expression _EOL {
     }, nil
 }
 
-boolean_expression = _ expression:(operator_first_boolean_expression / three_term_boolean_expression / full_boolean_expression / single_term_boolean_expression) {
+boolean_expression = _ expression:(
+        operator_first_boolean_expression /
+        three_term_boolean_expression /
+        full_boolean_expression /
+        single_term_boolean_expression) {
     return expression, nil
 }
 
@@ -131,7 +135,15 @@ full_boolean_expression = lhs:term _ comparison:comparison _ rhs:term {
     }, nil
 }
 
-term = identifier:(column_identifier / date / decimal / integer / regular_expression / string_literal) { return identifier, nil }
+term = identifier:(
+        column_identifier /
+        date /
+        decimal /
+        integer /
+        regular_expression /
+        string_literal) {
+    return identifier, nil
+}
 
 column_identifier = identifier:('%' '-'? [0-9]+) rng:range_expression? {
     if rng == nil {
