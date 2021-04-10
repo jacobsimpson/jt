@@ -3,6 +3,7 @@ package ast
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/jacobsimpson/jt/datetime"
 	"github.com/shopspring/decimal"
@@ -420,8 +421,39 @@ func parseInt(s string) (int64, error) {
 
 func resolveVar(environment *Environment, v Expression) Expression {
 	// TODO: This is going to crash hard if the variable doesn't exist.
-	if vr, ok := v.(*VarValue); ok {
+	switch vr := v.(type) {
+	case *VarValue:
 		return environment.Resolve(vr)
+	case *KeywordValue:
+		switch vr.value {
+		case "yesterday":
+			t := time.Now().Add(-24 * time.Hour)
+			t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+			return &DateTimeValue{
+				raw:   t.String(),
+				value: t,
+			}
+		case "today":
+			t := time.Now()
+			t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+			return &DateTimeValue{
+				raw:   t.String(),
+				value: t,
+			}
+		case "now":
+			t := time.Now()
+			return &DateTimeValue{
+				raw:   t.String(),
+				value: t,
+			}
+		case "tomorrow":
+			t := time.Now().Add(24 * time.Hour)
+			t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+			return &DateTimeValue{
+				raw:   t.String(),
+				value: t,
+			}
+		}
 	}
 	return v
 }

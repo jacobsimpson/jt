@@ -47,7 +47,8 @@ for name in \
         double_lt_any_le_double_operator \
         ternary_boolean_error \
         integer_ge_operator_negative_column \
-        any_gt_any ; do
+        any_gt_any \
+        any_gt_now ; do
 
     export JT=./jt
     export TEST_DIR="tests/$name"

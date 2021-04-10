@@ -430,48 +430,53 @@ func TestParser(t *testing.T) {
 			}},
 			nil,
 		},
-		//{
-		//	"%2 == today",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue("9", 9),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//nil,
-		//},
-		//{
-		//	"%2 == yesterday",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue("9", 9),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//nil,
-		//},
-		//{
-		//	"%2 == tomorrow",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left:     ast.NewVarValue("%0"),
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewIntegerValue("9", 9),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//nil,
-		//},
+		{
+			"%2 == today",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%2"),
+						Operator: ast.EQ_Operator,
+						Right:    ast.NewKeywordValue("today"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+			nil,
+		},
+		{
+			`
+
+			%112     >=       yesterday
+
+
+			`,
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%112"),
+						Operator: ast.GE_Operator,
+						Right:    ast.NewKeywordValue("yesterday"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+			nil,
+		},
+		{
+			"%2 < tomorrow",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%2"),
+						Operator: ast.LT_Operator,
+						Right:    ast.NewKeywordValue("tomorrow"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+			nil,
+		},
 		{
 			`%3 == "this is the thing"`,
 			&ast.Program{[]*ast.Rule{

@@ -47,8 +47,6 @@
       where `%0 == 3`.
 ### Dates
 
-- date related keywords that might be nice: `today`, `tomorrow`, `yesterday`,
-  `now`
 - Dates are a first class type with a literal represenation in the language,
   just like an integer, a boolean or a string. The complete literal
   representation is basically ISO-8601. However, there is extra support for
@@ -70,8 +68,6 @@
         - `jt '!=2013T'` prints all lines where the line can be coerced into a
           date, and the date is less than 2013-01-01T00:00:00 or greater than
           or equal to 2014-01-01T00:00:00
-- `jt` supports date/time as a native type, and has syntax support for
-  date/time literals
 - Print all lines where the 3rd column is a date before Dec 11, 2017 at
   6:43:00am local time. Since the 3rd column is being compared to a date, `jt`
   will attempt to parse it as a date/time, trying out various formats to see if
@@ -82,10 +78,6 @@
     ```
 
 - `jt '{print 2013T-1M;}'`
-- `jt '%3 < today()' - print all the lines where the 3rd column can be coerced
-  into a date which is before 00:00am of today.
-    - `yesterday()`
-    - `tomorrow()`
 
 ### Integers
 

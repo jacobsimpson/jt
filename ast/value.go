@@ -320,3 +320,30 @@ func (v *AnyValue) String() string {
 func (v *AnyValue) Evaluate(environment *Environment) (interface{}, error) {
 	return v.raw, nil
 }
+
+// KeywordValue is a Value implementation to hold a reserved language keyword.
+type KeywordValue struct {
+	value string
+}
+
+func NewKeywordValue(value string) Value {
+	return &KeywordValue{
+		value: value,
+	}
+}
+
+func (v *KeywordValue) Raw() string {
+	return v.value
+}
+
+func (v *KeywordValue) Value() interface{} {
+	return v.value
+}
+
+func (v *KeywordValue) String() string {
+	return v.value
+}
+
+func (v *KeywordValue) Evaluate(environment *Environment) (interface{}, error) {
+	return v.value, nil
+}

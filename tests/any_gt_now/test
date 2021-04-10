@@ -1,0 +1,2 @@
+# vi: ft=sh
+${JT} '%0 > now' ${INPUT}

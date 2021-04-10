@@ -142,8 +142,13 @@ term = identifier:(
         decimal /
         integer /
         regular_expression /
-        string_literal) {
+        string_literal /
+        keyword) {
     return identifier, nil
+}
+
+keyword = ("yesterday" / "today" / "now" / "tomorrow") {
+    return ast.NewKeywordValue(string(c.text)), nil
 }
 
 column_identifier = identifier:('%' '-'? [0-9]+) rng:range_expression? {
