@@ -43,14 +43,14 @@ rule = rule:(block_rule / no_block_rule) {
     return rule, nil
 }
 
-block_rule = _ expression:boolean_expression _ '{' _ identifier:identifier _ '(' _ column:column_identifier _ ')' _ '}' _EOL {
+block_rule = _ expression:boolean_expression _ '{' _ identifier:identifier _ '(' _ term:term _ ')' _ '}' _EOL {
     return &ast.Rule{
         Selection: expression.(ast.Expression),
         Block:     &ast.Block{
 		    []*ast.Command{
                 &ast.Command{
                     identifier.(string),
-                    []ast.Expression{column.(ast.Expression)},
+                    []ast.Expression{term.(ast.Expression)},
                 },
             },
 	    },
