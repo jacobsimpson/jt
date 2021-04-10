@@ -129,9 +129,9 @@ three_term_boolean_expression = lhs:term _ left_comparison:less_comparison _ ct:
 
 full_boolean_expression = lhs:term _ comparison:comparison _ rhs:term {
     return &ast.Comparison{
-        Left:     lhs.(ast.Value),
+        Left:     lhs.(ast.Expression),
         Operator: comparison.(ast.Operator),
-        Right:    rhs.(ast.Value),
+        Right:    rhs.(ast.Expression),
     }, nil
 }
 

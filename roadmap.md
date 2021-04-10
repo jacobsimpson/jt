@@ -1,7 +1,5 @@
 # Roadmap
 
-- Add string deliniation support for '' and ``
-- substrings of column identifiers in the selection of a rule.
 - Substrings
     - s = "ab.cd.txt"
     - s[:] == s[0:] == s

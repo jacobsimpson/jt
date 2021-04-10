@@ -556,26 +556,24 @@ func TestParser(t *testing.T) {
 		//	}},
 		//nil,
 		//},
-		// This test case requires that a rule comparison be updated to support
-		// arbitrary expressions on LHS and RHS.
-		//{
-		//	"%3[-4:] == '.txt'",
-		//	&ast.Program{[]*ast.Rule{
-		//		&ast.Rule{
-		//			&ast.Comparison{
-		//				Left: &ast.RangeExpression{
-		//					ast.NewVarValue("%2"),
-		//					func(i int) *int { return &i }(3),
-		//					func(i int) *int { return &i }(7),
-		//				},
-		//				Operator: ast.LT_Operator,
-		//				Right:    ast.NewStringValue("'.txt'"),
-		//			},
-		//			ast.NewPrintlnBlock(),
-		//		},
-		//	}},
-		//nil,
-		//},
+		{
+			"%3[-4:] == '.txt'",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left: &ast.RangeExpression{
+							ast.NewVarValue("%3"),
+							func(i int) *int { return &i }(-4),
+							nil,
+						},
+						Operator: ast.EQ_Operator,
+						Right:    ast.NewStringValue("'.txt'"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+			nil,
+		},
 	}
 
 	for _, test := range tests {
