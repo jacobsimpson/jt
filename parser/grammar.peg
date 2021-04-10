@@ -204,7 +204,11 @@ octal_int   = [+-]? "0o" [0-7]+     { return ast.NewIntegerValueFromOctalString(
 hex_int     = [+-]? "0x" [0-9A-F_]+ { return ast.NewIntegerValueFromHexString(string(c.text)) }
 decimal_int = [+-]? [0-9_]+         { return ast.NewIntegerValueFromDecString(string(c.text)) }
 
-string_literal = '"' [^"]* '"' {
+string_literal = ('"' [^"]* '"') {
+    return ast.NewStringValue(string(c.text)), nil
+} / ("'" [^']* "'") {
+    return ast.NewStringValue(string(c.text)), nil
+} / ('`' [^`]* '`') {
     return ast.NewStringValue(string(c.text)), nil
 }
 
