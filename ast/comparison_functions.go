@@ -26,39 +26,27 @@ func lt(environment *Environment, left, right Expression) bool {
 			return stringGTAny(r, l)
 		case *AnyValue:
 			return anyGTAny(r, l)
-		default:
-			return false
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return dateTimeLTAny(l, r)
-		default:
-			return false
 		}
 	case *DoubleValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return doubleLTAny(l, r)
-		default:
-			return false
 		}
 	case *IntegerValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerLTAny(l, r)
-		default:
-			return false
 		}
 	case *StringValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return stringLTAny(l, r)
-		default:
-			return false
 		}
-	default:
-		return false
 	}
 	return false
 }
@@ -80,32 +68,22 @@ func le(environment *Environment, left, right Expression) bool {
 			return stringGTAny(r, l) || stringEQAny(r, l)
 		case *AnyValue:
 			return anyGTAny(r, l) || anyEQAny(r, l)
-		default:
-			return false
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return dateTimeLTAny(l, r) || dateTimeEQAny(l, r)
-		default:
-			return false
 		}
 	case *IntegerValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerLTAny(l, r) || integerEQAny(l, r)
-		default:
-			return false
 		}
 	case *StringValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return stringLTAny(l, r) || stringEQAny(l, r)
-		default:
-			return false
 		}
-	default:
-		return false
 	}
 	return false
 }
@@ -121,8 +99,6 @@ func eq(environment *Environment, left, right Expression) bool {
 			return compareStringEQRegexp(r, l)
 		case *AnyValue:
 			return regexpEQAny(l, r)
-		default:
-			return false
 		}
 	case *AnyValue:
 		switch r := right.(type) {
@@ -138,22 +114,16 @@ func eq(environment *Environment, left, right Expression) bool {
 			return stringEQAny(r, l)
 		case *AnyValue:
 			return anyEQAny(r, l)
-		default:
-			return false
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return dateTimeEQAny(l, r)
-		default:
-			return false
 		}
 	case *IntegerValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerEQAny(l, r)
-		default:
-			return false
 		}
 	case *StringValue:
 		switch r := right.(type) {
@@ -163,13 +133,7 @@ func eq(environment *Environment, left, right Expression) bool {
 			return compareStringEQRegexp(l, r)
 		case *StringValue:
 			return compareStringEQString(l, r)
-		default:
-			// Error: "Can not compare %s to %s using %s",
-			//     left.Type(), right.Type(), operator
-			return false
 		}
-	default:
-		return false
 	}
 	return false
 }
@@ -195,32 +159,22 @@ func ge(environment *Environment, left, right Expression) bool {
 			return stringLTAny(r, l) || stringEQAny(r, l)
 		case *AnyValue:
 			return anyLTAny(r, l) || anyEQAny(r, l)
-		default:
-			return false
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return dateTimeGTAny(l, r) || dateTimeEQAny(l, r)
-		default:
-			return false
 		}
 	case *IntegerValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerGTAny(l, r) || integerEQAny(l, r)
-		default:
-			return false
 		}
 	case *StringValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return stringGTAny(l, r) || stringEQAny(l, r)
-		default:
-			return false
 		}
-	default:
-		return false
 	}
 	return false
 }
@@ -242,32 +196,22 @@ func gt(environment *Environment, left, right Expression) bool {
 			return stringLTAny(r, l)
 		case *AnyValue:
 			return anyGTAny(l, r)
-		default:
-			return false
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return dateTimeGTAny(l, r)
-		default:
-			return false
 		}
 	case *IntegerValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerGTAny(l, r)
-		default:
-			return false
 		}
 	case *StringValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return stringGTAny(l, r)
-		default:
-			return false
 		}
-	default:
-		return false
 	}
 	return false
 }
