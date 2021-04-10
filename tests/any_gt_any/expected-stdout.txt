@@ -1,0 +1,3 @@
+when  3
+where 4
+how   22

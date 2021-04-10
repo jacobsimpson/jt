@@ -7,6 +7,7 @@ Simple recipes for working with text.
 - [Basic explanation](#basic-explanation)
 - [Comparison operators](#comparison-operators)
 - [Input column names](#input-column-names)
+- [Accessing environment variables](#accessing-environment-variables)
 - [Type system](#type-system)
 - [Literals](#literals)
 - [Like Grep](#like-grep)
@@ -105,6 +106,49 @@ third column is numeric and greater than 3:
 a=3
 jt "%3 > $a"
 ```
+
+### Accessing environment variables
+
+It is possible to get access to environment variables without depending on
+shell expansion. Any variables prefixed with `$` will be assumed to represent
+environment variables. For example:
+
+```sh
+export a=3
+jt '%3 > $a'
+```
+
+There are a couple of subtlties to be aware of:
+
+1.  Environment variables will be brought into `jt` as type `any`, which means
+    they will be string comparisons. In the following example, `a` looks like
+    a number, but will be compared as a string.
+    ```sh
+    export a=3
+    jt '%3 > $a'
+    ```
+
+2.  Environment variables will be treated differently if they are expanded by
+    the shell, rather than evaluated by `jt`. Consider:
+    ```sh
+    export a="this is the value"
+    jt "%3 > $a"
+    ```
+
+    Shell expansion will result in this program for `jt` to compile:
+    ```sh
+    jt "%3 > this is the value"
+    ```
+
+    The same program, using single quotes, will be valid, resulting in printing
+    all lines where the third column is greater than `this is the value`.
+    ```sh
+    export a="this is the value"
+    jt '%3 > $a'
+    ```
+
+3.  If the environment variable does not exist, it will be treated as an empty
+    string, much the way `bash` would treat an unknown environment variable.
 
 ### Type system
 

@@ -16,7 +16,6 @@
     jt '%3 < 12 and %4 == "joe"'
     jt '%3 < 12 or %4 == "joe"'
     ```
-- Environment variable access (Using $ syntax)
 - Add support for booleans
 - Allow decimals to correctly compare to integers
 - fully expand the type comparison matrix.

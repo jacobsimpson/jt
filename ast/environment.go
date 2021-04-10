@@ -2,6 +2,7 @@ package ast
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -32,6 +33,9 @@ func (e *Environment) Resolve(vr *VarValue) Expression {
 			return &AnyValue{e.Row.Columns[len(e.Row.Columns)+i]}
 		}
 		return &AnyValue{e.Row.Columns[i]}
+	}
+	if strings.HasPrefix(vr.name, "$") {
+		return &AnyValue{os.Getenv(vr.name[1:])}
 	}
 	return e.Variables[vr.name]
 }

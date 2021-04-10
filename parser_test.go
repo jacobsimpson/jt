@@ -416,6 +416,20 @@ func TestParser(t *testing.T) {
 			}},
 			nil,
 		},
+		{
+			"%3 == $a1",
+			&ast.Program{[]*ast.Rule{
+				&ast.Rule{
+					&ast.Comparison{
+						Left:     ast.NewVarValue("%3"),
+						Operator: ast.EQ_Operator,
+						Right:    ast.NewVarValue("$a1"),
+					},
+					ast.NewPrintlnBlock(),
+				},
+			}},
+			nil,
+		},
 		//{
 		//	"%2 == today",
 		//	&ast.Program{[]*ast.Rule{

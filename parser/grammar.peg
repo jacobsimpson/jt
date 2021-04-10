@@ -137,6 +137,7 @@ full_boolean_expression = lhs:term _ comparison:comparison _ rhs:term {
 
 term = identifier:(
         column_identifier /
+        environment_variable /
         date /
         decimal /
         integer /
@@ -146,6 +147,16 @@ term = identifier:(
 }
 
 column_identifier = identifier:('%' '-'? [0-9]+) rng:range_expression? {
+    if rng == nil {
+        return ast.NewVarValue(string(flatten(identifier))), nil
+    }
+
+    r := rng.(*ast.RangeExpression)
+    r.Expression = ast.NewVarValue(string(flatten(identifier)))
+    return r, nil
+}
+
+environment_variable = identifier:('$' [_a-zA-Z][_a-zA-Z0-9]*) rng:range_expression? {
     if rng == nil {
         return ast.NewVarValue(string(flatten(identifier))), nil
     }

@@ -23,6 +23,8 @@ func lt(environment *Environment, left, right Expression) bool {
 			return doubleGTAny(r, l)
 		case *StringValue:
 			return stringGTAny(r, l)
+		case *AnyValue:
+			return anyGTAny(r, l)
 		default:
 			return false
 		}
@@ -75,6 +77,8 @@ func le(environment *Environment, left, right Expression) bool {
 			return doubleGTAny(r, l) || doubleEQAny(r, l)
 		case *StringValue:
 			return stringGTAny(r, l) || stringEQAny(r, l)
+		case *AnyValue:
+			return anyGTAny(r, l) || anyEQAny(r, l)
 		default:
 			return false
 		}
@@ -131,6 +135,8 @@ func eq(environment *Environment, left, right Expression) bool {
 			return doubleEQAny(r, l)
 		case *StringValue:
 			return stringEQAny(r, l)
+		case *AnyValue:
+			return anyEQAny(r, l)
 		default:
 			return false
 		}
@@ -186,6 +192,8 @@ func ge(environment *Environment, left, right Expression) bool {
 			return doubleLTAny(r, l) || doubleEQAny(r, l)
 		case *StringValue:
 			return stringLTAny(r, l) || stringEQAny(r, l)
+		case *AnyValue:
+			return anyLTAny(r, l) || anyEQAny(r, l)
 		default:
 			return false
 		}
@@ -231,6 +239,8 @@ func gt(environment *Environment, left, right Expression) bool {
 			return doubleLTAny(r, l)
 		case *StringValue:
 			return stringLTAny(r, l)
+		case *AnyValue:
+			return anyGTAny(l, r)
 		default:
 			return false
 		}
@@ -374,6 +384,18 @@ func stringLTAny(lValue *StringValue, val *AnyValue) bool {
 
 func stringGTAny(lValue *StringValue, val *AnyValue) bool {
 	return lValue.value > val.raw
+}
+
+func anyGTAny(lValue *AnyValue, val *AnyValue) bool {
+	return lValue.raw > val.raw
+}
+
+func anyEQAny(lValue *AnyValue, val *AnyValue) bool {
+	return lValue.raw == val.raw
+}
+
+func anyLTAny(lValue *AnyValue, val *AnyValue) bool {
+	return lValue.raw < val.raw
 }
 
 func parseInt(s string) (int64, error) {

@@ -1,0 +1,6 @@
+what  1
+butt  2
+when  3
+where 4
+why   12
+how   22
