@@ -89,11 +89,9 @@ important part of what it does.
 
 `jt` will produce columns for each input line.
 
-`%[0-9]+` is used to address a particular column of input data.
-
-`%-[0-9]+` is used to address a particular column of input data, starting from
-the end of the column list and moving backwards. `%-1` is the last column of
-data.
+A particular column can be addressed using column identifiers in the format of
+`%-?[0-9]+`. For example, `%1` is the first column of a line of input. `%-1` is
+the last column of a line of input.
 
 `%0` gets access to the whole line of input.
 
@@ -118,7 +116,7 @@ export a=3
 jt '%3 > $a'
 ```
 
-There are a couple of subtlties to be aware of:
+There are a couple of subtleties to be aware of:
 
 1.  Environment variables will be brought into `jt` as type `any`, which means
     they will be string comparisons. In the following example, `a` looks like
@@ -152,7 +150,7 @@ There are a couple of subtlties to be aware of:
 
 ### Type system
 
-`jt` recognizes a few different types. Integer, reals, strings, dates and
+`jt` recognizes a few different types. Integers, reals, strings, dates and
 regular expressions. Values that are read from data input have no type (they
 are the `any` type). Input values will be coerced to match the type they are
 compared again. If they can not be coerced, the match is always false.
