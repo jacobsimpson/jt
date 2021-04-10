@@ -86,6 +86,7 @@ func main() {
 	if err := execute(rules, inputFiles); err != nil {
 		switch e := err.(type) {
 		case parser.ErrorLister:
+			fmt.Fprintf(os.Stderr, "Could not understand program:\n")
 			for _, err := range e.Errors() {
 				p := err.(parser.ParserError)
 				fmt.Fprintf(os.Stderr, "%+v\n", p.InnerError())
