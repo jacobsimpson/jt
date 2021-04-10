@@ -45,7 +45,8 @@ for name in \
         string_le_operator \
         string_lt_operator \
         double_lt_any_le_double_operator \
-        ternary_boolean_error ; do
+        ternary_boolean_error \
+        integer_ge_operator_negative_column ; do
 
     export JT=./jt
     export TEST_DIR="tests/$name"

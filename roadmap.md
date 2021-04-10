@@ -1,7 +1,5 @@
 # Roadmap
 
-- implement negative column addressing. %-1 will address the last column, %-2
-  will address the second to last column.
 - Add string deliniation support for '' and ``
 - substrings of column identifiers in the selection of a rule.
 - Substrings
