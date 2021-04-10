@@ -8,12 +8,14 @@ parser/grammar.go: parser/grammar.peg
 test: jt
 	go test ./...
 
-tests: jt tests/test tests/*/*
+tests: jt FORCE
 	go test ./...
 	tests/test
 
 install: jt
 	cp ./jt /usr/bin/jt
+
+.PHONY: FORCE
 
 clean::
 	rm -Rf jt parser/grammar.go
