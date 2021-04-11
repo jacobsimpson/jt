@@ -69,6 +69,25 @@ func Test_lt(t *testing.T) {
 		{&IntegerValue{"40", 40}, mustDouble(t, "30.0") /*         */, false},
 		{&IntegerValue{"40", 40}, NewStringValue("'bbc'") /*       */, false},
 		{&IntegerValue{"40", 40}, NewStringValue("'50'") /*        */, false},
+
+		{mustDouble(t, "56.3"), &AnyValue{"61"} /*               */, true},
+		{mustDouble(t, "56.3"), &AnyValue{"73.4"} /*             */, true},
+		{mustDouble(t, "56.3"), &AnyValue{"56.3"} /*             */, false},
+		{mustDouble(t, "56.3"), &AnyValue{"49.7"} /*             */, false},
+		{mustDouble(t, "56.3"), &AnyValue{"abc"} /*              */, false},
+		{mustDouble(t, "56.3"), &AnyValue{"2010-10-11T06:45"} /* */, false},
+		{mustDouble(t, "56.3"), mustDateTime(t, "2010-10-11T06:45"), false},
+		{mustDouble(t, "56.3"), &IntegerValue{"61", 61} /*       */, false},
+		// This behavior is currently not implemented. But it should be.
+		//{mustDouble(t, "56.3"), &IntegerValue{"56", 56} /*       */, true},
+		// This behavior is currently not implemented. But it should be.
+		//{mustDouble(t, "56.3"), &IntegerValue{"47", 47} /*       */, true},
+		{mustDouble(t, "56.3"), mustDouble(t, "66.7") /*         */, true},
+		{mustDouble(t, "56.3"), mustDouble(t, "56.3") /*         */, false},
+		{mustDouble(t, "56.3"), mustDouble(t, "46.7") /*         */, false},
+		{mustDouble(t, "56.3"), NewStringValue("'56.4'") /*      */, false},
+		{mustDouble(t, "56.3"), NewStringValue("'56.3'") /*      */, false},
+		{mustDouble(t, "56.3"), NewStringValue("'56.2'") /*      */, false},
 	}
 
 	for _, test := range tests {
