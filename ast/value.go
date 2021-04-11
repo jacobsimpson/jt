@@ -84,6 +84,10 @@ type StringValue struct {
 	value string
 }
 
+// NewStringValue creates a new StringValue, given a string. It is assumed that
+// the input string is deliniated at each end by a single character that will
+// be chopped in the returned value.
+// i.e. NewStringValue("'abc'") => StringValue{"'abc'", "abc").
 func NewStringValue(s string) Value {
 	return &StringValue{
 		raw:   s,
