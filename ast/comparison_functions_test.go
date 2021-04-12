@@ -63,8 +63,7 @@ func Test_lt(t *testing.T) {
 		{&IntegerValue{"40", 40}, &IntegerValue{"50", 50} /*       */, false},
 		{&IntegerValue{"40", 40}, &IntegerValue{"40", 40} /*       */, false},
 		{&IntegerValue{"40", 40}, &IntegerValue{"30", 30} /*       */, false},
-		// This behavior is currently not implemented. But it should be.
-		//{&IntegerValue{"40", 40}, mustDouble(t, "50.0") /*         */, true},
+		{&IntegerValue{"40", 40}, mustDouble(t, "50.0") /*         */, true},
 		{&IntegerValue{"40", 40}, mustDouble(t, "40.0") /*         */, false},
 		{&IntegerValue{"40", 40}, mustDouble(t, "30.0") /*         */, false},
 		{&IntegerValue{"40", 40}, NewStringValue("'bbc'") /*       */, false},

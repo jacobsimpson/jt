@@ -43,6 +43,8 @@ func lt(environment *Environment, left, right Expression) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerLTAny(l, r)
+		case *DoubleValue:
+			return integerLTDouble(l, r)
 		}
 	case *StringValue:
 		switch r := right.(type) {
@@ -277,6 +279,10 @@ func integerLTAny(iValue *IntegerValue, val *AnyValue) bool {
 		return false
 	}
 	return i < parsed
+}
+
+func integerLTDouble(lhs *IntegerValue, rhs *DoubleValue) bool {
+	return decimal.NewFromInt(lhs.value).LessThan(*rhs.value)
 }
 
 func integerGTAny(iValue *IntegerValue, val *AnyValue) bool {
