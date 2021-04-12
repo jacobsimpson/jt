@@ -213,16 +213,33 @@ func gt(environment *Environment, left, right Expression) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return dateTimeGTAny(l, r)
+		case *DateTimeValue:
+			return dateTimeGTDateTime(l, r)
+		}
+	case *DoubleValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return doubleGTAny(l, r)
+		case *DoubleValue:
+			return doubleGTDouble(l, r)
+		case *IntegerValue:
+			return doubleGTInteger(l, r)
 		}
 	case *IntegerValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerGTAny(l, r)
+		case *DoubleValue:
+			return integerGTDouble(l, r)
+		case *IntegerValue:
+			return integerGTInteger(l, r)
 		}
 	case *StringValue:
 		switch r := right.(type) {
 		case *AnyValue:
 			return stringGTAny(l, r)
+		case *StringValue:
+			return stringGTString(l, r)
 		}
 	}
 	return false
@@ -271,6 +288,10 @@ func dateTimeGTAny(lhs *DateTimeValue, rhs *AnyValue) bool {
 	return lhs.value.After(coerced)
 }
 
+func dateTimeGTDateTime(lhs *DateTimeValue, rhs *DateTimeValue) bool {
+	return lhs.value.After(rhs.value)
+}
+
 func integerEQAny(lhs *IntegerValue, rhs *AnyValue) bool {
 	i := lhs.value
 	parsed, err := parseInt(rhs.raw)
@@ -304,6 +325,14 @@ func integerGTAny(lhs *IntegerValue, rhs *AnyValue) bool {
 		return false
 	}
 	return i > parsed
+}
+
+func integerGTDouble(lhs *IntegerValue, rhs *DoubleValue) bool {
+	return decimal.NewFromInt(lhs.value).GreaterThan(*rhs.value)
+}
+
+func integerGTInteger(lhs *IntegerValue, rhs *IntegerValue) bool {
+	return lhs.value > rhs.value
 }
 
 func doubleEQAny(lhs *DoubleValue, rhs *AnyValue) bool {
@@ -341,6 +370,14 @@ func doubleGTAny(lhs *DoubleValue, rhs *AnyValue) bool {
 	return d.GreaterThan(parsed)
 }
 
+func doubleGTDouble(lhs *DoubleValue, rhs *DoubleValue) bool {
+	return lhs.value.GreaterThan(*rhs.value)
+}
+
+func doubleGTInteger(lhs *DoubleValue, rhs *IntegerValue) bool {
+	return lhs.value.GreaterThan(decimal.NewFromInt(rhs.value))
+}
+
 func doubleLTDouble(lhs *DoubleValue, rhs *DoubleValue) bool {
 	return lhs.value.LessThan(*rhs.value)
 }
@@ -359,6 +396,10 @@ func stringLTAny(lhs *StringValue, rhs *AnyValue) bool {
 
 func stringGTAny(lhs *StringValue, rhs *AnyValue) bool {
 	return lhs.value > rhs.raw
+}
+
+func stringGTString(lhs *StringValue, rhs *StringValue) bool {
+	return lhs.value > rhs.value
 }
 
 func stringLTString(lhs *StringValue, rhs *StringValue) bool {
