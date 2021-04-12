@@ -222,59 +222,57 @@ func gt(environment *Environment, left, right Expression) bool {
 	return false
 }
 
-func compareStringEQRegexp(s *StringValue, re *RegexpValue) bool {
-	sv := s.value
-	rev := re.re
-	return rev.MatchString(sv)
+func compareStringEQRegexp(lhs *StringValue, rhs *RegexpValue) bool {
+	return rhs.re.MatchString(lhs.value)
 }
 
-func compareStringEQString(left *StringValue, right *StringValue) bool {
-	return left.value == right.value
+func compareStringEQString(lhs *StringValue, rhs *StringValue) bool {
+	return lhs.value == rhs.value
 }
 
-func regexpEQAny(re *RegexpValue, val *AnyValue) bool {
-	rev := re.re
-	return rev.MatchString(val.raw)
+func regexpEQAny(lhs *RegexpValue, rhs *AnyValue) bool {
+	rev := lhs.re
+	return rev.MatchString(rhs.raw)
 }
 
-func dateTimeEQAny(dtValue *DateTimeValue, val *AnyValue) bool {
-	dt := dtValue.value
-	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val.raw)
+func dateTimeEQAny(lhs *DateTimeValue, rhs *AnyValue) bool {
+	dt := lhs.value
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, rhs.raw)
 	if err != nil {
 		return false
 	}
 	return dt.Equal(coerced)
 }
 
-func dateTimeLTAny(dtValue *DateTimeValue, val *AnyValue) bool {
-	dt := dtValue.value
-	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val.raw)
+func dateTimeLTAny(lhs *DateTimeValue, rhs *AnyValue) bool {
+	dt := lhs.value
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, rhs.raw)
 	if err != nil {
 		return false
 	}
 	return dt.Before(coerced)
 }
 
-func dateTimeGTAny(dtValue *DateTimeValue, val *AnyValue) bool {
-	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, val.raw)
+func dateTimeGTAny(lhs *DateTimeValue, rhs *AnyValue) bool {
+	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, rhs.raw)
 	if err != nil {
 		return false
 	}
-	return dtValue.value.After(coerced)
+	return lhs.value.After(coerced)
 }
 
-func integerEQAny(iValue *IntegerValue, val *AnyValue) bool {
-	i := iValue.value
-	parsed, err := parseInt(val.raw)
+func integerEQAny(lhs *IntegerValue, rhs *AnyValue) bool {
+	i := lhs.value
+	parsed, err := parseInt(rhs.raw)
 	if err != nil {
 		return false
 	}
 	return i == parsed
 }
 
-func integerLTAny(iValue *IntegerValue, val *AnyValue) bool {
-	i := iValue.value
-	parsed, err := parseInt(val.raw)
+func integerLTAny(lhs *IntegerValue, rhs *AnyValue) bool {
+	i := lhs.value
+	parsed, err := parseInt(rhs.raw)
 	if err != nil {
 		return false
 	}
@@ -285,29 +283,29 @@ func integerLTDouble(lhs *IntegerValue, rhs *DoubleValue) bool {
 	return decimal.NewFromInt(lhs.value).LessThan(*rhs.value)
 }
 
-func integerGTAny(iValue *IntegerValue, val *AnyValue) bool {
-	i := iValue.value
-	parsed, err := parseInt(val.raw)
+func integerGTAny(lhs *IntegerValue, rhs *AnyValue) bool {
+	i := lhs.value
+	parsed, err := parseInt(rhs.raw)
 	if err != nil {
 		return false
 	}
 	return i > parsed
 }
 
-func doubleEQAny(dValue *DoubleValue, val *AnyValue) bool {
-	d := dValue.value
-	parsed, err := decimal.NewFromString(val.raw)
+func doubleEQAny(lhs *DoubleValue, rhs *AnyValue) bool {
+	d := lhs.value
+	parsed, err := decimal.NewFromString(rhs.raw)
 	if err != nil {
 		return false
 	}
 	return d.Equal(parsed)
 }
 
-func doubleLTAny(dValue *DoubleValue, val *AnyValue) bool {
-	d := dValue.value
-	parsed, err := decimal.NewFromString(val.raw)
+func doubleLTAny(lhs *DoubleValue, rhs *AnyValue) bool {
+	d := lhs.value
+	parsed, err := decimal.NewFromString(rhs.raw)
 	if err != nil {
-		parsedInt, err := parseInt(val.raw)
+		parsedInt, err := parseInt(rhs.raw)
 		if err != nil {
 			return false
 		}
@@ -316,11 +314,11 @@ func doubleLTAny(dValue *DoubleValue, val *AnyValue) bool {
 	return d.LessThan(parsed)
 }
 
-func doubleGTAny(dValue *DoubleValue, val *AnyValue) bool {
-	d := dValue.value
-	parsed, err := decimal.NewFromString(val.raw)
+func doubleGTAny(lhs *DoubleValue, rhs *AnyValue) bool {
+	d := lhs.value
+	parsed, err := decimal.NewFromString(rhs.raw)
 	if err != nil {
-		parsedInt, err := parseInt(val.raw)
+		parsedInt, err := parseInt(rhs.raw)
 		if err != nil {
 			return false
 		}
@@ -333,32 +331,32 @@ func doubleLTDouble(lhs *DoubleValue, rhs *DoubleValue) bool {
 	return lhs.value.LessThan(*rhs.value)
 }
 
-func stringEQAny(lValue *StringValue, val *AnyValue) bool {
-	return lValue.value == val.raw
+func stringEQAny(lhs *StringValue, rhs *AnyValue) bool {
+	return lhs.value == rhs.raw
 }
 
-func stringLTAny(lValue *StringValue, val *AnyValue) bool {
-	return lValue.value < val.raw
+func stringLTAny(lhs *StringValue, rhs *AnyValue) bool {
+	return lhs.value < rhs.raw
 }
 
-func stringGTAny(lValue *StringValue, val *AnyValue) bool {
-	return lValue.value > val.raw
+func stringGTAny(lhs *StringValue, rhs *AnyValue) bool {
+	return lhs.value > rhs.raw
 }
 
 func stringLTString(lhs *StringValue, rhs *StringValue) bool {
 	return lhs.value < rhs.value
 }
 
-func anyGTAny(lValue *AnyValue, val *AnyValue) bool {
-	return lValue.raw > val.raw
+func anyGTAny(lhs *AnyValue, rhs *AnyValue) bool {
+	return lhs.raw > rhs.raw
 }
 
-func anyEQAny(lValue *AnyValue, val *AnyValue) bool {
-	return lValue.raw == val.raw
+func anyEQAny(lhs *AnyValue, rhs *AnyValue) bool {
+	return lhs.raw == rhs.raw
 }
 
-func anyLTAny(lValue *AnyValue, val *AnyValue) bool {
-	return lValue.raw < val.raw
+func anyLTAny(lhs *AnyValue, rhs *AnyValue) bool {
+	return lhs.raw < rhs.raw
 }
 
 func parseInt(s string) (int64, error) {
