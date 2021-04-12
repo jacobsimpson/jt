@@ -88,6 +88,17 @@ func Test_lt(t *testing.T) {
 		{mustDouble(t, "56.3"), NewStringValue("'56.4'") /*      */, false},
 		{mustDouble(t, "56.3"), NewStringValue("'56.3'") /*      */, false},
 		{mustDouble(t, "56.3"), NewStringValue("'56.2'") /*      */, false},
+
+		{NewStringValue("'jkl'"), &AnyValue{"kkl"} /*              */, true},
+		{NewStringValue("'jkl'"), &AnyValue{"jkl"} /*              */, false},
+		{NewStringValue("'jkl'"), &AnyValue{"ikl"} /*              */, false},
+		{NewStringValue("'jkl'"), mustDateTime(t, "2010-10-11T06:45"), false},
+		{NewStringValue("'jkl'"), mustDateTime(t, "2010-10-11T06:45"), false},
+		{NewStringValue("'jkl'"), &IntegerValue{"13", 13} /*       */, false},
+		{NewStringValue("'jkl'"), mustDouble(t, "13.1") /*         */, false},
+		{NewStringValue("'jkl'"), NewStringValue("'kkl'") /*       */, true},
+		{NewStringValue("'jkl'"), NewStringValue("'jkl'") /*       */, false},
+		{NewStringValue("'jkl'"), NewStringValue("'ikl'") /*       */, false},
 	}
 
 	for _, test := range tests {

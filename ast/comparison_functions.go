@@ -48,6 +48,8 @@ func lt(environment *Environment, left, right Expression) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return stringLTAny(l, r)
+		case *StringValue:
+			return stringLTString(l, r)
 		}
 	}
 	return false
@@ -335,6 +337,10 @@ func stringLTAny(lValue *StringValue, val *AnyValue) bool {
 
 func stringGTAny(lValue *StringValue, val *AnyValue) bool {
 	return lValue.value > val.raw
+}
+
+func stringLTString(lhs *StringValue, rhs *StringValue) bool {
+	return lhs.value < rhs.value
 }
 
 func anyGTAny(lValue *AnyValue, val *AnyValue) bool {
