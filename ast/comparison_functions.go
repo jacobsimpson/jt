@@ -31,6 +31,8 @@ func lt(environment *Environment, left, right Expression) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return dateTimeLTAny(l, r)
+		case *DateTimeValue:
+			return dateTimeLTDateTime(l, r)
 		}
 	case *DoubleValue:
 		switch r := right.(type) {
@@ -47,6 +49,8 @@ func lt(environment *Environment, left, right Expression) bool {
 			return integerLTAny(l, r)
 		case *DoubleValue:
 			return integerLTDouble(l, r)
+		case *IntegerValue:
+			return integerLTInteger(l, r)
 		}
 	case *StringValue:
 		switch r := right.(type) {
@@ -255,6 +259,10 @@ func dateTimeLTAny(lhs *DateTimeValue, rhs *AnyValue) bool {
 	return dt.Before(coerced)
 }
 
+func dateTimeLTDateTime(lhs *DateTimeValue, rhs *DateTimeValue) bool {
+	return lhs.value.Before(rhs.value)
+}
+
 func dateTimeGTAny(lhs *DateTimeValue, rhs *AnyValue) bool {
 	coerced, err := datetime.ParseDateTime(datetime.CoercionFormats, rhs.raw)
 	if err != nil {
@@ -283,6 +291,10 @@ func integerLTAny(lhs *IntegerValue, rhs *AnyValue) bool {
 
 func integerLTDouble(lhs *IntegerValue, rhs *DoubleValue) bool {
 	return decimal.NewFromInt(lhs.value).LessThan(*rhs.value)
+}
+
+func integerLTInteger(lhs *IntegerValue, rhs *IntegerValue) bool {
+	return lhs.value < rhs.value
 }
 
 func integerGTAny(lhs *IntegerValue, rhs *AnyValue) bool {

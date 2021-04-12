@@ -10,13 +10,6 @@ import (
 )
 
 func Test_lt(t *testing.T) {
-	//- any
-	//- date/time (date, timestamp, time??)
-	//- integer
-	//- reals
-	//- regular expressions
-	//- string
-	//- string range
 	tests := []struct {
 		left  Value
 		right Value
@@ -47,7 +40,7 @@ func Test_lt(t *testing.T) {
 		{mustDateTime(t, "2010-09-08T07:06"), &AnyValue{"2010-09-09T07:06"} /*  */, true},
 		{mustDateTime(t, "2010-09-08T07:06"), &AnyValue{"2010-09-08T07:06"} /*  */, false},
 		{mustDateTime(t, "2010-09-08T07:06"), &AnyValue{"2010-09-07T07:06"} /*  */, false},
-		{mustDateTime(t, "2010-09-08T07:06"), mustDateTime(t, "2010-09-09T07:06"), false},
+		{mustDateTime(t, "2010-09-08T07:06"), mustDateTime(t, "2010-09-09T07:06"), true},
 		{mustDateTime(t, "2010-09-08T07:06"), mustDateTime(t, "2010-09-08T07:06"), false},
 		{mustDateTime(t, "2010-09-08T07:06"), mustDateTime(t, "2010-09-07T07:06"), false},
 		{mustDateTime(t, "2010-09-08T07:06"), &IntegerValue{"13", 13} /*        */, false},
@@ -60,7 +53,7 @@ func Test_lt(t *testing.T) {
 		{&IntegerValue{"40", 40}, &AnyValue{"40"} /*               */, false},
 		{&IntegerValue{"40", 40}, &AnyValue{"30"} /*               */, false},
 		{&IntegerValue{"40", 40}, mustDateTime(t, "2010-09-07T07:06"), false},
-		{&IntegerValue{"40", 40}, &IntegerValue{"50", 50} /*       */, false},
+		{&IntegerValue{"40", 40}, &IntegerValue{"50", 50} /*       */, true},
 		{&IntegerValue{"40", 40}, &IntegerValue{"40", 40} /*       */, false},
 		{&IntegerValue{"40", 40}, &IntegerValue{"30", 30} /*       */, false},
 		{&IntegerValue{"40", 40}, mustDouble(t, "50.0") /*         */, true},
