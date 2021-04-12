@@ -16,16 +16,16 @@ func lt(environment *Environment, left, right Expression) bool {
 	switch l := left.(type) {
 	case *AnyValue:
 		switch r := right.(type) {
-		case *DateTimeValue:
-			return dateTimeGTAny(r, l)
-		case *IntegerValue:
-			return integerGTAny(r, l)
-		case *DoubleValue:
-			return doubleGTAny(r, l)
-		case *StringValue:
-			return stringGTAny(r, l)
 		case *AnyValue:
 			return anyGTAny(r, l)
+		case *DateTimeValue:
+			return dateTimeGTAny(r, l)
+		case *DoubleValue:
+			return doubleGTAny(r, l)
+		case *IntegerValue:
+			return integerGTAny(r, l)
+		case *StringValue:
+			return stringGTAny(r, l)
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
@@ -70,16 +70,16 @@ func le(environment *Environment, left, right Expression) bool {
 	switch l := left.(type) {
 	case *AnyValue:
 		switch r := right.(type) {
-		case *DateTimeValue:
-			return dateTimeGTAny(r, l) || dateTimeEQAny(r, l)
-		case *IntegerValue:
-			return integerGTAny(r, l) || integerEQAny(r, l)
-		case *DoubleValue:
-			return doubleGTAny(r, l) || doubleEQAny(r, l)
-		case *StringValue:
-			return stringGTAny(r, l) || stringEQAny(r, l)
 		case *AnyValue:
 			return anyGTAny(r, l) || anyEQAny(r, l)
+		case *DateTimeValue:
+			return dateTimeGTAny(r, l) || dateTimeEQAny(r, l)
+		case *DoubleValue:
+			return doubleGTAny(r, l) || doubleEQAny(r, l)
+		case *IntegerValue:
+			return integerGTAny(r, l) || integerEQAny(r, l)
+		case *StringValue:
+			return stringGTAny(r, l) || stringEQAny(r, l)
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
@@ -107,25 +107,25 @@ func eq(environment *Environment, left, right Expression) bool {
 	switch l := left.(type) {
 	case *RegexpValue:
 		switch r := right.(type) {
-		case *StringValue:
-			return compareStringEQRegexp(r, l)
 		case *AnyValue:
 			return regexpEQAny(l, r)
+		case *StringValue:
+			return compareStringEQRegexp(r, l)
 		}
 	case *AnyValue:
 		switch r := right.(type) {
-		case *RegexpValue:
-			return regexpEQAny(r, l)
-		case *DateTimeValue:
-			return dateTimeEQAny(r, l)
-		case *IntegerValue:
-			return integerEQAny(r, l)
-		case *DoubleValue:
-			return doubleEQAny(r, l)
-		case *StringValue:
-			return stringEQAny(r, l)
 		case *AnyValue:
 			return anyEQAny(r, l)
+		case *DateTimeValue:
+			return dateTimeEQAny(r, l)
+		case *DoubleValue:
+			return doubleEQAny(r, l)
+		case *IntegerValue:
+			return integerEQAny(r, l)
+		case *RegexpValue:
+			return regexpEQAny(r, l)
+		case *StringValue:
+			return stringEQAny(r, l)
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
@@ -161,16 +161,16 @@ func ge(environment *Environment, left, right Expression) bool {
 	switch l := left.(type) {
 	case *AnyValue:
 		switch r := right.(type) {
-		case *DateTimeValue:
-			return dateTimeLTAny(r, l) || dateTimeEQAny(r, l)
-		case *IntegerValue:
-			return integerLTAny(r, l) || integerEQAny(r, l)
-		case *DoubleValue:
-			return doubleLTAny(r, l) || doubleEQAny(r, l)
-		case *StringValue:
-			return stringLTAny(r, l) || stringEQAny(r, l)
 		case *AnyValue:
 			return anyLTAny(r, l) || anyEQAny(r, l)
+		case *DateTimeValue:
+			return dateTimeLTAny(r, l) || dateTimeEQAny(r, l)
+		case *DoubleValue:
+			return doubleLTAny(r, l) || doubleEQAny(r, l)
+		case *IntegerValue:
+			return integerLTAny(r, l) || integerEQAny(r, l)
+		case *StringValue:
+			return stringLTAny(r, l) || stringEQAny(r, l)
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
@@ -198,16 +198,16 @@ func gt(environment *Environment, left, right Expression) bool {
 	switch l := left.(type) {
 	case *AnyValue:
 		switch r := right.(type) {
-		case *DateTimeValue:
-			return dateTimeLTAny(r, l)
-		case *IntegerValue:
-			return integerLTAny(r, l)
-		case *DoubleValue:
-			return doubleLTAny(r, l)
-		case *StringValue:
-			return stringLTAny(r, l)
 		case *AnyValue:
 			return anyGTAny(l, r)
+		case *DateTimeValue:
+			return dateTimeLTAny(r, l)
+		case *DoubleValue:
+			return doubleLTAny(r, l)
+		case *IntegerValue:
+			return integerLTAny(r, l)
+		case *StringValue:
+			return stringLTAny(r, l)
 		}
 	case *DateTimeValue:
 		switch r := right.(type) {
