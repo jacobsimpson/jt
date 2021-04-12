@@ -105,13 +105,6 @@ func eq(environment *Environment, left, right Expression) bool {
 	right = resolveVar(environment, right)
 
 	switch l := left.(type) {
-	case *RegexpValue:
-		switch r := right.(type) {
-		case *AnyValue:
-			return regexpEQAny(l, r)
-		case *StringValue:
-			return compareStringEQRegexp(r, l)
-		}
 	case *AnyValue:
 		switch r := right.(type) {
 		case *AnyValue:
@@ -136,6 +129,13 @@ func eq(environment *Environment, left, right Expression) bool {
 		switch r := right.(type) {
 		case *AnyValue:
 			return integerEQAny(l, r)
+		}
+	case *RegexpValue:
+		switch r := right.(type) {
+		case *AnyValue:
+			return regexpEQAny(l, r)
+		case *StringValue:
+			return compareStringEQRegexp(r, l)
 		}
 	case *StringValue:
 		switch r := right.(type) {
